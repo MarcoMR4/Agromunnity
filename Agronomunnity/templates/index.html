@@ -1,0 +1,156 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+{% endblock stylesheets %}
+{% block content %}
+<header class="navbar sticky-top flex-md-nowrap p-0 shadow justify-content-center">
+    <div class="text-center col-md-2 col-lg-1 pt-2">
+      <img src="/static/assets/img/icons/logo.svg" alt="logo" width="20" />
+      <p>Agromunnity</p>
+    </div>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </header>
+  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse ">
+    <div class="pt-5 nav flex-column align-items-center">
+        <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="85" class="rounded-circle"/> Nombre de usuario
+    </div>
+    <hr class="hr" />
+    <div class="position-sticky pt-4">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+          <a href={% url 'index' %} class="nav-link text-dark"> Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">
+            --
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">
+            --
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">
+            --
+          </a>
+        </li>
+        <li class="nav-item">
+          <a>
+            <router-link to="/user-register" class="nav-link text-dark">
+              Registrar usuarios
+            </router-link>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href={% url 'exit' %} class="nav-link text-danger">Cerrar sesión</a>
+        </li>
+    </ul>
+    </div>
+  </nav>
+  <body>
+    <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-9 ms-sm-auto col-lg-10 p-md-4"> 
+                <div class="">
+                    Bienvenido
+                    Pruebas de detección del COVID-19: información importante
+Actualizado el 28 de sep. del 2022
+English | Otros idiomas
+Imprimir
+Al hacerse la prueba de detección:
+Recuerde hacérsela en el momento correcto
+Elija el tipo correcto de prueba según su circunstancia
+Siga las instrucciones de la prueba según las recomendaciones de la FDA
+Si no lo hace, sus resultados podrían no indicar correctamente si tiene COVID-19 o no.
+
+En esta página
+Cuándo hacerse una prueba de detección
+Tipos de pruebas
+Cómo elegir una prueba de detección del COVID-19
+Resultado positivo en la prueba
+Resultado negativo en la prueba
+Prueba de anticuerpos
+Cuándo hacerse una prueba de detección del COVID-19
+Trabajador de servicios de salud con un vial y un hisopo
+Situaciones en las que es importante hacerse la prueba:
+
+Si tiene síntomas, hágase una prueba inmediatamente.
+Si estuvo expuesto al COVID-19 y no tiene síntomas, deje pasar al menos 5 días completos después de su exposición para hacerse la prueba. Si se hace la prueba demasiado pronto, es más probable que el resultado no sea preciso.
+Si está en ciertos entornos de alto riesgo, es posible que tenga que hacerse pruebas de detección como parte de un programa de pruebas de evaluación preventivas.
+Considere hacerse una prueba antes de tener contacto con una persona con riesgo alto de enfermarse gravemente a causa del COVID-19, especialmente si se encuentra en un área con un nivel medio o alto de COVID-19 en la comunidad.
+Para ver una guía sobre cómo usar las pruebas para determinar qué medidas de mitigación se recomiendan mientras se recupera del COVID-19, vea Aislamiento y precauciones para personas con COVID-19.
+
+Pruebas de detección o tratamiento del COVID-19
+
+Tipos de pruebas
+Las pruebas virales se usan para saber si tiene una infección en curso por SARS-CoV-2, el virus que causa el COVID-19. Se analizan muestras extraídas de su nariz o boca. Hay dos tipos principales de pruebas virales: las pruebas de amplificación de ácido nucleico (NAAT, por sus siglas en inglés) y las pruebas de antígenos. En algunas circunstancias, podría recomendarse un tipo de prueba por sobre la otra. Todas las pruebas se deben realizar siguiendo los requisitos de la FDA.
+
+Las NAAT, como las pruebas de PCR, por lo general se hacen en un laboratorio. Suelen ser las pruebas más confiables para personas con o sin síntomas. Estas pruebas permiten detectar material genético viral, que puede permanecer en su organismo por hasta 90 días después de su resultado positivo. Por consiguiente, no debe usar una NAAT si tuvo una prueba positiva en los últimos 90 días.
+Las pruebas de antígenos* son pruebas rápidas cuyos resultados están listos en 15 a 30 minutos. Son menos confiables que las NAAT, especialmente para las personas que no tienen síntomas. Un resultado negativo aislado en una prueba de antígeno no permite descartar la infección.  Para detectar mejor la infección, se debe repetir la prueba de antígenos con resultado negativo con un intervalo de al menos 48 horas (esto se conoce como pruebas seriadas). A veces se puede recomendar una prueba NAAT de seguimiento para confirmar el resultado de una prueba de antígenos.
+Las *autopruebas, o pruebas para hacerse en casa, por lo general son pruebas de antígenos que se pueden hacer en cualquier lado sin necesidad de ir a un centro de realización de pruebas en particular. Siga las instrucciones del fabricante y de la FDA, lo que incluye la cantidad de veces que quizá deba repetir la prueba. Varios resultados negativos aumentan la probabilidad de que sea correcto que no está infectado por el virus que causa el COVID-19.
+
+Puede ordenar kits de autoprueba gratis en COVIDtests.gov o comprar las pruebas en línea, en farmacias y tiendas.
+También puede visitar el sitio web de la FDA para ver un listado de las pruebas autorizadas.
+Como señalan las etiquetas de las pruebas de antígenos de venta sin receta médica autorizadas: los resultados negativos se deben considerar presuntos (es decir, son resultados preliminares). Los resultados negativos no descartan la infección por SARS-CoV-2 y no deben utilizarse como el único elemento para el tratamiento o las decisiones en cuanto al manejo de pacientes, incluidas las decisiones sobre el control de la infección. Consulte la guía de la FDA para el uso de pruebas de antígenos de detección del COVID-19 para hacerse en casa.
+Cómo elegir una prueba de detección del COVID-19
+Me encuentro en una situación en la que se recomienda hacerse una prueba de detección y:
+
+No tuve COVID-19 o no tuve una prueba positiva en los últimos 90 días.
+Pruebas de detección del COVID-19: información importante
+Actualizado el 28 de sep. del 2022
+English | Otros idiomas
+Imprimir
+Al hacerse la prueba de detección:
+Recuerde hacérsela en el momento correcto
+Elija el tipo correcto de prueba según su circunstancia
+Siga las instrucciones de la prueba según las recomendaciones de la FDA
+Si no lo hace, sus resultados podrían no indicar correctamente si tiene COVID-19 o no.
+
+En esta página
+Cuándo hacerse una prueba de detección
+Tipos de pruebas
+Cómo elegir una prueba de detección del COVID-19
+Resultado positivo en la prueba
+Resultado negativo en la prueba
+Prueba de anticuerpos
+Cuándo hacerse una prueba de detección del COVID-19
+Trabajador de servicios de salud con un vial y un hisopo
+Situaciones en las que es importante hacerse la prueba:
+
+Si tiene síntomas, hágase una prueba inmediatamente.
+Si estuvo expuesto al COVID-19 y no tiene síntomas, deje pasar al menos 5 días completos después de su exposición para hacerse la prueba. Si se hace la prueba demasiado pronto, es más probable que el resultado no sea preciso.
+Si está en ciertos entornos de alto riesgo, es posible que tenga que hacerse pruebas de detección como parte de un programa de pruebas de evaluación preventivas.
+Considere hacerse una prueba antes de tener contacto con una persona con riesgo alto de enfermarse gravemente a causa del COVID-19, especialmente si se encuentra en un área con un nivel medio o alto de COVID-19 en la comunidad.
+Para ver una guía sobre cómo usar las pruebas para determinar qué medidas de mitigación se recomiendan mientras se recupera del COVID-19, vea Aislamiento y precauciones para personas con COVID-19.
+
+Pruebas de detección o tratamiento del COVID-19
+
+Tipos de pruebas
+Las pruebas virales se usan para saber si tiene una infección en curso por SARS-CoV-2, el virus que causa el COVID-19. Se analizan muestras extraídas de su nariz o boca. Hay dos tipos principales de pruebas virales: las pruebas de amplificación de ácido nucleico (NAAT, por sus siglas en inglés) y las pruebas de antígenos. En algunas circunstancias, podría recomendarse un tipo de prueba por sobre la otra. Todas las pruebas se deben realizar siguiendo los requisitos de la FDA.
+
+Las NAAT, como las pruebas de PCR, por lo general se hacen en un laboratorio. Suelen ser las pruebas más confiables para personas con o sin síntomas. Estas pruebas permiten detectar material genético viral, que puede permanecer en su organismo por hasta 90 días después de su resultado positivo. Por consiguiente, no debe usar una NAAT si tuvo una prueba positiva en los últimos 90 días.
+Las pruebas de antígenos* son pruebas rápidas cuyos resultados están listos en 15 a 30 minutos. Son menos confiables que las NAAT, especialmente para las personas que no tienen síntomas. Un resultado negativo aislado en una prueba de antígeno no permite descartar la infección.  Para detectar mejor la infección, se debe repetir la prueba de antígenos con resultado negativo con un intervalo de al menos 48 horas (esto se conoce como pruebas seriadas). A veces se puede recomendar una prueba NAAT de seguimiento para confirmar el resultado de una prueba de antígenos.
+Las *autopruebas, o pruebas para hacerse en casa, por lo general son pruebas de antígenos que se pueden hacer en cualquier lado sin necesidad de ir a un centro de realización de pruebas en particular. Siga las instrucciones del fabricante y de la FDA, lo que incluye la cantidad de veces que quizá deba repetir la prueba. Varios resultados negativos aumentan la probabilidad de que sea correcto que no está infectado por el virus que causa el COVID-19.
+
+Puede ordenar kits de autoprueba gratis en COVIDtests.gov o comprar las pruebas en línea, en farmacias y tiendas.
+También puede visitar el sitio web de la FDA para ver un listado de las pruebas autorizadas.
+Como señalan las etiquetas de las pruebas de antígenos de venta sin receta médica autorizadas: los resultados negativos se deben considerar presuntos (es decir, son resultados preliminares). Los resultados negativos no descartan la infección por SARS-CoV-2 y no deben utilizarse como el único elemento para el tratamiento o las decisiones en cuanto al manejo de pacientes, incluidas las decisiones sobre el control de la infección. Consulte la guía de la FDA para el uso de pruebas de antígenos de detección del COVID-19 para hacerse en casa.
+Cómo elegir una prueba de detección del COVID-19
+Me encuentro en una situación en la que se recomienda hacerse una prueba de detección y:
+
+No tuve COVID-19 o no tuve una prueba positiva en los últimos 90 días.
+                </div>
+            </main>
+        </div>
+    </div>
+  </body>
+{% endblock content %}
+{% block javascripts %}
+  <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+{% endblock javascripts %}
+
+
+
