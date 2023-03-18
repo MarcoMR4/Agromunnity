@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>
+            Agromunnity - {% block title %} {% endblock %}
+        </title>
+
+        <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/assets/css/main.css">
+        {% block stylesheets %}
+        {% endblock stylesheets %}
+
+    </head>
+
+    <body>
+        {% include 'layouts/navbar.html' %}
+
+
+        {% if request.user.user.tipouser == 'E_V' %}
+            {% include "user_enc_ventas/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'D_R' %}
+            {% include "user_dir_gral/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'E_A' %}
+            {% include "user_enc_acopio/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'I_C' %}
+            {% include "user_ing_campo/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'E_B' %}
+            {% include "user_enc_bit/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'G_C' %}
+            {% include "user_ger_cuad/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'E_P' %}
+            {% include "user_enc_prod/sidenav.html" %}
+        {% elif request.user.user.tipouser == 'ADM' %}
+            {% include "user_admin/sidenav.html" %}
+        {% endif %}
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-9 ms-sm-auto col-lg-10 p-md-4"> 
+                    {% block content %}
+                    {% endblock content %}
+                    {% include 'layouts/footer.html' %}
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        {% block javascripts %}
+        {% endblock javascripts %}
+
+    </body>
+
+</html>
