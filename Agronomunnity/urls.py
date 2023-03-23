@@ -13,7 +13,8 @@ urlpatterns = [
     #usuarios en general
     path('', views.index, name='index'),
     path('login/', views.li, name='login'),
-    path('logout/', views.lo, name='exit')
+    path('logout/', views.lo, name='exit'),
+    path('tr/',views.transportRegister, name="tr")
 
 ]
 
