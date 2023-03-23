@@ -46,7 +46,7 @@
   }
 
   .sidebar .nav-link.active {
-    color:#a5e244;;
+    color:#a5e244;
   }
 
   .sidebar .nav-link:hover .feather,
@@ -60,4 +60,8 @@
     padding-top: .5rem;
     overflow-x: hidden;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  }
+
+  .main-color{
+    background-color: #a5e244;
   }
