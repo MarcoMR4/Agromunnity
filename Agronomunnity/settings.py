@@ -65,12 +65,8 @@ WSGI_APPLICATION = 'Agronomunnity.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'agronomunity',
-        'USER': 'postgres',
-        'PASSWORD': 'tecmorelia',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
