@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from .forms import UserLoginForm, AddEmplooye
+from .forms import UserLoginForm, AddEmplooye, AddTransport
 from django.contrib.auth import authenticate, logout, login
 from django.template import RequestContext
 from .models import user, User
@@ -61,3 +61,11 @@ def workerRegister(request):
             return render(request, "user_enc_bit/workerRegister.html", {'form':form})
     else: 
         return render(request, 'denied.html')
+    
+@login_required
+def transportRegister(request):
+    if request.user.user.tipouser == 'E_B':
+        form = AddTransport()
+
+    return render(request, 'user_enc_bit/transportRegister.html', 
+                     {'form':form})
