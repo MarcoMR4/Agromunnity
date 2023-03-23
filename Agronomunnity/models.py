@@ -1,8 +1,9 @@
 from django.db import models
+from django.utils.timezone import now
 from django.contrib.auth.models import User
 
 class ListaAcceso(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    Usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     telefono = models.CharField(max_length=10, blank = True)
     correoPersonal = models.EmailField(max_length = 254, blank = True)
     tipoUsuario = (
