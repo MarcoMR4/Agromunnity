@@ -52,3 +52,40 @@ class AddEmplooye(forms.Form):
             attrs={'class': 'form-control col-sm-6', 'style': 'font-size: 12px;'}
         )
     )
+
+
+class AddTransport(forms.Form):
+
+    Placa = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control col-sm-6 ', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+    Modelo = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control col-sm-6 ', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+    estatusTransporte = (
+    ('A', 'Activo'),
+    ('I', 'Inactivo'),
+    ('M', 'Mantenimiento')
+    )
+    EstatusTransporte = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control col-sm-6', 'style': 'font-size: 12px;'}
+        ),
+        choices=estatusTransporte
+    )
+    #cargar choferes desde la base de dtos 
+    choferes = (
+    ('1', 'chofer1'),
+    ('2', 'chofer2'),
+    ('3', 'chofer3')
+    )
+    ElegirChofer = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control col-sm-6', 'style': 'font-size: 12px;'}
+        ),
+        choices=choferes
+    )

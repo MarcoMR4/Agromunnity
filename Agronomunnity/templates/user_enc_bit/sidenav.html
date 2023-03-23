@@ -1,4 +1,4 @@
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse ">
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse navbar-nav ms-auto">
     <div class="pt-5 nav flex-column align-items-center text-center">
         <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="85" class="rounded-circle"/> 
         {{request.user.username}}
@@ -17,6 +17,12 @@
             <a href={% url 'wr' %} class="nav-link"> Registrar Trabajador</a>
           </li>
 
+          
+          <li class="nav-item rounded-pill" {% if request.resolver_match.url_name == 'tr' %} style='background-color: #a5e244;' {% endif %}>
+            <a href={% url 'tr' %} class="nav-link"> 
+              Registrar Medio de Transporte</a>
+          </li>
+          <i class=""></i>
           <li class="nav-item">
             <a href={% url 'exit' %} class="nav-link text-danger">Cerrar sesión</a>
           </li>
