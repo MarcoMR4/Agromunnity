@@ -1,5 +1,5 @@
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse ">
-    <div class="pt-5 nav flex-column align-items-center">
+    <div class="pt-5 nav flex-column align-items-center text-center">
         <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="85" class="rounded-circle"/> 
         {{request.user.username}}
         <br>
@@ -9,10 +9,14 @@
     <div class="position-sticky pt-4">
       <ul class="nav flex-column">
   
-          <li class="nav-item {% if 'index' in segment %} active {% endif %}">
+          <li class="nav-item rounded-pill" {% if request.resolver_match.url_name == 'index' %} style='background-color: #a5e244;' {% endif %}>
             <a href={% url 'index' %} class="nav-link text-dark"> Inicio</a>
           </li>
   
+          <li class="nav-item rounded-pill" {% if request.resolver_match.url_name == 'wr' %} style='background-color: #a5e244;' {% endif %}>
+            <a href={% url 'wr' %} class="nav-link"> Registrar Trabajador</a>
+          </li>
+
           <li class="nav-item">
             <a href={% url 'exit' %} class="nav-link text-danger">Cerrar sesión</a>
           </li>
