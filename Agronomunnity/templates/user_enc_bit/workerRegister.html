@@ -1,0 +1,56 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Registro de trabajadores{% endblock %}
+
+{% block content %}
+
+    {% if error %}
+        <div class="alert alert-danger mt-2" role="alert">Error al registrar el trabajador <br>Error de tipo: {{error}}</div>
+    {% elif mensaje %}
+        <div class="alert alert-success mt-2" role="alert">{{mensaje}}</div>
+    {% endif %}
+
+    <div class="perfil row mt-2 align-items-center justify-content-center">
+            
+        <div class="infoPerfil d-flex flex-column justify-content-center col-12 col-md-7 mt-1">
+            <div class="tit text-center">
+                <h1>Agregar Trabajador</h1>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="espacioDatosGenerales">
+                    <div class="datos p-2">
+                        <div class="form-floating mb-3">
+                            {{form.Nombre}}
+                            <label for="nombre">Nombre(s)</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{form.AP}}
+                            <label for="ap">Apellido Paterno</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{form.AM}}
+                            <label for="am">Apellido Materno</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{form.Correo}}
+                            <label for="correo">Correo</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{form.Tipo}}
+                            <label for="tipo">Tipo de usuario</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {{form.Telefono}}
+                            <label for="telefono">Telefono</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="botonCambiarPassword mt-2 text-center" style="width: 100%;">
+                    <button type="submit" class="btn rounded" style="background-color: #a5e244;">Agregar</button>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

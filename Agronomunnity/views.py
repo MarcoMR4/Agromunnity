@@ -1,8 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from .forms import UserLoginForm
+from .forms import UserLoginForm, AddEmplooye, AddTransport
 from django.contrib.auth import authenticate, logout, login
+from django.template import RequestContext
+from .models import user, User
+from django.contrib.auth.hashers import make_password
 
 @login_required
 def index(request):
@@ -27,3 +30,42 @@ def li(request):
 def lo(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def workerRegister(request):
+    if request.user.user.tipouser == 'E_B':
+        form = AddEmplooye()
+        if request.method == 'POST':
+            try:
+                nombre = request.POST['Nombre']
+                contrasenia = 'Agro-'+request.POST['Telefono']
+                usuario = User.objects.create(
+                    username=nombre,
+                    password= make_password(contrasenia)
+                )
+                trabajador = user.objects.create(
+                    telefono=request.POST['Telefono'],
+                    correoPersonal=request.POST['Correo'],
+                    tipouser=request.POST['Tipo'],
+                    user_id=usuario.id
+                )
+                return render(request, "user_enc_bit/workerRegister.html", {
+                    'form':form,
+                    "mensaje": "Trabajador Registrado exitosamente"})
+            except Exception as e:
+                print(e)
+                return render(request, "user_enc_bit/workerRegister.html", {
+                    'form':form,
+                    "error": e})
+        else:
+            return render(request, "user_enc_bit/workerRegister.html", {'form':form})
+    else: 
+        return render(request, 'denied.html')
+    
+@login_required
+def transportRegister(request):
+    if request.user.user.tipouser == 'E_B':
+        form = AddTransport()
+
+    return render(request, 'user_enc_bit/transportRegister.html', 
+                     {'form':form})

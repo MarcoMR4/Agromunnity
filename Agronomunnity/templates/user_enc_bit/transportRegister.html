@@ -1,0 +1,48 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Registro de camiones{% endblock %}
+
+{% block content %}
+
+<div class="row mt-2 align-items-center justify-content-center">
+            
+    <div class="d-flex flex-column justify-content-center col-12 col-md-7 mt-1">
+        <div class="tit text-center">
+            <h1>Agregar Medio de Transporte</h1>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="espacioDatosGenerales">
+                <div class="datos p-2">
+
+                    <div class="form-floating mb-3">
+                        {{form.Placa}}
+                        <label for="placa">Placa</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{form.Modelo}}
+                        <label for="modelo">Modelo</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{form.EstatusTransporte}}
+                        <label for="estatus">Estatus</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        {{form.ElegirChofer}}
+                        <label for="estatus">Asignar Chofer</label>
+                    </div>
+
+                </div>
+            </div>
+            <div class="botonCambiarPassword mt-2 text-center" style="width: 100%;">
+                <button type="submit" class="btn rounded" style="background-color: #a5e244;">Registrar</button>
+                
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
