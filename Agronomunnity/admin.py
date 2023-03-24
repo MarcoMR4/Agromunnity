@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(ListaAcceso)
+admin.site.register(Trabajador)
 admin.site.register(Camion)
 admin.site.register(MiembroCuadrilla)
 admin.site.register(Cuadrilla)

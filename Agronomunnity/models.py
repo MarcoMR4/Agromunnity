@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 
-class ListaAcceso(models.Model):
+class Trabajador(models.Model):
     Usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     telefono = models.CharField(max_length=10, blank = True)
     correoPersonal = models.EmailField(max_length = 254, blank = True)
@@ -25,9 +25,9 @@ class ListaAcceso(models.Model):
         return self.Mostrar()
 
     class Meta:
-        verbose_name= 'ListaAcceso'
-        verbose_name_plural= 'ListasAccesos'
-        db_table= 'listaAcceso'
+        verbose_name= 'Trabajador'
+        verbose_name_plural= 'Trabajadores'
+        db_table= 'trabajador'
         ordering= ['id']
 
 class Camion(models.Model):
@@ -73,6 +73,7 @@ class MiembroCuadrilla(models.Model):
         ordering= ['id']
 
 class Cuadrilla(models.Model):
+    nombre = models.CharField(max_length=20, blank = True)
     idGerenteCuadrilla = models.ForeignKey('ListaAcceso', on_delete=models.CASCADE)
     idCapatazCuadrilla = models.ForeignKey('ListaAcceso', on_delete=models.CASCADE)
 
@@ -92,6 +93,7 @@ class Productor(models.Model):
     nombre = models.CharField(max_length=20, blank = True)
     apellidoP = models.CharField(max_length=30, blank = True)
     apellidoM = models.CharField(max_length=30, blank = True)
+    telefono = models.CharField(max_length=10, blank = True)
 
     def Mostrar(self):
         return "{}, {}".format(self.nombre, self.apellidoP, self.apellidoM)
@@ -107,14 +109,14 @@ class Productor(models.Model):
 
 class Huerta(models.Model):
     nombre = models.CharField(max_length=20, blank = True)
-    Ubicacion = models.CharField(max_length=30, blank = True)
+    ubicacion = models.CharField(max_length=30, blank = True)
     estatusHuerta = (
         ('H_A', 'Activo'),
         ('H_I', 'Inactivo'),
     )
     estatus = models.CharField(max_length=3, choices=estatusHuerta, default='Activo')
     idProductor = models.ForeignKey('Productor', on_delete=models.CASCADE)
-    Fruta = models.CharField(max_length=20, blank = True)
+    fruta = models.CharField(max_length=20, blank = True)
 
     def Mostrar(self):
         return "{}, {}".format(self.nombre, self.estatus)

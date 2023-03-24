@@ -30,7 +30,7 @@ def li(request):
 def lo(request):
     logout(request)
     return redirect('login')
-
+#modificar nombre de datos en base a los cambios de nombre en las bases de datos
 @login_required
 def workerRegister(request):
     if request.user.user.tipouser == 'E_B':
