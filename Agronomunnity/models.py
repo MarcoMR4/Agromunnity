@@ -77,11 +77,11 @@ class Cuadrilla(models.Model):
     idGerenteCuadrilla = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
     idCapatazCuadrilla = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
 
-    #def Mostrar(self):
-    #    return "{}, {}".format(self.nombre, self.apellidoP, self.apellidoM)
+    def Mostrar(self):
+        return "{}, {}".format(self.nombre)
 
-    #def __str__(self):
-    #    return self.Mostrar()
+    def __str__(self):
+        return self.Mostrar()
 
     class Meta:
         verbose_name= 'Cuadrilla'
