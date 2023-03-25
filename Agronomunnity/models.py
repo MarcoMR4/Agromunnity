@@ -40,7 +40,7 @@ class Camion(models.Model):
         ('C_M', 'Mantenimiento'),
     )
     estatus = models.CharField(max_length=3, choices=estatusCamion, default='Activo')
-    idChofer = models.ForeignKey('ListaAcceso', on_delete=models.CASCADE)
+    idChofer = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
 
     def Mostrar(self):
         return "{}, {}".format(self.estatus, self.modelo)
@@ -74,8 +74,8 @@ class MiembroCuadrilla(models.Model):
 
 class Cuadrilla(models.Model):
     nombre = models.CharField(max_length=20, blank = True)
-    idGerenteCuadrilla = models.ForeignKey('ListaAcceso', on_delete=models.CASCADE)
-    idCapatazCuadrilla = models.ForeignKey('ListaAcceso', on_delete=models.CASCADE)
+    idGerenteCuadrilla = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+    idCapatazCuadrilla = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
 
     #def Mostrar(self):
     #    return "{}, {}".format(self.nombre, self.apellidoP, self.apellidoM)
