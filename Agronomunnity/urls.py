@@ -9,11 +9,13 @@ from . import views
 urlpatterns = [
     #administrador
     path('admin/', admin.site.urls),
-    path("wr/", views.workerRegister, name="wr"),
     #usuarios en general
     path('', views.index, name='index'),
     path('login/', views.li, name='login'),
     path('logout/', views.lo, name='exit'),
+
+    #Encargado de bitacora
+    path("wr/", views.workerRegister, name="wr"),
     path('tr/',views.transportRegister, name="tr")
 
 ]

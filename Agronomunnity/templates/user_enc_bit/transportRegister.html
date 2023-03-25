@@ -1,48 +1,84 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Registro de camiones{% endblock %}
+{% block title %}Medios de transporte{% endblock %}
 
 {% block content %}
 
-<div class="row mt-2 align-items-center justify-content-center">
-            
-    <div class="d-flex flex-column justify-content-center col-12 col-md-7 mt-1">
-        <div class="tit text-center">
-            <h1>Agregar Medio de Transporte</h1>
-        </div>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="espacioDatosGenerales">
-                <div class="datos p-2">
+<div class="mt-2 mx-5 align-items-center justify-content-center">
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>Modelo</th>
+                <th>Capacidad</th>
+                <th>Conductor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Ford F-450</td>
+                <td>20 Toneladas</td>
+                <td>Marco Antonio Mercado Rodriguez</td>
+                
+                <td>- - - -</td>
+            </tr>
+            <tr>
+                <td>Ford F-450</td>
+                <td>20 Toneladas</td>
+                <td>Marco Antonio Mercado Rodriguez</td>
+                
+                <td>- - - -</td>
+            </tr><tr>
+                <td>Ford F-450</td>
+                <td>20 Toneladas</td>
+                <td>Marco Antonio Mercado Rodriguez</td>
+                
+                <td>- - - -</td>
+            </tr><tr>
+                <td>Ford F-450</td>
+                <td>20 Toneladas</td>
+                <td>Marco Antonio Mercado Rodriguez</td>
+                
+                <td>- - - -</td>
+            </tr><tr>
+                <td>Ford F-450</td>
+                <td>20 Toneladas</td>
+                <td>Marco Antonio Mercado Rodriguez</td>
+                
+                <td>- - - -</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="mt-2 text-center" style="width: 100%;">
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+            Agregar
+        </button>
+    </div>
 
-                    <div class="form-floating mb-3">
-                        {{form.Placa}}
-                        <label for="placa">Placa</label>
+    
+        
+        <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar camión de carga</h1>
                     </div>
-
-                    <div class="form-floating mb-3">
-                        {{form.Modelo}}
-                        <label for="modelo">Modelo</label>
+                    <div class="modal-body justify-content-center">
+                        <form action="#" method="POST">
+                            {% csrf_token %}
+                            <div class="d-flex flex-column">
+                                <p><label
+                                        style="font-weight: 600; font-size: 2vh; color: black;">Aqui van todos los campos</label><br>
+                                    {{form.description}}
+                                </p>
+                                <button type="submit" class="btn" id="btnagendar" data-bs-dismiss="modal" style="background-color: #a5e244;">Registrar</button>
+                            </div>
+                        </form>
                     </div>
-
-                    <div class="form-floating mb-3">
-                        {{form.EstatusTransporte}}
-                        <label for="estatus">Estatus</label>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        {{form.ElegirChofer}}
-                        <label for="estatus">Asignar Chofer</label>
-                    </div>
-
                 </div>
             </div>
-            <div class="botonCambiarPassword mt-2 text-center" style="width: 100%;">
-                <button type="submit" class="btn rounded" style="background-color: #a5e244;">Registrar</button>
-                
-            </div>
-        </form>
-    </div>
+        </div>
+</div>
 </div>
 
 {% endblock content %}

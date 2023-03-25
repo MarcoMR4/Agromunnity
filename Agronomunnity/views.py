@@ -66,6 +66,6 @@ def workerRegister(request):
 def transportRegister(request):
     if request.user.user.tipouser == 'E_B':
         form = AddTransport()
-
-    return render(request, 'user_enc_bit/transportRegister.html', 
-                     {'form':form})
+        return render(request, 'user_enc_bit/transportRegister.html',{'form':form})
+    else: 
+        return render(request, 'denied.html')
