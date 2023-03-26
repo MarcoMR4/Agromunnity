@@ -7,6 +7,7 @@ from django.template import RequestContext
 from .models import user, User
 from django.contrib.auth.hashers import make_password
 
+#dashboard 
 @login_required
 def index(request):
     return render(request, 'index.html')
