@@ -74,8 +74,8 @@ class MiembroCuadrilla(models.Model):
 
 class Cuadrilla(models.Model):
     nombre = models.CharField(max_length=20, blank = True)
-    idGerenteCuadrilla = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
-    idCapatazCuadrilla = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+    idGerenteCuadrilla = models.ForeignKey('Trabajador', related_name='gerente', on_delete=models.CASCADE)
+    idCapatazCuadrilla = models.ForeignKey('Trabajador', related_name='capataz', on_delete=models.CASCADE)
 
     def Mostrar(self):
         return "{}, {}".format(self.nombre)
@@ -175,9 +175,9 @@ class OrdenCorte(models.Model):
         return self.Mostrar()
 
     class Meta:
-        verbose_name= 'Pedido'
-        verbose_name_plural= 'Pedidos'
-        db_table= 'pedido'
+        verbose_name= 'OrdenCorte'
+        verbose_name_plural= 'OrdenesCorte'
+        db_table= 'ordenCorte'
         ordering= ['id']
 
 class Viaje(models.Model):
@@ -199,9 +199,9 @@ class Viaje(models.Model):
         return self.Mostrar()
 
     class Meta:
-        verbose_name= 'Pedido'
-        verbose_name_plural= 'Pedidos'
-        db_table= 'pedido'
+        verbose_name= 'Viaje'
+        verbose_name_plural= 'Viajes'
+        db_table= 'viaje'
         ordering= ['id']
 
 class ReporteCorte(models.Model):

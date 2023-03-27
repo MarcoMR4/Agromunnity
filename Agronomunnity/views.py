@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserLoginForm, AddEmplooye, AddTransport
 from django.contrib.auth import authenticate, logout, login
 from django.template import RequestContext
-from .models import user, User
+from .models import Trabajador, User
 from django.contrib.auth.hashers import make_password
 
 @login_required
