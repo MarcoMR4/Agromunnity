@@ -10,6 +10,7 @@ class Trabajador(models.Model):
         ('E_V', 'Encargado de ventas'),
         ('E_B', 'Encargado de bitacora'),
         ('E_P', 'Encargado de produccion'),
+        ('E_T', 'Encargado de transporte'),
         ('D_G', 'Director General'),
         ('I_C', 'Ingeniero de campo'),
         ('G_C', 'Gerente de cuadrilla'),

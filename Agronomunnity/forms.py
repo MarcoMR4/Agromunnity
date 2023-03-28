@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 from django import forms
 
-from .models import Trabajador
+from .models import Cuadrilla, Productor, Trabajador
 
 
 class UserLoginForm(AuthenticationForm):
@@ -89,9 +89,6 @@ class AddTransport(forms.Form):
         choices=choferes
     )
 
-#Formularios faltantes:
-#Agregar huerta, agregar productor de huerta, agregar cuadrilla, agregar miembro cuadrilla
-
 class AddProductor(forms.Form):
 
     Nombre = forms.CharField(
@@ -143,11 +140,11 @@ class AddHuerta(forms.Form):
         choices=estatusHuerta
     )
     #cargar productores desde la base de dtos 
-    productores = (
-    ('1', 'productor1'),
-    ('2', 'productor2'),
-    ('3', 'productor3')
-    )
+    c = Productor.objects.order_by('apellidoP')
+    productores =[]
+    c = Productor.objects.order_by('apellidoP')
+    for a in c:
+        productores.append([a.nombre, a.apellidoP])
     ElegirProductor = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
@@ -163,56 +160,56 @@ class AddCuadrilla(forms.Form):
         )
     )
     #cargar gerente desde la base de datos 
-    gerente = (
-    ('1', 'gerente1'),
-    ('2', 'gerente2'),
-    ('3', 'gerente3')
-    )
+    g = Trabajador.objects.filter(rol='G_C')
+    gerentes =[]
+    g = Trabajador.objects.filter(rol='G_C')
+    for a in g:
+        gerentes.append([ a.Usuario.id, a.Usuario.username])
     ElegirGerente = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         ),
-        choices=gerente
+        choices=gerentes
     )
     #cargar capataz desde la base de datos 
-    capataz = (
-    ('1', 'capataz1'),
-    ('2', 'capataz2'),
-    ('3', 'capataz3')
-    )
+    c = Trabajador.objects.filter(rol='C_C')
+    capataces =[]
+    c = Trabajador.objects.filter(rol='C_C')
+    for a in c:
+        capataces.append([ a.Usuario.id, a.Usuario.username])
     ElegirCapataz = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         ),
-        choices=capataz
+        choices=capataces
     )
 
 class AddMiembroCuadrilla(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control col-sm-6 ', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
     AP = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control col-sm-6', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
     AM = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control col-sm-6', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
     #cargar cuadrilla desde la base de datos 
-    cuadrilla = (
-    ('1', 'cuadrilla1'),
-    ('2', 'cuadrilla2'),
-    ('3', 'cuadrilla3')
-    )
-    ElegirCuadrilla = forms.ChoiceField(
+    c = Cuadrilla.objects.order_by('nombre')
+    cuadrillas =[]
+    c = Cuadrilla.objects.order_by('nombre')
+    for a in c:
+        cuadrillas.append([ a.Usuario.id, a.Usuario.username])
+    ElegirChofer = forms.ChoiceField(
         widget=forms.Select(
-            attrs={'class': 'form-control col-sm-6', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         ),
-        choices=cuadrilla
+        choices=cuadrillas
     )
