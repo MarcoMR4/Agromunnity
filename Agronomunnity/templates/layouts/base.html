@@ -24,36 +24,26 @@
         {% include 'layouts/navbar.html' %}
 
 
-        {% if request.user.user.tipouser == 'E_V' %}
+        {% if request.user.trabajador.rol == 'E_V' %}
             {% include "user_enc_ventas/sidenav.html" %}
-        {% elif request.user.user.tipouser == 'D_R' %}
+        {% elif request.user.trabajador.rol == 'D_R' %}
             {% include "user_dir_gral/sidenav.html" %}
-        {% elif request.user.user.tipouser == 'I_C' %}
+        {% elif request.user.trabajador.rol == 'I_C' %}
             {% include "user_ing_campo/sidenav.html" %}
-        {% elif request.user.user.tipouser == 'E_B' %}
+        {% elif request.user.trabajador.rol == 'E_B' %}
             {% include "user_enc_bit/sidenav.html" %}
-        {% elif request.user.user.tipouser == 'G_C' %}
+        {% elif request.user.trabajador.rol == 'G_C' %}
             {% include "user_ger_cuad/sidenav.html" %}
-        {% elif request.user.user.tipouser == 'E_P' %}
+        {% elif request.user.trabajador.rol == 'E_P' %}
             {% include "user_enc_prod/sidenav.html" %}
-        {% elif request.user.user.tipouser == 'ADM' %}
+        {% elif request.user.trabajador.rol == 'ADM' %}
             {% include "user_admin/sidenav.html" %}
         {% endif %}
         
 
         <div class="content-wrapper">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1></h1>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <section class="content">
-                <main class="py-4">
+                <main>
                     {% block content %}
                     {% endblock content %}
                     {% include 'layouts/footer.html' %}
