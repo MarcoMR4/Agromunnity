@@ -1,56 +1,66 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Cuadrillas{% endblock %}
+{% block title %}Editar Cuadrilla{% endblock %}
 
 {% block content %}
 
-    {% if error %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-            <strong>Error!</strong> {{error}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
+{% if error %}
+    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+        <strong>Error!</strong> {{error}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     {% elif mensaje %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-            <strong>Exito!</strong> {{mensaje}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endif %}
+    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+        <strong>Exito!</strong> {{mensaje}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
+
+    <div class="text-3 text-center">
+        <h3 class="py-5" id="exampleModalLabel">Cuadrilla</h3>
+    </div>
+    <div class="mx-5 align-items-center justify-content-center">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="text-center">
+                <input type="hidden" name="Id" value="modificar">
+                <p class="form-floating mb-3">
+                    {{formc.Nombre}}
+                    <label>Nombre</label>
+                </p>
+                <p class="form-floating mb-3">
+                    {{formc.ElegirGerente}}
+                    <label>Gerente</label>
+                </p>
+                <p class="form-floating mb-3">
+                    {{formc.ElegirCapataz}}
+                    <label>Capataz</label>
+                </p>
+                <button type="submit" class="btn" style="background-color: #a5e244;">Guardar</button>
+            </div>
+        </form>
+    </div>
     
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Cuadrillas de corte</h3>
-        </div>
         <table id="example" class="table table-striped text-center" style="width:100%">
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Gerente</th>
-                    <th>Capataz</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for a in cuadrillas %}
+                {% for a in miembros %}
                     <tr>
-                        <td>{{a.nombre}}</td>
-                        <td>{{a.idGerenteCuadrilla.Usuario.username}}</td>
-                        <td>{{a.idCapatazCuadrilla.Usuario.username}}</td>
+                        <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
                         <td>
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                
-                                        <input type="hidden" name="Id" value="modificar">
-                                        <input type="hidden" name="Cuadrilla" value={{a.id}}>
-                                        <button type="submit" class="btn">
-                                            <i class="nav-icon fas fa-edit text-primary"></i>
-                                        </button>
-                                    </p>
-                                </div>
-                            </form>
+                            <a>
+                                <i class="nav-icon fas fa-edit"></i>
+                            </a>
                             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
                                 <i class="nav-icon fas fa-trash text-danger"></i>
                             </button>
@@ -67,7 +77,7 @@
                                                         {% csrf_token %}
                                                         
                                                                 <input type="hidden" name="Id" value="eliminar">
-                                                                <input type="hidden" name="Cuadrilla" value={{a.id}}>
+                                                                <input type="hidden" name="Miembro" value={{a.id}}>
                                                                 <button type="submit" class="btn btn-danger">Eliminar</button>
                                                             </p>
                                                         </div>
@@ -101,16 +111,16 @@
                             <div class="text-center">
                                 <input type="hidden" name="Id" value="agregar">
                                 <p class="form-floating mb-3">
-                                    {{form.Nombre}}
+                                    {{formm.Nombre}}
                                     <label>Nombre</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.ElegirGerente}}
-                                    <label>Gerente</label>
+                                    {{formm.AP}}
+                                    <label>Apellido Paterno</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.ElegirCapataz}}
-                                    <label>Capataz</label>
+                                    {{formm.AM}}
+                                    <label>Apellido Materno</label>
                                 </p>
                                 <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
                             </div>

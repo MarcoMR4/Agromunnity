@@ -3,11 +3,12 @@ from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from .forms import UserLoginForm, AddEmplooye, AddTransport, AddCuadrilla, AddHuerta, AddProductor, AddMiembroCuadrilla
+from .forms import UserLoginForm, AddEmplooye, AddTransport, AddCuadrilla, AddHuerta, AddProductor, AddMiembroCuadrilla, ChangeCuadrilla
 from django.contrib.auth import authenticate, logout, login
 from django.template import RequestContext
 from .models import Trabajador, User, Camion, Cuadrilla, Productor, Huerta, MiembroCuadrilla
 from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 
 @login_required
 def index(request):
@@ -102,29 +103,128 @@ def squadRegister(request):
         form = AddCuadrilla()
         cuadrillas = Cuadrilla.objects.all()
         if request.method == 'POST':
-            try:
-                gerente=Trabajador.objects.get(Usuario_id=request.POST['ElegirGerente'])
-                capataz=Trabajador.objects.get(Usuario_id=request.POST['ElegirCapataz'])
-                Cuadrilla.objects.create(
-                    nombre=request.POST['Nombre'],
-                    idCapatazCuadrilla=capataz,
-                    idGerenteCuadrilla=gerente
-                )
-                return render(request, 'user_enc_bit/squadRegister.html', {
-                    'form':form,
-                    "mensaje": "Cuadrilla Registrada exitosamente",
-                    'cuadrillas': cuadrillas})
-            except Exception as e:
-                print(e)
-                return render(request, 'user_enc_bit/squadRegister.html', {
-                    'form':form,
-                    "error": e,
-                    'cuadrillas': cuadrillas})
+            if request.POST['Id']=='eliminar':
+                try:
+                    c = Cuadrilla.objects.get(id=request.POST['Cuadrilla']) 
+                    c.delete()
+                    return render(request, 'user_enc_bit/squadRegister.html', {
+                        'form':form,
+                        "mensaje": "Cuadrilla Eliminada exitosamente",
+                        'cuadrillas': cuadrillas})
+                except Exception as e:
+                    print(e)
+                    return render(request, 'user_enc_bit/squadRegister.html', {
+                        'form':form,
+                        "error": "No se pudo borrar la cuadrilla, intentalo de nuevo",
+                        'cuadrillas': cuadrillas})
+            elif request.POST['Id']=='agregar':
+                try:
+                    gerente=Trabajador.objects.get(Usuario_id=request.POST['ElegirGerente'])
+                    capataz=Trabajador.objects.get(Usuario_id=request.POST['ElegirCapataz'])
+                    Cuadrilla.objects.create(
+                        nombre=request.POST['Nombre'],
+                        idCapatazCuadrilla=capataz,
+                        idGerenteCuadrilla=gerente
+                    )
+                    return render(request, 'user_enc_bit/squadRegister.html', {
+                        'form':form,
+                        "mensaje": "Cuadrilla Registrada exitosamente",
+                        'cuadrillas': cuadrillas})
+                except Exception as e:
+                    print(e)
+                    return render(request, 'user_enc_bit/squadRegister.html', {
+                        'form':form,
+                        "error": 'No se pudo registrar la cuadrilla, intentalo de nuevo',
+                        'cuadrillas': cuadrillas})
+            elif request.POST['Id']=='modificar':
+                try:
+                    cuadrilla=request.POST['Cuadrilla']
+                    request.session['cuadrilla'] = cuadrilla
+                    url = reverse('sm')
+                    return redirect(url)
+                except Exception as e:
+                    print(e)
+                    return render(request, 'user_enc_bit/squadRegister.html', {
+                        'form':form,
+                        "error": "A ocurrido un error, intentalo de nuevo",
+                        'cuadrillas': cuadrillas})
         else:
             return render(request, 'user_enc_bit/squadRegister.html', {'form':form, 'cuadrillas': cuadrillas})
     else: 
         return render(request, 'denied.html')
-    
+
+def squadModify(request):
+    if request.user.trabajador.rol == 'E_B':
+        c = request.session.get('cuadrilla')
+        formc = ChangeCuadrilla(cuadrilla=c)
+        formm = AddMiembroCuadrilla()
+        miembros = MiembroCuadrilla.objects.filter(idCuadrilla_id=c)
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    m = MiembroCuadrilla.objects.get(id=request.POST['Miembro']) 
+                    m.delete()
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formm':formm,
+                        'formc':formc,
+                        "mensaje": "Miembro eliminado exitosamente",
+                        'miembros': miembros})
+                except Exception as e:
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formm':formm,
+                        'formc':formc,
+                        "error": "No se pudo borrar al miembro, intentalo de nuevo",
+                        'miembros': miembros})
+            elif request.POST['Id']=='agregar':
+                try:
+                    MiembroCuadrilla.objects.create(
+                        nombre=request.POST['Nombre'],
+                        apellidoP=request.POST['AP'],
+                        apellidoM=request.POST['AM'],
+                        idCuadrilla_id=c
+                    )
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formc':formc,
+                        'formm':formm,
+                        "mensaje": "Miembro Registrado exitosamente",
+                        'miembros': miembros})
+                except Exception as e:
+                    print(e)
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formc':formc,
+                        'formm':formm,
+                        "error": "No se pudo agregar el miembro, intentalo de nuevo",
+                        'miembros': miembros})
+            elif request.POST['Id']=='modificar':
+                try:
+                    gerente=Trabajador.objects.get(Usuario_id=request.POST['ElegirGerente'])
+                    capataz=Trabajador.objects.get(Usuario_id=request.POST['ElegirCapataz'])
+                    cuadrilla = Cuadrilla.objects.get(id = c)
+                    cuadrilla.nombre = request.POST['Nombre']
+                    cuadrilla.idCapatazCuadrilla = capataz
+                    cuadrilla.idGerenteCuadrilla = gerente
+                    cuadrilla.save()
+                    formc = ChangeCuadrilla(cuadrilla=c)
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formc':formc,
+                        'formm':formm,
+                        "mensaje": "Se modificacion los datos",
+                        'miembros': miembros})
+                except Exception as e:
+                    print(e)
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formc':formc,
+                        'formm':formm,
+                        "error": "No se pudo modificar los datos, intentalo de nuevo",
+                        'miembros': miembros})
+        else:
+            return render(request, 'user_enc_bit/squadModify.html', {
+                'formc':formc,
+                'formm':formm,
+                'miembros': miembros})
+    else: 
+        return render(request, 'denied.html')
+
 def producerRegister(request):
     if request.user.trabajador.rol == 'E_B':
         form = AddProductor()
