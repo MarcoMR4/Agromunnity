@@ -16,7 +16,11 @@ urlpatterns = [
 
     #Encargado de bitacora
     path("wr/", views.workerRegister, name="wr"),
-    path('tr/',views.transportRegister, name="tr")
+    path('tr/',views.transportRegister, name="tr"),
+    path('sr/',views.squadRegister, name="sr"),
+    path('sm/',views.squadModify, name="sm"),
+    path('pr/',views.producerRegister, name="pr"),
+    path('or/',views.orchardRegister, name="or")
 
 ]
 

@@ -1,38 +1,34 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Transportes{% endblock %}
+{% block title %}Productores{% endblock %}
 
 {% block content %}
 
     {% if error %}
-        <div class="alert alert-danger mt-2" role="alert">Error al registrar el camión <br>Error de tipo: {{error}}</div>
+        <div class="alert alert-danger mt-2" role="alert">Error al registrar al productor <br>Error de tipo: {{error}}</div>
     {% elif mensaje %}
         <div class="alert alert-success mt-2" role="alert">{{mensaje}}</div>
     {% endif %}
     
     <div class="mx-5 align-items-center justify-content-center">
         <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Camiones</h3>
+            <h3 class="py-5" id="exampleModalLabel">Productores de aguacate</h3>
         </div>
         <table id="example" class="table table-striped text-center" style="width:100%">
             <thead>
                 <tr>
-                    <th>Placa</th>
-                    <th>Modelo</th>
-                    <th>Capacidad</th>
-                    <th>Conductor</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for a in camiones %}
+                {% for a in productores %}
                     <tr>
-                        <td>{{a.placa}}</td>
-                        <td>{{a.modelo}}</td>
-                        <td>{{a.capacidad}} Toneladas</td>
-                        <td>{{a.idChofer.Usuario.username}}</td>
+                        <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
+                        <td>{{a.telefono}}</td>
                         <td>
-                            <i class="nav-icon fas fa-refresh mr-2"></i>
+                            <i class="nav-icon fas fa-edit mr-2"></i>
                             <i class="nav-icon fas fa-trash ml-2 text-danger"></i>
                         </td>
                     </tr>
@@ -48,27 +44,27 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Camion</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Productores</h1>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="text-center">
                                 <p class="form-floating mb-3">
-                                    {{form.Placa}}
-                                    <label>Placa</label>
+                                    {{form.Nombre}}
+                                    <label>Nombre</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.Modelo}}
-                                    <label>Modelo</label>
+                                    {{form.AP}}
+                                    <label>Apellido Paterno</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.EstatusTransporte}}
-                                    <label>Estatus</label>
+                                    {{form.AM}}
+                                    <label>Apellido Materno</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.ElegirChofer}}
-                                    <label>Conductor</label>
+                                    {{form.Telefono}}
+                                    <label>Telefono</label>
                                 </p>
                                 <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
                             </div>

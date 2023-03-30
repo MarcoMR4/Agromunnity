@@ -2,7 +2,7 @@
   <!--Usuario-->
   <a href="" class="brand-link" style="background:#a5e244">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text font-weight">{{request.user.user.tipouser}}</span>
+    <span class="brand-text fs-6">{{request.user.trabajador.get_rol_display}}</span>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
@@ -26,8 +26,8 @@
                   <p>Trabajadores</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href="" class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'pr' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'pr' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-id-badge"></i>
                   <p>Productores</p>
               </a>
@@ -38,8 +38,8 @@
                   <p>Pedidos</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href="" class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'sr' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'sr' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-users"></i>
                   <p>Cuadrillas</p>
               </a>
@@ -54,6 +54,12 @@
               <a href="" class="nav-link inactive">
                   <i class="nav-icon fas fa-tasks"></i>
                   <p>Ordenes de corte</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'or' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'or' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-tree"></i>
+                  <p>Huertas</p>
               </a>
             </li>
             <li class="nav-item">
