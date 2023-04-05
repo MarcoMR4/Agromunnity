@@ -5,9 +5,19 @@
 {% block content %}
 
     {% if error %}
-        <div class="alert alert-danger mt-2" role="alert">Error al registrar al productor <br>Error de tipo: {{error}}</div>
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+            <strong>Error!</strong> {{error}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     {% elif mensaje %}
-        <div class="alert alert-success mt-2" role="alert">{{mensaje}}</div>
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+            <strong>Exito!</strong> {{mensaje}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     {% endif %}
     
     <div class="mx-5 align-items-center justify-content-center">

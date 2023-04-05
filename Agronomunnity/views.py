@@ -231,21 +231,22 @@ def producerRegister(request):
         form = AddProductor()
         productores = Productor.objects.all()
         if request.method == 'POST':
-            
             if request.POST['Id']=='eliminar':
                 try:
                     c = Productor.objects.get(id=request.POST['Productor']) 
                     c.delete()
                     return render(request, 'user_enc_bit/producerRegister.html', {
                         'form':form,
-                        "mensaje": "Productor Eliminada exitosamente",
-                        'productores': productores})
+                        "mensaje": "Productor eliminado correctamente.",
+                        'productores': productores
+                    })
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/producerRegister.html', {
                         'form':form,
-                        "error": "No se pudo borrar al productor, intentalo de nuevo",
-                        'productores': productores})
+                        "error": "No se pudo realizar la eliminación, intente de nuevo.",
+                        'productores': productores
+                    })
             elif request.POST['Id']=='agregar':
                 try:
                     Productor.objects.create(
@@ -256,14 +257,16 @@ def producerRegister(request):
                     )
                     return render(request, 'user_enc_bit/producerRegister.html', {
                         'form':form,
-                        "mensaje": "Productor Registrada exitosamente",
-                        'productores': productores})
+                        "mensaje": "Productor registrado correctamente.",
+                        'productores': productores
+                    })
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/producerRegister.html', {
                         'form':form,
-                        "error": e,
-                        'productores': productores})
+                        "error": "No es posible realizar el registro, intente de nuevo.",
+                        'productores': productores
+                    })
             elif request.POST['Id']=='modificar':
                 try:
                     productor=request.POST['Productor']
@@ -274,9 +277,9 @@ def producerRegister(request):
                     print(e)
                     return render(request, 'user_enc_bit/producerRegister.html', {
                         'form':form,
-                        "error": "A ocurrido un error, intentalo de nuevo",
-                        'productores': productores})
-
+                        "error": "A ocurrido un error, intente de nuevo.",
+                        'productores': productores
+                    })
         else:
             return render(request, 'user_enc_bit/producerRegister.html', {'form':form, 'productores': productores})
     else: 
@@ -286,33 +289,34 @@ def producerModify(request):
     if request.user.trabajador.rol == 'E_B':
         c = request.session.get('productor')
         formc = ChangeProductor(productor=c)
-        formm = AddProductor()
-        origen = Productor.objects.all()
+        productores = Productor.objects.all()
         
         if request.method == 'POST':
-            if request.POST['Id']=='modificar':
-                try:
-                    productor = Productor.objects.get(id = c)
-                    productor.nombre = request.POST['Nombre']
-                    productor.apellidoP = request.POST['AP']
-                    productor.apellidoM = request.POST['AM']
-                    productor.telefono = request.POST['Telefono']
-                    productor.save()
-                    formc = ChangeProductor(productor=c)
-                    url = reverse('pr')
-                    return redirect(url)
-                except Exception as e:
-                    print(e)
-                    return render(request, 'user_enc_bit/producerRegister.html', {
-                        'formc':formc,
-                        'formm':formm,
-                        "error": "No se pudo modificar los datos, intentalo de nuevo",
-                        'productores': origen})
+            try:
+                productor = Productor.objects.get(id = c)
+                productor.nombre = request.POST['Nombre']
+                productor.apellidoP = request.POST['AP']
+                productor.apellidoM = request.POST['AM']
+                productor.telefono = request.POST['Telefono']
+                productor.save()
+                formc = ChangeProductor(productor=c)
+                return render(request, 'user_enc_bit/producerRegister.html', {
+                    'formc':formc,
+                    "mensaje": "Se guardaron las modificaciones correctamente.",
+                    'productores': productores
+                })
+            except Exception as e:
+                print(e)
+                return render(request, 'user_enc_bit/producerModify.html', {
+                    'formc':formc,
+                    "error": "No se pudieron realizar los cambios, intente de nuevo.",
+                    'productores': productores
+                })
         else:
             return render(request, 'user_enc_bit/producerModify.html', {
                 'formc':formc,
-                'formm':formm,
-                'productores': origen})
+                'productores': productores
+            })
     else: 
         return render(request, 'denied.html')
 
@@ -321,7 +325,6 @@ def orchardRegister(request):
         form = AddHuerta()
         huertas = Huerta.objects.all()
         if request.method == 'POST':
-
             if request.POST['Id']=='eliminar':
                 try:
                     c = Huerta.objects.get(id=request.POST['Huerta']) 

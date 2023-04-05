@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Editar Productores{% endblock %}
+{% block title %}Editar Productor{% endblock %}
 
 {% block content %}
 
@@ -21,7 +21,7 @@
     {% endif %}
     
     <div class="text-3 text-center">
-        <h3 class="py-5" id="exampleModalLabel">Productor</h3>
+        <h3 class="py-5" id="exampleModalLabel">Pantalla de edición de productor</h3>
     </div>
     <div class="mx-5 align-items-center justify-content-center">
         <form method="POST" enctype="multipart/form-data">
@@ -47,68 +47,6 @@
                 <button type="submit" class="btn" style="background-color: #a5e244;">Guardar</button>
             </div>
         </form>
-    </div>
-
-    <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Productores de aguacate</h3>
-        </div>
-        <div class="table-responsive">
-            <table id="example" class="table table-striped text-center" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Telefono</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for a in productores %}
-                        <tr>
-                            <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
-                            <td>{{a.telefono}}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-2 text-center" style="width: 100%;">
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                <i class="nav-icon fas fa-plus"></i>
-            </button>
-        </div>
-        <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Productores</h1>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="text-center">
-                                <p class="form-floating mb-3">
-                                    {{formm.Nombre}}
-                                    <label>Nombre</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{formm.AP}}
-                                    <label>Apellido Paterno</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{formm.AM}}
-                                    <label>Apellido Materno</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{formm.Telefono}}
-                                    <label>Telefono</label>
-                                </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
 {% endblock content %}
