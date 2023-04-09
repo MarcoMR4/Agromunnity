@@ -44,88 +44,131 @@
             </div>
         </form>
     </div>
+
+    <div class="text-3 text-center">
+        <h3 class="py-5" id="exampleModalLabel">Miembros</h3>
+    </div>
     
-    <div class="mx-5 align-items-center justify-content-center">
-        <table id="example" class="table table-striped text-center" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for a in miembros %}
-                    <tr>
-                        <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
-                        <td>
-                            <a>
-                                <i class="nav-icon fas fa-edit"></i>
-                            </a>
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                <i class="nav-icon fas fa-trash text-danger"></i>
-                            </button>
-                            <div class="modal fade" id="eliminar{{a.id}}">
-                                <div class="modal-dialog text-center">
-                                    <div class="modal-content">
-                                        <div class="pt-4 text-center">
-                                            <h1 class="fs-5">¿Seguro que deseas eliminar a {{a.nombre}}?</h1>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="text-center d-inline-block">
-                                                <p class="form-floating">
-                                                    <form method="POST" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        
-                                                                <input type="hidden" name="Id" value="eliminar">
-                                                                <input type="hidden" name="Miembro" value={{a.id}}>
-                                                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                                                            </p>
-                                                        </div>
-                                                    </form>
-                                                    <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                                                </p>
-                                            </div>
+    <div class="row row-cols row-cols-md-4 justify-content-center px-3">
+        
+        <div class="card text-center shadow mx-2" style="background:#EAFBD5">
+            <div class="card-body">
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal">
+                    <img src="/static/assets/img/icons/add.png" width="70">
+                    <p class="card-text mt-2">Agregar miembro</p>
+                </button>
+            </div>
+        </div>
+
+        {% if miembros %}
+            {% for a in miembros %}
+                <div class="card text-center shadow mx-2" style="background:#CEF6F5">
+                    <div class="card-body">
+                        <img src="/static/assets/img/icons/user-icon.svg" width="70" class="rounded-circle">
+                        <p class="card-text">{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</p>
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#editar{{a.id}}">
+                            <i class="nav-icon fas fa-edit text-primary"></i>
+                        </button>
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                            <i class="nav-icon fas fa-trash text-danger"></i>
+                        </button>
+                        <div class="modal fade" id="eliminar{{a.id}}">
+                            <div class="modal-dialog text-center">
+                                <div class="modal-content">
+                                    <div class="pt-4 text-center">
+                                        <h1 class="fs-5">¿Seguro que deseas eliminar a {{a.nombre}}?</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="text-center d-inline-block">
+                                            <p class="form-floating">
+                                                <form method="POST" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="Id" value="eliminar">
+                                                    <input type="hidden" name="Miembro" value={{a.id}}>
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                                <button class="btn btn-primary mt-2" data-bs-dismiss="modal">Cancelar</button>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-2 text-center" style="width: 100%;">
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                <i class="nav-icon fas fa-plus"></i>
-            </button>
-        </div>
-        <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Cuadrillas</h1>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="text-center">
-                                <input type="hidden" name="Id" value="agregar">
-                                <p class="form-floating mb-3">
-                                    {{formm.Nombre}}
-                                    <label>Nombre</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{formm.AP}}
-                                    <label>Apellido Paterno</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{formm.AM}}
-                                    <label>Apellido Materno</label>
-                                </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                        </div>
+
+                        <div class="modal fade" id="editar{{a.id}}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de miembro.</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="text-center">
+                                                <input type="hidden" name="Id" value="editar">
+                                                <input type="hidden" name="Miembro" value={{a.id}}>
+                                                <p class="form-floating mb-3">
+                                                    <input class="form-control" type="text" name="Nombre" value={{a.nombre}}>
+                                                    <label>Nombre</label>
+                                                </p>
+                                                <p class="form-floating mb-3">
+                                                    <input class="form-control" type="text" name="AP" value={{a.apellidoP}}>
+                                                    <label>Apellido Paterno</label>
+                                                </p>
+                                                <p class="form-floating mb-3">
+                                                    <input class="form-control" type="text" name="AM" value={{a.apellidoM}}>
+                                                    <label>Apellido Materno</label>
+                                                </p>
+                                                <button type="submit" class="btn btn-danger">Guardar</button>
+                                            </div>
+                                        </form>
+                                        <button class="btn btn-primary mt-2" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
+                </div>
+            {% endfor %}
+        {% else %}
+
+            <div class="card text-center shadow mx-2" style="background:#F6CECE">
+                <div class="card-body">
+                    <img src="/static/assets/img/icons/alert.png" width="70">
+                    <p class="card-text">Esta cuadrilla no tiene miembros.</p>
+                </div>
+            </div>
+
+    {% endif %}
+
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Miembro</h1>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="text-center">
+                            <input type="hidden" name="Id" value="agregar">
+                            <p class="form-floating mb-3">
+                                {{formm.Nombre}}
+                                <label>Nombre</label>
+                            </p>
+                            <p class="form-floating mb-3">
+                                {{formm.AP}}
+                                <label>Apellido Paterno</label>
+                            </p>
+                            <p class="form-floating mb-3">
+                                {{formm.AM}}
+                                <label>Apellido Materno</label>
+                            </p>
+                            <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

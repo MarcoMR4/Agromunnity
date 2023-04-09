@@ -14,27 +14,29 @@
         <div class="text-3 text-center">
             <h3 class="py-5" id="exampleModalLabel">Trabajadores</h3>
         </div>
-        <table id="example" class="table table-striped text-center" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Puesto</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for a in trabajadores %}
+        <div class="table-responsive">
+            <table id="example" class="table table-striped text-center" style="width:100%">
+                <thead>
                     <tr>
-                        <td>{{a.Usuario.username}} {{a.Usuario.last_name}}</td>
-                        <td>{{a.get_rol_display}}</td>
-                        <td>
-                            <i class="nav-icon fas fa-user-pen mr-2"></i>
-                            <i class="nav-icon fas fa-trash ml-2 text-danger"></i>
-                        </td>
+                        <th>Nombre</th>
+                        <th>Puesto</th>
+                        <th>Acciones</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for a in trabajadores %}
+                        <tr>
+                            <td>{{a.Usuario.username}} {{a.Usuario.last_name}}</td>
+                            <td>{{a.get_rol_display}}</td>
+                            <td>
+                                <i class="nav-icon fas fa-user-pen mr-2"></i>
+                                <i class="nav-icon fas fa-trash ml-2 text-danger"></i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <div class="mt-2 text-center" style="width: 100%;">
             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
                 <i class="nav-icon fas fa-user-plus"></i>
