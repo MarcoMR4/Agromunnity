@@ -110,13 +110,13 @@ def squadRegister(request):
                     c.delete()
                     return render(request, 'user_enc_bit/squadRegister.html', {
                         'form':form,
-                        "mensaje": "Cuadrilla Eliminada exitosamente",
+                        "mensaje": "Cuadrilla eliminada correctamente.",
                         'cuadrillas': cuadrillas})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/squadRegister.html', {
                         'form':form,
-                        "error": "No se pudo borrar la cuadrilla, intentalo de nuevo",
+                        "error": "No se pudo realizar la eliminación, intente de nuevo.",
                         'cuadrillas': cuadrillas})
             elif request.POST['Id']=='agregar':
                 try:
@@ -129,13 +129,13 @@ def squadRegister(request):
                     )
                     return render(request, 'user_enc_bit/squadRegister.html', {
                         'form':form,
-                        "mensaje": "Cuadrilla Registrada exitosamente",
+                        "mensaje": "Cuadrilla registrada correctamente.",
                         'cuadrillas': cuadrillas})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/squadRegister.html', {
                         'form':form,
-                        "error": 'No se pudo registrar la cuadrilla, intentalo de nuevo',
+                        "error": 'No se pudo realizar el registro, intente de nuevo.',
                         'cuadrillas': cuadrillas})
             elif request.POST['Id']=='modificar':
                 try:
@@ -147,7 +147,7 @@ def squadRegister(request):
                     print(e)
                     return render(request, 'user_enc_bit/squadRegister.html', {
                         'form':form,
-                        "error": "A ocurrido un error, intentalo de nuevo",
+                        "error": "A ocurrido un error, intente de nuevo.",
                         'cuadrillas': cuadrillas})
         else:
             return render(request, 'user_enc_bit/squadRegister.html', {'form':form, 'cuadrillas': cuadrillas})
@@ -168,13 +168,13 @@ def squadModify(request):
                     return render(request, 'user_enc_bit/squadModify.html', {
                         'formm':formm,
                         'formc':formc,
-                        "mensaje": "Miembro eliminado exitosamente",
+                        "mensaje": "Se elimino el miembro correctamente.",
                         'miembros': miembros})
                 except Exception as e:
                     return render(request, 'user_enc_bit/squadModify.html', {
                         'formm':formm,
                         'formc':formc,
-                        "error": "No se pudo borrar al miembro, intentalo de nuevo",
+                        "error": "No se pudo realizar la eliminación, intente de nuevo.",
                         'miembros': miembros})
             elif request.POST['Id']=='agregar':
                 try:
@@ -187,14 +187,14 @@ def squadModify(request):
                     return render(request, 'user_enc_bit/squadModify.html', {
                         'formc':formc,
                         'formm':formm,
-                        "mensaje": "Miembro Registrado exitosamente",
+                        "mensaje": "Miembro Registrado correctamente.",
                         'miembros': miembros})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/squadModify.html', {
                         'formc':formc,
                         'formm':formm,
-                        "error": "No se pudo agregar el miembro, intentalo de nuevo",
+                        "error": "No se pudo realizar el registro, intente de nuevo.",
                         'miembros': miembros})
             elif request.POST['Id']=='modificar':
                 try:
@@ -206,17 +206,36 @@ def squadModify(request):
                     cuadrilla.idGerenteCuadrilla = gerente
                     cuadrilla.save()
                     formc = ChangeCuadrilla(cuadrilla=c)
-                    return render(request, 'user_enc_bit/squadModify.html', {
+                    return render(request, 'user_enc_bit/squadRegister.html', {
                         'formc':formc,
                         'formm':formm,
-                        "mensaje": "Se modificacion los datos",
+                        "mensaje": "Se guardaron las modificaciones correctamente.",
                         'miembros': miembros})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/squadModify.html', {
                         'formc':formc,
                         'formm':formm,
-                        "error": "No se pudo modificar los datos, intentalo de nuevo",
+                        "error": "No se pudo modificar los datos, intente de nuevo.",
+                        'miembros': miembros})
+            elif request.POST['Id']=='editar':
+                try:
+                    miembro = MiembroCuadrilla.objects.get(id=request.POST['Miembro'])
+                    miembro.nombre = request.POST['Nombre']
+                    miembro.apellidoP = request.POST['AP']
+                    miembro.apellidoM = request.POST['AM']
+                    miembro.save()
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formc':formc,
+                        'formm':formm,
+                        "mensaje": "Se guardaron las modificaciones correctamente.",
+                        'miembros': miembros})
+                except Exception as e:
+                    print(e)
+                    return render(request, 'user_enc_bit/squadModify.html', {
+                        'formc':formc,
+                        'formm':formm,
+                        "error": "No se pudo realizar la modificación, intente de nuevo.",
                         'miembros': miembros})
         else:
             return render(request, 'user_enc_bit/squadModify.html', {
