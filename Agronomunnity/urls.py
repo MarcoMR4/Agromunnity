@@ -20,7 +20,9 @@ urlpatterns = [
     path('sr/',views.squadRegister, name="sr"),
     path('sm/',views.squadModify, name="sm"),
     path('pr/',views.producerRegister, name="pr"),
-    path('or/',views.orchardRegister, name="or")
+    path('pm/',views.producerModify, name="pm"),
+    path('or/',views.orchardRegister, name="or"),
+    path('om/',views.orchardModify, name="om")
 
 ]
 
