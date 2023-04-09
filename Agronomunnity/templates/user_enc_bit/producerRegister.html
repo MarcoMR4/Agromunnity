@@ -5,36 +5,85 @@
 {% block content %}
 
     {% if error %}
-        <div class="alert alert-danger mt-2" role="alert">Error al registrar al productor <br>Error de tipo: {{error}}</div>
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+            <strong>Error!</strong> {{error}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     {% elif mensaje %}
-        <div class="alert alert-success mt-2" role="alert">{{mensaje}}</div>
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+            <strong>Exito!</strong> {{mensaje}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     {% endif %}
     
     <div class="mx-5 align-items-center justify-content-center">
         <div class="text-3 text-center">
             <h3 class="py-5" id="exampleModalLabel">Productores de aguacate</h3>
         </div>
-        <table id="example" class="table table-striped text-center" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Telefono</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for a in productores %}
+        <div class="table-responsive">
+            <table id="example" class="table table-striped text-center" style="width:100%">
+                <thead>
                     <tr>
-                        <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
-                        <td>{{a.telefono}}</td>
-                        <td>
-                            <i class="nav-icon fas fa-edit mr-2"></i>
-                            <i class="nav-icon fas fa-trash ml-2 text-danger"></i>
-                        </td>
+                        <th>Nombre</th>
+                        <th>Telefono</th>
+                        <th>Acciones</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for a in productores %}
+                        <tr>
+                            <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
+                            <td>{{a.telefono}}</td>
+                            <td>
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    
+                                            <input type="hidden" name="Id" value="modificar">
+                                            <input type="hidden" name="Productor" value={{a.id}}>
+                                            <button type="submit" class="btn">
+                                                <i class="nav-icon fas fa-edit text-primary"></i>
+                                            </button>
+                                        </p>
+                                    </div>
+                                </form>
+                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                    <i class="nav-icon fas fa-trash text-danger"></i>
+                                </button>
+                                <div class="modal fade" id="eliminar{{a.id}}">
+                                    <div class="modal-dialog text-center">
+                                        <div class="modal-content">
+                                            <div class="pt-4 text-center">
+                                                <h1 class="fs-5">¿Seguro que deseas eliminar a {{a.nombre}}?</h1>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="text-center d-inline-block">
+                                                    <p class="form-floating">
+                                                        <form method="POST" enctype="multipart/form-data">
+                                                            {% csrf_token %}
+                                                            
+                                                                    <input type="hidden" name="Id" value="eliminar">
+                                                                    <input type="hidden" name="Productor" value={{a.id}}>
+                                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                </p>
+                                                            </div>
+                                                        </form>
+                                                        <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <div class="mt-2 text-center" style="width: 100%;">
             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
                 <i class="nav-icon fas fa-plus"></i>
@@ -50,6 +99,7 @@
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="text-center">
+                                <input type="hidden" name="Id" value="agregar">
                                 <p class="form-floating mb-3">
                                     {{form.Nombre}}
                                     <label>Nombre</label>
