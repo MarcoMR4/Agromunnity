@@ -206,11 +206,12 @@ def squadModify(request):
                     cuadrilla.idGerenteCuadrilla = gerente
                     cuadrilla.save()
                     formc = ChangeCuadrilla(cuadrilla=c)
+                    cuadrillas = Cuadrilla.objects.all()
                     return render(request, 'user_enc_bit/squadRegister.html', {
                         'formc':formc,
                         'formm':formm,
                         "mensaje": "Se guardaron las modificaciones correctamente.",
-                        'miembros': miembros})
+                        'cuadrillas': cuadrillas})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/squadModify.html', {
@@ -350,13 +351,13 @@ def orchardRegister(request):
                     c.delete()
                     return render(request, 'user_enc_bit/orchardRegister.html', {
                         'form':form,
-                        "mensaje": "Huerta Eliminada exitosamente",
+                        "mensaje": "Se elimino la huerta correctamente.",
                         'huertas': huertas})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/orchardRegister.html', {
                         'form':form,
-                        "error": "No se pudo borrar la huerta, intentalo de nuevo",
+                        "error": "No se pudo eliminar la huerta, intente de nuevo.",
                         'huertas': huertas})
             elif request.POST['Id']=='agregar':
                 try:
@@ -370,13 +371,13 @@ def orchardRegister(request):
                     )
                     return render(request, 'user_enc_bit/orchardRegister.html', {
                         'form':form,
-                        "mensaje": "Huerta Registrada exitosamente",
+                        "mensaje": "Huerta registrada correctamente.",
                         'huertas': huertas})
                 except Exception as e:
                     print(e)
                     return render(request, 'user_enc_bit/orchardRegister.html', {
                         'form':form,
-                        "error": e,
+                        "error": "No se pudo registrar la huerta, intente de nuevo.",
                         'huertas': huertas})
             elif request.POST['Id']=='modificar':
                 try:
@@ -388,7 +389,7 @@ def orchardRegister(request):
                     print(e)
                     return render(request, 'user_enc_bit/orchardRegister.html', {
                         'form':form,
-                        "error": "A ocurrido un error, intentalo de nuevo",
+                        "error": "A ocurrido un error, intente de nuevo.",
                         'huertas': huertas})
 
         else:
@@ -405,26 +406,25 @@ def orchardModify(request):
         huertas = Huerta.objects.filter(id=c)
         
         if request.method == 'POST':
-            if request.POST['Id']=='modificar':
-                try:
-                    productor=Productor.objects.get(nombre=request.POST['ElegirProductor'])
-                    huerta = Huerta.objects.get(id = c)
-                    huerta.nombre = request.POST['Nombre']
-                    huerta.ubicacion = request.POST['Ubicacion']
-                    huerta.fruta = request.POST['Fruta']
-                    huerta.estatus = request.POST['EstatusHuerta']
-                    huerta.idProductor = productor
-                    huerta.save()
-                    formc = ChangeHuerta(huerta=c)
-                    url = reverse('or')
-                    return redirect(url)
-                except Exception as e:
-                    print(e)
-                    return render(request, 'user_enc_bit/orchardRegister.html', {
-                        'formc':formc,
-                        'formm':formm,
-                        "error": "No se pudo modificar los datos, intentalo de nuevo",
-                        'huertas': huertas})
+            try:
+                productor=Productor.objects.get(nombre=request.POST['ElegirProductor'])
+                huerta = Huerta.objects.get(id = c)
+                huerta.nombre = request.POST['Nombre']
+                huerta.ubicacion = request.POST['Ubicacion']
+                huerta.fruta = request.POST['Fruta']
+                huerta.estatus = request.POST['EstatusHuerta']
+                huerta.idProductor = productor
+                huerta.save()
+                formc = ChangeHuerta(huerta=c)
+                url = reverse('or')
+                return redirect(url)
+            except Exception as e:
+                print(e)
+                return render(request, 'user_enc_bit/orchardRegister.html', {
+                    'formc':formc,
+                    'formm':formm,
+                    "error": "No se pudo modificar los datos, intente de nuevo.",
+                    'huertas': huertas})
         else:
             return render(request, 'user_enc_bit/orchardModify.html', {
                 'formc':formc,
