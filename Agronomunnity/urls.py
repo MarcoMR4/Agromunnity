@@ -15,7 +15,11 @@ urlpatterns = [
     path('logout/', views.lo, name='exit'),
 
     #Encargado de bitacora
+    #Trabajador
+    path("w/", views.worker, name="w"),
     path("wr/", views.workerRegister, name="wr"),
+    path("wd/", views.workerDelete, name="wd"),
+    path("wm/", views.workerModify, name="wm"),
     path('tr/',views.transportRegister, name="tr"),
     path('sr/',views.squadRegister, name="sr"),
     path('sm/',views.squadModify, name="sm"),

@@ -36,39 +36,166 @@ def lo(request):
     return redirect('login')
 
 @login_required
-def workerRegister(request):
+def worker(request):
     if request.user.trabajador.rol == 'E_B':
+        #Consultas necesarias para mostrar en plantilla
         form = AddEmplooye()
         trabajadores = Trabajador.objects.all()
+        #si se envia un formulario
         if request.method == 'POST':
-            try:
-                usuario = User.objects.create(
-                    username=request.POST['Nombre'],
-                    last_name=request.POST['AP']+' '+request.POST['AM'],
-                    password= make_password(request.POST['Telefono'])
-                )
-                trabajador = Trabajador.objects.create(
-                    telefono=request.POST['Telefono'],
-                    correoPersonal=request.POST['Correo'],
-                    rol=request.POST['Tipo'],
-                    Usuario_id=usuario.id
-                )
-                return render(request, "user_enc_bit/workerRegister.html", {
-                    'form':form,
-                    "mensaje": "Trabajador Registrado exitosamente",
-                    'trabajadores': trabajadores
-                })
-            except Exception as e:
-                return render(request, "user_enc_bit/workerRegister.html", {
-                    'form':form,
-                    "error": e,
-                    'trabajadores': trabajadores
-                })
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Trabajador'] = request.POST['Trabajador']
+                    url = reverse('wd')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('w')
+                    return redirect(url)
+            if request.POST['Id']=='agregar':
+                try:
+                    request.session['Nombres'] = request.POST['Nombre']
+                    request.session['Apellidos'] = request.POST['AP']+' '+request.POST['AM']
+                    request.session['Telefono'] = request.POST['Telefono']
+                    request.session['Correo'] = request.POST['Correo']
+                    request.session['Rol'] = request.POST['Tipo']
+                    url = reverse('wr')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                    url = reverse('w')
+                    return redirect(url)
+            if request.POST['Id']=='modificar':
+                try:
+                    request.session['Trabajador'] = request.POST['Trabajador']
+                    request.session['Nombres'] = request.POST['Nombre']
+                    print(request.POST['Correo'])
+                    request.session['Apellidos'] = request.POST['Apellidos']
+                    request.session['Telefono'] = request.POST['Telefono']
+                    request.session['Correo'] = request.POST['Correo']
+                    request.session['Rol'] = request.POST['Tipo']
+                    url = reverse('wm')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('w')
+                    return redirect(url)
         else:
-            return render(request, "user_enc_bit/workerRegister.html", {'form':form, 'trabajadores': trabajadores})
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_bit/worker.html", {
+                    'form':form,
+                    'trabajadores': trabajadores,
+                    "mensaje": request.session['Mensaje']
+                })
+            if request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_bit/worker.html", {
+                    'form':form,
+                    'trabajadores': trabajadores,
+                    "error": request.session['Error']
+                })
+            else:
+                return render(request, "user_enc_bit/worker.html", {'form':form, 'trabajadores': trabajadores})
+    else: 
+        return render(request, 'denied.html')
+
+def workerDelete(request):
+    if request.user.trabajador.rol == 'E_B':
+        try:
+            #Se obtiene el trabajador y elimina
+            trabajador = request.session.get('Trabajador')
+            t = Trabajador.objects.get(id=trabajador)
+            u = User.objects.get(id = t.Usuario_id)
+            u.delete() 
+            t.delete()
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Trabajador eliminado correctamente."
+        except Exception as e:
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('w')
+        return redirect(url)
     else: 
         return render(request, 'denied.html')
     
+def workerRegister(request):
+    if request.user.trabajador.rol == 'E_B':
+        try:
+            #Se obtienen los datos y se crea el usuario
+            usuario = User.objects.create(
+                username=request.session.get('Nombres'),
+                last_name=request.session.get('Apellidos'),
+                password= make_password(request.session.get('Telefono'))
+            )
+        
+            Trabajador.objects.create(
+                telefono=request.session.get('Telefono'),
+                correoPersonal=request.session.get('Correo'),
+                rol=request.session.get('Rol'),
+                Usuario_id=usuario.id
+            )
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Trabajador registrado correctamente."
+        except Exception as e:
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+            
+        url = reverse('w')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+def workerModify(request):
+    if request.user.trabajador.rol == 'E_B':
+        try:
+            #Se obtienen los datos y se modifican
+            trabajador = Trabajador.objects.get(id=request.session.get('Trabajador'))
+            usuario = User.objects.get(id=trabajador.Usuario_id)
+
+            usuario.username=request.session.get('Nombres')
+            usuario.last_name=request.session.get('Apellidos')
+            usuario.save()
+            trabajador.telefono=request.session.get('Telefono')
+            trabajador.correoPersonal=request.session.get('Correo')
+            trabajador.rol=request.session.get('Rol')
+            trabajador.save()
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            print(e)
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('w')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+
 @login_required
 def transportRegister(request):
     if request.user.trabajador.rol == 'E_B':
