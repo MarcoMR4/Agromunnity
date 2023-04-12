@@ -20,11 +20,16 @@ urlpatterns = [
     path("wr/", views.workerRegister, name="wr"),
     path("wd/", views.workerDelete, name="wd"),
     path("wm/", views.workerModify, name="wm"),
+
     path('tr/',views.transportRegister, name="tr"),
     path('sr/',views.squadRegister, name="sr"),
     path('sm/',views.squadModify, name="sm"),
+
+    path('p/',views.producer, name="p"),
     path('pr/',views.producerRegister, name="pr"),
+    path('pd/',views.producerDelete, name="pd"),
     path('pm/',views.producerModify, name="pm"),
+
     path('or/',views.orchardRegister, name="or"),
     path('om/',views.orchardModify, name="om")
 

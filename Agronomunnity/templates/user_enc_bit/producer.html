@@ -39,17 +39,45 @@
                             <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
                             <td>{{a.telefono}}</td>
                             <td>
-                                <form method="POST" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    
-                                            <input type="hidden" name="Id" value="modificar">
-                                            <input type="hidden" name="Productor" value={{a.id}}>
-                                            <button type="submit" class="btn">
-                                                <i class="nav-icon fas fa-edit text-primary"></i>
-                                            </button>
-                                        </p>
+                                <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                    <i class="nav-icon fas fa-edit text-primary"></i>
+                                </button>
+                                <div class="modal fade" id="modificar{{a.id}}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de {{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</h1>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <div class="text-center">
+                                                        <input type="hidden" name="Id" value="modificar">
+                                                        <input type="hidden" name="Productor" value={{a.id}}>
+                                                        <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="Nombre" value="{{a.nombre}}">
+                                                            <label>Nombre(s)</label>
+                                                        </p>
+                                                        <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="AP" value="{{a.apellidoP}}">
+                                                            <label>Apellido Paterno</label>
+                                                        </p>
+                                                        <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="AM" value="{{a.apellidoM}}">
+                                                            <label>Apellido Materno</label>
+                                                        </p>
+                                                        <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="Telefono" value={{a.telefono}}>
+                                                            <label>Telefono</label>
+                                                        </p>
+                                                        <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
+                                                    </div>
+                                                </form>
+                                                <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </form>
+                                </div>
                                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
                                     <i class="nav-icon fas fa-trash text-danger"></i>
                                 </button>
@@ -57,7 +85,7 @@
                                     <div class="modal-dialog text-center">
                                         <div class="modal-content">
                                             <div class="pt-4 text-center">
-                                                <h1 class="fs-5">¿Seguro que deseas eliminar a {{a.nombre}}?</h1>
+                                                <h1 class="fs-5">¿Seguro que deseas eliminar a {{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}?</h1>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="text-center d-inline-block">
@@ -93,7 +121,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Productores</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Productor</h1>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">

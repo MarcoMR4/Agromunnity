@@ -34,7 +34,8 @@ def li(request):
 def lo(request):
     logout(request)
     return redirect('login')
-
+#Encargado de bitacora
+#Trabajador
 @login_required
 def worker(request):
     if request.user.trabajador.rol == 'E_B':
@@ -53,7 +54,7 @@ def worker(request):
                     request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
                     url = reverse('w')
                     return redirect(url)
-            if request.POST['Id']=='agregar':
+            elif request.POST['Id']=='agregar':
                 try:
                     request.session['Nombres'] = request.POST['Nombre']
                     request.session['Apellidos'] = request.POST['AP']+' '+request.POST['AM']
@@ -67,7 +68,7 @@ def worker(request):
                     request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
                     url = reverse('w')
                     return redirect(url)
-            if request.POST['Id']=='modificar':
+            elif request.POST['Id']=='modificar':
                 try:
                     request.session['Trabajador'] = request.POST['Trabajador']
                     request.session['Nombres'] = request.POST['Nombre']
@@ -91,7 +92,7 @@ def worker(request):
                     'trabajadores': trabajadores,
                     "mensaje": request.session['Mensaje']
                 })
-            if request.session.get('Operacion')==0:
+            elif request.session.get('Operacion')==0:
                 request.session['Operacion'] = -1
                 return render(request, "user_enc_bit/worker.html", {
                     'form':form,
@@ -195,6 +196,149 @@ def workerModify(request):
     else: 
         return render(request, 'denied.html')
 
+#Productor
+def producer(request):
+    if request.user.trabajador.rol == 'E_B':
+        #Consultas necesarias para mostrar en plantilla
+        form = AddProductor()
+        productores = Productor.objects.all()
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Productor'] = request.POST['Productor']
+                    url = reverse('pd')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('p')
+                    return redirect(url)
+            elif request.POST['Id']=='agregar':
+                try:
+                    request.session['Nombre'] = request.POST['Nombre']
+                    request.session['AP'] = request.POST['AP']
+                    request.session['AM'] = request.POST['AM']
+                    request.session['Telefono'] = request.POST['Telefono']
+                    url = reverse('pr')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                    url = reverse('p')
+                    return redirect(url)
+            elif request.POST['Id']=='modificar':
+                try:
+                    request.session['Productor'] = request.POST['Productor']
+                    request.session['Nombre'] = request.POST['Nombre']
+                    request.session['AP'] = request.POST['AP']
+                    request.session['AM'] = request.POST['AM']
+                    request.session['Telefono'] = request.POST['Telefono']
+                    url = reverse('pm')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('p')
+                    return redirect(url)
+        else:
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, 'user_enc_bit/producer.html', {
+                    'form':form,
+                    "mensaje": request.session['Mensaje'],
+                    'productores': productores
+                })
+            elif request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, 'user_enc_bit/producer.html', {
+                    'form':form,
+                    "error": request.session['Error'],
+                    'productores': productores
+                })
+            else:
+                return render(request, "user_enc_bit/producer.html", {'form':form, 'productores': productores})
+    else: 
+        return render(request, 'denied.html')
+
+def producerRegister(request):
+    if request.user.trabajador.rol == 'E_B':
+        try:
+            #Se obtienen los datos y se crea el usuario
+            Productor.objects.create(
+                nombre=request.session.get('Nombre'),
+                apellidoP=request.session.get('AP'),
+                apellidoM=request.session.get('AM'),
+                telefono=request.session.get('Telefono'),
+            )
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Productor registrado correctamente."
+        except Exception as e:
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+            
+        url = reverse('p')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+def producerDelete(request):
+    if request.user.trabajador.rol == 'E_B':
+        try:
+            #Se obtiene el trabajador y elimina
+            productor = request.session.get('Productor')
+            p = Productor.objects.get(id=productor)
+            p.delete()
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Productor eliminado correctamente."
+        except Exception as e:
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('p')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+def producerModify(request):
+    if request.user.trabajador.rol == 'E_B':
+        try:
+            #Se obtienen los datos y se modifican
+            productor = Productor.objects.get(id=request.session.get('Productor'))
+            productor.nombre=request.session.get('Nombre')
+            productor.apellidoP=request.session.get('AP')
+            productor.apellidoM=request.session.get('AM')
+            productor.telefono=request.session.get('Telefono')
+            productor.save()
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            print(e)
+            #se borra la sesion y toca volver a iniciar sesion
+            #request.session.clear()
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('p')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
 
 @login_required
 def transportRegister(request):
@@ -370,100 +514,6 @@ def squadModify(request):
                 'formc':formc,
                 'formm':formm,
                 'miembros': miembros})
-    else: 
-        return render(request, 'denied.html')
-
-def producerRegister(request):
-    if request.user.trabajador.rol == 'E_B':
-        form = AddProductor()
-        productores = Productor.objects.all()
-        if request.method == 'POST':
-            if request.POST['Id']=='eliminar':
-                try:
-                    c = Productor.objects.get(id=request.POST['Productor']) 
-                    c.delete()
-                    return render(request, 'user_enc_bit/producerRegister.html', {
-                        'form':form,
-                        "mensaje": "Productor eliminado correctamente.",
-                        'productores': productores
-                    })
-                except Exception as e:
-                    print(e)
-                    return render(request, 'user_enc_bit/producerRegister.html', {
-                        'form':form,
-                        "error": "No se pudo realizar la eliminación, intente de nuevo.",
-                        'productores': productores
-                    })
-            elif request.POST['Id']=='agregar':
-                try:
-                    Productor.objects.create(
-                        nombre=request.POST['Nombre'],
-                        apellidoP=request.POST['AP'],
-                        apellidoM=request.POST['AM'],
-                        telefono=request.POST['Telefono'],
-                    )
-                    return render(request, 'user_enc_bit/producerRegister.html', {
-                        'form':form,
-                        "mensaje": "Productor registrado correctamente.",
-                        'productores': productores
-                    })
-                except Exception as e:
-                    print(e)
-                    return render(request, 'user_enc_bit/producerRegister.html', {
-                        'form':form,
-                        "error": "No es posible realizar el registro, intente de nuevo.",
-                        'productores': productores
-                    })
-            elif request.POST['Id']=='modificar':
-                try:
-                    productor=request.POST['Productor']
-                    request.session['productor'] = productor
-                    url = reverse('pm')
-                    return redirect(url)
-                except Exception as e:
-                    print(e)
-                    return render(request, 'user_enc_bit/producerRegister.html', {
-                        'form':form,
-                        "error": "A ocurrido un error, intente de nuevo.",
-                        'productores': productores
-                    })
-        else:
-            return render(request, 'user_enc_bit/producerRegister.html', {'form':form, 'productores': productores})
-    else: 
-        return render(request, 'denied.html')
-
-def producerModify(request):
-    if request.user.trabajador.rol == 'E_B':
-        c = request.session.get('productor')
-        formc = ChangeProductor(productor=c)
-        productores = Productor.objects.all()
-        
-        if request.method == 'POST':
-            try:
-                productor = Productor.objects.get(id = c)
-                productor.nombre = request.POST['Nombre']
-                productor.apellidoP = request.POST['AP']
-                productor.apellidoM = request.POST['AM']
-                productor.telefono = request.POST['Telefono']
-                productor.save()
-                formc = ChangeProductor(productor=c)
-                return render(request, 'user_enc_bit/producerRegister.html', {
-                    'formc':formc,
-                    "mensaje": "Se guardaron las modificaciones correctamente.",
-                    'productores': productores
-                })
-            except Exception as e:
-                print(e)
-                return render(request, 'user_enc_bit/producerModify.html', {
-                    'formc':formc,
-                    "error": "No se pudieron realizar los cambios, intente de nuevo.",
-                    'productores': productores
-                })
-        else:
-            return render(request, 'user_enc_bit/producerModify.html', {
-                'formc':formc,
-                'productores': productores
-            })
     else: 
         return render(request, 'denied.html')
 
