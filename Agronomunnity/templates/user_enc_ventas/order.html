@@ -1,0 +1,119 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+
+    {% if error %}
+        <div class="alert alert-danger mt-2" role="alert">Error al registrar el pedido <br>{{error}}</div>
+    {% elif mensaje %}
+        <div class="alert alert-success mt-2" role="alert">{{mensaje}}</div>
+    {% endif %}
+    
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="text-3 text-center">
+            <h3 class="py-5" id="exampleModalLabel">Pedidos</h3>
+        </div>
+        <div class="table-responsive">
+            <table id="example" class="table table-striped text-center" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Vendedor</th>
+                        <th>NúmeroPedido</th>
+                        <th>FechaPedido</th>
+                        <th>Cliente</th>
+                        <th>Total Pallets</th>
+                        <th>Estatus</th>
+                        <th>FechaSalida</th>
+                        <th>Avance</th>
+                        <th>Mercado</th>
+                        <th>Destino</th>
+
+
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ped in pedidos %}
+                        <tr>
+                            <td>{{ped.idTrabajador}}</td>
+                            <td>{{ped.numeroPedido}}</td>
+                            <td>{{ped.fechaPedido}}</td>
+                            <td>{{ped.nombreCliente}} {{ped.apellidoPCliente}}   {{ped.apellidoMCliente}}</td>
+                            <td>{{ped.totalPalletsPedido}}</td>
+                            <td>{{ped.estatus}}</td>
+                            <td>{{ped.salidaFechaPedido}}</td>
+                            <td>{{ped.avancePedido}}</td>
+                            <td>{{ped.mercadoPedido}}</td>
+                            <td>{{ped.destinoPedido}}</td>
+                            
+
+
+                            <td>
+                                <i class="nav-icon fa fa-pencil-square mr-2"></i>
+                            </td> 
+                            <td>
+                                <i class="nav-icon fas fa-trash ml-2 text-danger"></i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-2 text-center" style="width: 100%;">
+            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                <i class="nav-icon 	fa fa-list-ul"></i>
+                    Añadir nuevo Pedido
+            </button>
+        </div>
+        <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Pedido</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <p class="form-floating mb-3">
+                                    {{form.numeroPedido}}
+                                    <label>Número de pedido</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.nombreCliente}}
+                                    <label>Nombre de cliente</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.aPCliente}}
+                                    <label>Apellido paterno</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.aMCliente}}
+                                    <label>Apellido materno</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.avance}}
+                                    <label>Avance de pedido</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.mercado}}
+                                    <label>Mercado</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.avance}}
+                                    <label>Destino</label>
+                                </p>
+                                
+                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar Pedido</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

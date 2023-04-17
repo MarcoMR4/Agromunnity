@@ -80,7 +80,7 @@ class AddTransport(forms.Form):
     c = Trabajador.objects.filter(rol='C_T')
     choferes =[]
     for a in c:
-        choferes.append([ a.Usuario.id, a.Usuario.username])
+        choferes.append([ a.id, a.Usuario.username])
     ElegirChofer = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
@@ -289,7 +289,7 @@ class AddCuadrilla(forms.Form):
     g = Trabajador.objects.filter(rol='G_C')
     gerentes =[]
     for a in g:
-        gerentes.append([ a.Usuario.id, a.Usuario.username])
+        gerentes.append([a.Usuario.id, a.Usuario.username])
     ElegirGerente = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
@@ -300,7 +300,7 @@ class AddCuadrilla(forms.Form):
     c = Trabajador.objects.filter(rol='C_C')
     capataces =[]
     for a in c:
-        capataces.append([ a.Usuario.id, a.Usuario.username])
+        capataces.append([a.Usuario.id, a.Usuario.username])
     ElegirCapataz = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
@@ -323,5 +323,44 @@ class AddMiembroCuadrilla(forms.Form):
     AM = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+class AddPedido(forms.Form): 
+
+    numeroPedido = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
+    nombreCliente = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+    aPCliente = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+    aMCliente = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+    avance = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false'}
+        )
+    )
+    mercado = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false'}
+        )
+    )
+    destino = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false'}
         )
     )

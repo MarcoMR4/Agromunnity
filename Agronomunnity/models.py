@@ -79,7 +79,7 @@ class Cuadrilla(models.Model):
     idCapatazCuadrilla = models.ForeignKey('Trabajador', related_name='capataz', on_delete=models.CASCADE)
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombre)
+        return "{}".format(self.nombre)
 
     def __str__(self):
         return self.Mostrar()

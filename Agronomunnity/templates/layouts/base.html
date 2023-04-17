@@ -31,6 +31,8 @@
             {% include "user_ing_campo/sidenav.html" %}
         {% elif request.user.trabajador.rol == 'E_B' %}
             {% include "user_enc_bit/sidenav.html" %}
+        {% elif request.user.trabajador.rol == 'E_T' %}
+            {% include "user_enc_trans/sidenav.html" %}
         {% elif request.user.trabajador.rol == 'G_C' %}
             {% include "user_ger_cuad/sidenav.html" %}
         {% elif request.user.trabajador.rol == 'E_P' %}

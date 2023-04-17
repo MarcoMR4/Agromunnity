@@ -9,15 +9,15 @@
       <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'index' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href="" class="nav-link inactive">
+              <a href={% url 'index' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-house"></i>
                   <p>Inicio</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'so' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'so' %} class="nav-link inactive">
-                <i class="nav-icon fas fa-bar-chart"></i>
-                  <p>Pedidos</p>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 't' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 't' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-truck"></i>
+                  <p>Transportes</p>
               </a>
             </li>
             <li class="nav-item">

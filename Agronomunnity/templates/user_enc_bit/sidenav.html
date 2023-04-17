@@ -38,16 +38,10 @@
                   <p>Pedidos</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'sr' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'sr' %} class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 's' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 's' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-users"></i>
                   <p>Cuadrillas</p>
-              </a>
-            </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'tr' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'tr' %} class="nav-link inactive">
-                  <i class="nav-icon fas fa-truck"></i>
-                  <p>Transportes</p>
               </a>
             </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>

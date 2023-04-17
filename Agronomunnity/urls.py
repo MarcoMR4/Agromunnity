@@ -20,15 +20,27 @@ urlpatterns = [
     path("wr/", views.workerRegister, name="wr"),
     path("wd/", views.workerDelete, name="wd"),
     path("wm/", views.workerModify, name="wm"),
-
-    path('tr/',views.transportRegister, name="tr"),
-    path('sr/',views.squadRegister, name="sr"),
-    path('sm/',views.squadModify, name="sm"),
-
+    #Productor
     path('p/',views.producer, name="p"),
     path('pr/',views.producerRegister, name="pr"),
     path('pd/',views.producerDelete, name="pd"),
     path('pm/',views.producerModify, name="pm"),
+    #Cuadrillas
+    path('s/',views.squad, name="s"),
+    path('sd/',views.squadDelete, name="sd"),
+    path('sr/',views.squadRegister, name="sr"),
+    path('sm/',views.squadModify, name="sm"),
+    path('smd/',views.squadMemberDelete, name="smd"),
+    path('smr/',views.squadMemberRegister, name="smr"),
+    path('smm/',views.squadMemberModify, name="smm"),
+    path('sms/',views.squadMemberSave, name="sms"),
+    #Transporte
+    path('t/',views.transport, name="t"),
+    path('td/',views.transportDelete, name="td"),
+    path('tr/',views.transportRegister, name="tr"),
+    path('tm/',views.transportModify, name="tm"),
+    #Pedido
+    path('so/',views.order, name="so"),
 
     path('or/',views.orchardRegister, name="or"),
     path('om/',views.orchardModify, name="om")
