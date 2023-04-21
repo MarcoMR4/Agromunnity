@@ -38,6 +38,7 @@ def worker(request):
         #Consultas necesarias para mostrar en plantilla
         form = AddEmplooye()
         trabajadores = Trabajador.objects.all()
+        ntrabajadores = Trabajador.objects.count()
         #si se envia un formulario
         if request.method == 'POST':
             if request.POST['Id']=='eliminar':
@@ -86,6 +87,7 @@ def worker(request):
                 return render(request, "user_enc_bit/worker.html", {
                     'form':form,
                     'trabajadores': trabajadores,
+                    'ntrabajadores': ntrabajadores,
                     "mensaje": request.session['Mensaje']
                 })
             elif request.session.get('Operacion')==0:
@@ -93,10 +95,15 @@ def worker(request):
                 return render(request, "user_enc_bit/worker.html", {
                     'form':form,
                     'trabajadores': trabajadores,
+                    'ntrabajadores': ntrabajadores,
                     "error": request.session['Error']
                 })
             else:
-                return render(request, "user_enc_bit/worker.html", {'form':form, 'trabajadores': trabajadores})
+                return render(request, "user_enc_bit/worker.html", {
+                    'form':form,
+                    'trabajadores': trabajadores,
+                    'ntrabajadores': ntrabajadores
+                })
     else: 
         return render(request, 'denied.html')
 
