@@ -173,17 +173,26 @@ class AddHuerta(forms.Form):
         ),
         choices=estatusHuerta
     )
-    #cargar productores desde la base de dtos 
-    c = Productor.objects.order_by('apellidoP')
-    productores =[]
-    for a in c:
-        productores.append([a.nombre, a.apellidoP])
-    ElegirProductor = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=productores
-    )
+
+    ElegirProductor = forms.ModelChoiceField( #Este metodo lo crea como un select directamente
+        queryset=Productor.objects.order_by('apellidoP'), #realiza la query para sacar los datos
+        empty_label="(Seleccione)", #Esto solo es el mensaje que sale al inicio de la lista que crea
+        to_field_name="nombre", #Especifica que fila de la tabla o datos se usara
+        widget=forms.Select( #Esto pone el estilo que teniamos antes pero vez que Claudio quiere que se note mas que son listas de seleccion
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )) 
+    
+    #Esto ya no se usaria
+    #c = Productor.objects.order_by('apellidoP')
+    #productores =[]
+    #for a in c:
+    #    productores.append([a.nombre, a.apellidoP])
+    #ElegirProductor = forms.ChoiceField(
+    #    widget=forms.Select(
+    #        attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+    #    ),
+    #    choices=productores
+    #)
 
 class ChangeHuerta(forms.Form):
     def __init__(self, *args, **kwargs):
