@@ -208,6 +208,7 @@ def producer(request):
         #Consultas necesarias para mostrar en plantilla
         form = AddProductor()
         productores = Productor.objects.all()
+        nproductores = Productor.objects.count()
         #si se envia un formulario
         if request.method == 'POST':
             if request.POST['Id']=='eliminar':
@@ -253,17 +254,23 @@ def producer(request):
                 return render(request, 'user_enc_bit/producer.html', {
                     'form':form,
                     "mensaje": request.session['Mensaje'],
-                    'productores': productores
+                    'productores': productores,
+                    'nproductores': nproductores
                 })
             elif request.session.get('Operacion')==0:
                 request.session['Operacion'] = -1
                 return render(request, 'user_enc_bit/producer.html', {
                     'form':form,
                     "error": request.session['Error'],
-                    'productores': productores
+                    'productores': productores,
+                    'nproductores': nproductores
                 })
             else:
-                return render(request, "user_enc_bit/producer.html", {'form':form, 'productores': productores})
+                return render(request, "user_enc_bit/producer.html", {
+                    'form':form,
+                    'productores': productores,
+                    'nproductores': nproductores
+                })
     else: 
         return render(request, 'denied.html')
 
