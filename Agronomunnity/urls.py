@@ -41,10 +41,16 @@ urlpatterns = [
     path('tm/',views.transportModify, name="tm"),
     #Pedido
     path('so/',views.order, name="so"),
-
+    #Huerta
+    path('o/',views.orchard, name="o"),
+    path('om/',views.orchardModify, name="om"),
     path('or/',views.orchardRegister, name="or"),
-    path('om/',views.orchardModify, name="om")
-
+    path('od/',views.orchardDelete, name="od"),
+    #Viaje
+    path('ct/',views.trip, name="ct"),
+    path('ctm/',views.tripModify, name="ctm"),
+    path('ctr/',views.tripRegister, name="ctr"),
+    path('ctd/',views.tripDelete, name="ctd"),
 ]
 
 

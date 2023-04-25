@@ -38,10 +38,10 @@
                 <tbody>
                     {% for a in camiones %}
                         <tr>
-                            <td>{{a.placa}}</td>
-                            <td>{{a.modelo}}</td>
-                            <td>{{a.capacidad}} Toneladas</td>
-                            <td>{{a.idChofer.Usuario.username}}</td>
+                            <td>{{a.placaTransporte}}</td>
+                            <td>{{a.modeloTransporte}}</td>
+                            <td>{{a.capacidadTransporte}} Toneladas</td>
+                            <td>{{a.idChoferTransporte.usuario.first_name}} {{a.idChoferTransporte.usuario.last_name}}</td>
                             <td>
                                 <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
                                     <i class="nav-icon fas fa-edit text-primary"></i>
@@ -59,27 +59,39 @@
                                                         <input type="hidden" name="Id" value="modificar">
                                                         <input type="hidden" name="Camion" value={{a.id}}>
                                                         <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Placa" value="{{a.placa}}">
+                                                            <input class="form-control" type="text" name="Placa" value="{{a.placaTransporte}}">
                                                             <label>Placa</label>
                                                         </p>
                                                         <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Modelo" value="{{a.modelo}}">
+                                                            <input class="form-control" type="text" name="Modelo" value="{{a.modeloTransporte}}">
                                                             <label>Modelo</label>
                                                         </p>
                                                         <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Capacidad" value="{{a.capacidad}}">
+                                                            <input class="form-control" type="text" name="Capacidad" value="{{a.capacidadTransporte}}">
                                                             <label>Capacidad</label>
                                                         </p>
                                                         <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="Tipo" value="{{a.tipoTransporte}}">
+                                                            <label>Tipo de transporte</label>
+                                                        </p>
+                                                        <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionTransporte}}">
+                                                            <label>Descripcion</label>
+                                                        </p>
+                                                        <p class="form-floating mb-3">
+                                                            <input class="form-control" type="text" name="Candado" value="{{a.candadoTransporte}}">
+                                                            <label>Candado de Transporte</label>
+                                                        </p>
+                                                        <p class="form-floating mb-3">
                                                             <select name="Estatus" class="form-control">
-                                                                <option value="A" {% if a.estatus == 'A' %}selected{% endif %}>Activo</option>
-                                                                <option value="I" {% if a.estatus == 'I' %}selected{% endif %}>Inactivo</option>
-                                                                <option value="M" {% if a.estatus == 'M' %}selected{% endif %}>Mantenimiento</option>
+                                                                <option value="A" {% if a.estatusTransporte == 'C_A' %}selected{% endif %}>Activo</option>
+                                                                <option value="I" {% if a.estatusTransporte == 'C_I' %}selected{% endif %}>Inactivo</option>
+                                                                <option value="M" {% if a.estatusTransporte == 'C_M' %}selected{% endif %}>Mantenimiento</option>
                                                             </select>
                                                             <label>Estatus</label>
                                                         </p>
                                                         <p class="form-floating mb-3">
-                                                            {{form.ElegirChofer}}
+                                                            {{form.Chofer}}
                                                             <label>Conductor</label>
                                                         </p>
                                                         <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
@@ -145,15 +157,31 @@
                                     <label>Placa</label>
                                 </p>
                                 <p class="form-floating mb-3">
+                                    {{form.Capacidad}}
+                                    <label>Capacidad</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Descripcion}}
+                                    <label>Descripcion</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Tipo}}
+                                    <label>Tipo de transporte</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Candado}}
+                                    <label>Candado</label>
+                                </p>
+                                <p class="form-floating mb-3">
                                     {{form.Modelo}}
                                     <label>Modelo</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.EstatusTransporte}}
+                                    {{form.Estatus}}
                                     <label>Estatus</label>
                                 </p>
                                 <p class="form-floating mb-3">
-                                    {{form.ElegirChofer}}
+                                    {{form.Chofer}}
                                     <label>Conductor</label>
                                 </p>
                                 <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>

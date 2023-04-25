@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Editar Productor{% endblock %}
+{% block title %}Editar Huertas{% endblock %}
 
 {% block content %}
 
@@ -19,9 +19,9 @@
         </button>
     </div>
     {% endif %}
-    
+
     <div class="text-3 text-center">
-        <h3 class="py-5" id="exampleModalLabel">Pantalla de edición de productor</h3>
+        <h3 class="py-5" id="exampleModalLabel">Huerta</h3>
     </div>
     <div class="mx-5 align-items-center justify-content-center">
         <form method="POST" enctype="multipart/form-data">
@@ -33,16 +33,20 @@
                     <label>Nombre</label>
                 </p>
                 <p class="form-floating mb-3">
-                    {{formc.AP}}
-                    <label>Apellido Paterno</label>
+                    {{formc.Ubicacion}}
+                    <label>Ubicacion</label>
                 </p>
                 <p class="form-floating mb-3">
-                    {{formc.AM}}
-                    <label>Apellido Materno</label>
+                    {{formc.Fruta}}
+                    <label>Fruta</label>
                 </p>
                 <p class="form-floating mb-3">
-                    {{formc.Telefono}}
-                    <label>Telefono</label>
+                    {{formc.EstatusHuerta}}
+                    <label>Estatus</label>
+                </p>
+                <p class="form-floating mb-3">
+                    {{formc.ElegirProductor}}
+                    <label>Productor</label>
                 </p>
                 <button type="submit" class="btn" style="background-color: #a5e244;">Guardar</button>
             </div>

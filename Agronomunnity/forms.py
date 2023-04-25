@@ -1,8 +1,8 @@
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 from django import forms
-
-from .models import Cuadrilla, Productor, Trabajador, Huerta
+from django.db.models.functions import Concat
+from .models import Cuadrilla, Productor, Trabajador, Huerta, RolTrabajador
 
 
 class UserLoginForm(AuthenticationForm):
@@ -10,42 +10,47 @@ class UserLoginForm(AuthenticationForm):
         super(UserLoginForm, self).__init__(*args, **kwargs)
 
     username = UsernameField(
-        widget=forms.TextInput(attrs={'id': 'username', 'name':'username', 'class':'form-control'})
+        widget=forms.TextInput(attrs={'class':'form-control'})
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'id': 'password', 'name':'password', 'class':'form-control'})
+        widget=forms.PasswordInput(attrs={'class':'form-control'})
     )
 
-class AddEmplooye(forms.Form):
-#modificar datos en base al cambio de nombre de la base de datos
+class AddWorker(forms.Form):
+
     Nombre = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
+
     AP = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
+
     AM = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
+
     Correo = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'placeholder':'Debe contener dominio @morelia.tecnm.mx'}
         )
     )
-    users = Trabajador.tipoUsuario
-    tU = list(users)
-    Tipo = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=tU
-    )
+
+    Rol = forms.ModelChoiceField(
+        queryset=RolTrabajador.objects.order_by('nomenclaturaRol'),
+        empty_label="(Seleccione)", #Esto solo es el mensaje que sale al inicio de la lista que crea
+        to_field_name="nombreRol", #Especifica que fila de la tabla o datos se usara
+        widget=forms.Select( #Esto pone el estilo que teniamos antes pero vez que Claudio quiere que se note mas que son listas de seleccion
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    ) 
+
     Telefono = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
@@ -60,35 +65,59 @@ class AddTransport(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
+
+    Capacidad = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
+    Descripcion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
+    Tipo = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
+    Candado = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
     Modelo = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
+
     estatusTransporte = (
-    ('A', 'Activo'),
-    ('I', 'Inactivo'),
-    ('M', 'Mantenimiento')
+    ('C_A', 'Activo'),
+    ('C_I', 'Inactivo'),
+    ('C_M', 'Mantenimiento')
     )
-    EstatusTransporte = forms.ChoiceField(
+
+    Estatus = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         ),
         choices=estatusTransporte
     )
-    #cargar choferes desde la base de dtos 
-    c = Trabajador.objects.filter(rol='C_T')
-    choferes =[]
-    for a in c:
-        choferes.append([ a.id, a.Usuario.username])
-    ElegirChofer = forms.ChoiceField(
+
+    Chofer = forms.ModelChoiceField(
+        queryset = Trabajador.objects.filter(rol__nomenclaturaRol__exact='C_T'),
+        empty_label="(Seleccione)",
         widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=choferes
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
     )
 
-class AddProductor(forms.Form):
+class AddProducer(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
@@ -146,53 +175,65 @@ class ChangeProductor(forms.Form):
         )
     )
 
-class AddHuerta(forms.Form):
+class AddOrchard(forms.Form):
 
-    nombre = forms.CharField(
+    Nombre = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
-    ubicacion = forms.CharField(
+
+    Fruta = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
-    fruta = forms.CharField(
+
+    Ubicacion = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
+
+    Localizacion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
+    Clave = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
+    Inocuidad = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
+    )
+
     estatusHuerta = (
     ('H_A', 'Activo'),
     ('H_I', 'Inactivo'),
     )
-    EstatusHuerta = forms.ChoiceField(
+
+    Estatus = forms.ChoiceField(
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         ),
         choices=estatusHuerta
     )
 
-    ElegirProductor = forms.ModelChoiceField( #Este metodo lo crea como un select directamente
-        queryset=Productor.objects.order_by('apellidoP'), #realiza la query para sacar los datos
-        empty_label="(Seleccione)", #Esto solo es el mensaje que sale al inicio de la lista que crea
-        to_field_name="nombre", #Especifica que fila de la tabla o datos se usara
-        widget=forms.Select( #Esto pone el estilo que teniamos antes pero vez que Claudio quiere que se note mas que son listas de seleccion
+    Productor = forms.ModelChoiceField(
+        queryset=Productor.objects.order_by('apellidoP'),
+        empty_label="(Seleccione)",
+        to_field_name="nombre",
+        widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
-        )) 
-    
-    #Esto ya no se usaria
-    #c = Productor.objects.order_by('apellidoP')
-    #productores =[]
-    #for a in c:
-    #    productores.append([a.nombre, a.apellidoP])
-    #ElegirProductor = forms.ChoiceField(
-    #    widget=forms.Select(
-    #        attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-    #    ),
-    #    choices=productores
-    #)
+        )
+    ) 
+
 
 class ChangeHuerta(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -208,7 +249,6 @@ class ChangeHuerta(forms.Form):
         self.fields['Ubicacion'].widget.attrs.update({'value': ubicacion})
         self.fields['Fruta'].widget.attrs.update({'value': fruta})
         self.fields['EstatusHuerta'].widget.attrs.update({'value': estatus})
-        self.fields['ElegirProductor'].widget.attrs.update({'value': productor})
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
@@ -235,101 +275,79 @@ class ChangeHuerta(forms.Form):
         ),
         choices=estatusHuerta
     )
-    #cargar productores desde la base de dtos 
-    c = Productor.objects.order_by('apellidoP')
-    productores =[]
-    for a in c:
-        productores.append([a.nombre, a.apellidoP])
-    ElegirProductor = forms.ChoiceField(
+
+    ElegirProductor = forms.ModelChoiceField(
+        queryset=Productor.objects.order_by('apellidoP'),
+        empty_label="(Seleccione)",
+        to_field_name="nombre",
         widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=productores
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
     )
 
-class ChangeCuadrilla(forms.Form):
-    def __init__(self, *args, **kwargs):
-        c = kwargs.pop('cuadrilla', None)
-        cuadrilla = Cuadrilla.objects.get(id=c)
-        nombre = cuadrilla.nombre
-        gerente = cuadrilla.idGerenteCuadrilla
-        capataz = cuadrilla.idCapatazCuadrilla
-        super(ChangeCuadrilla, self).__init__(*args, **kwargs)
-        self.fields['Nombre'].widget.attrs.update({'value': nombre})
-        self.fields['ElegirGerente'].widget.attrs.update({'value': gerente})
-        self.fields['ElegirCapataz'].widget.attrs.update({'value': capataz})
+class AddSquad(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
-    #cargar gerente desde la base de datos 
-    g = Trabajador.objects.filter(rol='G_C')
-    gerentes =[]
-    for a in g:
-        gerentes.append([ a.Usuario.id, a.Usuario.username])
-    ElegirGerente = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=gerentes
-    )
-    #cargar capataz desde la base de datos 
-    c = Trabajador.objects.filter(rol='C_C')
-    capataces =[]
-    for a in c:
-        capataces.append([ a.Usuario.id, a.Usuario.username])
-    ElegirCapataz = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=capataces
+
+    Ubicacion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+        )
     )
 
-class AddCuadrilla(forms.Form):
+    estatusCuadrilla = (
+    ('C_A', 'Activa'),
+    ('C_I', 'Inactiva'),
+    )
+
+    Estatus = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        ),
+        choices=estatusCuadrilla
+    )
+
+    Gerente = forms.ModelChoiceField(
+        queryset = Trabajador.objects.filter(rol__nomenclaturaRol__exact='G_C'),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    )
+
+    Jefe = forms.ModelChoiceField(
+        queryset = Trabajador.objects.filter(rol__nomenclaturaRol__exact='J_C'),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    )
+
+class AddSquadMember(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
-    #cargar gerente desde la base de datos 
-    g = Trabajador.objects.filter(rol='G_C')
-    gerentes =[]
-    for a in g:
-        gerentes.append([a.Usuario.id, a.Usuario.username])
-    ElegirGerente = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=gerentes
-    )
-    #cargar capataz desde la base de datos 
-    c = Trabajador.objects.filter(rol='C_C')
-    capataces =[]
-    for a in c:
-        capataces.append([a.Usuario.id, a.Usuario.username])
-    ElegirCapataz = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=capataces
-    )
 
-class AddMiembroCuadrilla(forms.Form):
-
-    Nombre = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
-        )
-    )
     AP = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
+
     AM = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    noImss = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )

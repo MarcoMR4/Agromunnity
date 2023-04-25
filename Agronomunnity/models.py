@@ -3,24 +3,12 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 
 class Trabajador(models.Model):
-    Usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     telefono = models.CharField(max_length=10, blank = True)
-    correoPersonal = models.EmailField(max_length = 254, blank = True)
-    tipoUsuario = (
-        ('E_V', 'Encargado de ventas'),
-        ('E_B', 'Encargado de bitacora'),
-        ('E_P', 'Encargado de produccion'),
-        ('E_T', 'Encargado de transporte'),
-        ('D_G', 'Director General'),
-        ('I_C', 'Ingeniero de campo'),
-        ('G_C', 'Gerente de cuadrilla'),
-        ('C_C', 'Capataz de cuadrilla'),
-        ('C_T', 'Chofer de transporte'),
-    )
-    rol = models.CharField(max_length=3, choices=tipoUsuario, default='')
-
+    rol = models.ForeignKey('RolTrabajador', on_delete=models.CASCADE)
+    
     def Mostrar(self):
-        return "{} - {}".format(self.Usuario.username, self.get_rol_display())
+        return "{} {} - {}".format(self.usuario.first_name, self.usuario.last_name, self.rol.nombreRol)
 
     def __str__(self):
         return self.Mostrar()
@@ -31,38 +19,59 @@ class Trabajador(models.Model):
         db_table= 'trabajador'
         ordering= ['id']
 
-class Camion(models.Model):
-    placa = models.CharField(max_length=20, blank = True)
-    modelo = models.CharField(max_length=50, blank = True)
-    capacidad = models.CharField(max_length=20, blank = True)
-    estatusCamion = (
-        ('C_A', 'Activo'),
-        ('C_I', 'Inactivo'),
-        ('C_M', 'Mantenimiento'),
-    )
-    estatus = models.CharField(max_length=3, choices=estatusCamion, default='Activo')
-    idChofer = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+class RolTrabajador(models.Model):
+    nomenclaturaRol = models.CharField(max_length=3, blank = True)
+    nombreRol = models.CharField(max_length=50, blank = True)
 
     def Mostrar(self):
-        return "{}, {}".format(self.estatus, self.modelo)
+        return "{} - {}".format(self.nomenclaturaRol, self.nombreRol)
 
     def __str__(self):
         return self.Mostrar()
 
     class Meta:
-        verbose_name= 'Camion'
-        verbose_name_plural= 'Camiones'
-        db_table= 'camion'
+        verbose_name= 'RolTrabajador'
+        verbose_name_plural= 'RolesTrabajador'
+        db_table= 'roltrabajador'
+        ordering= ['id']
+
+class CamionTransporte(models.Model):
+    idChoferTransporte = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+    capacidadTransporte = models.CharField(max_length=20, blank = True)
+    placaTransporte = models.CharField(max_length=20, blank = True)
+    modeloTransporte = models.CharField(max_length=50, blank = True)
+    tipoTransporte = models.CharField(max_length=50, blank = True)
+    descripcionTransporte = models.CharField(max_length=200, blank = True)
+    candadoTransporte = models.CharField(max_length=20, blank = True)
+    estatusCamion = (
+        ('C_A', 'Activo'),
+        ('C_I', 'Inactivo'),
+        ('C_M', 'Mantenimiento'),
+    )
+    estatusTransporte = models.CharField(max_length=3, choices=estatusCamion, default='Activo')
+    
+
+    def Mostrar(self):
+        return "{}, {} - {}".format(self.modeloTransporte, self.placaTransporte, self.estatusTransporte)
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'CamionTransporte'
+        verbose_name_plural= 'CamionesTransporte'
+        db_table= 'camiontransporte'
         ordering= ['id']
 
 class MiembroCuadrilla(models.Model):
     nombre = models.CharField(max_length=20, blank = True)
     apellidoP = models.CharField(max_length=30, blank = True)
     apellidoM = models.CharField(max_length=30, blank = True)
+    noImss = models.CharField(max_length=30, blank = True)
     idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombre, self.apellidoP, self.apellidoM)
+        return "{} {} {}".format(self.nombre, self.apellidoP, self.apellidoM)
 
     def __str__(self):
         return self.Mostrar()
@@ -74,12 +83,18 @@ class MiembroCuadrilla(models.Model):
         ordering= ['id']
 
 class Cuadrilla(models.Model):
-    nombre = models.CharField(max_length=20, blank = True)
     idGerenteCuadrilla = models.ForeignKey('Trabajador', related_name='gerente', on_delete=models.CASCADE)
-    idCapatazCuadrilla = models.ForeignKey('Trabajador', related_name='capataz', on_delete=models.CASCADE)
+    idJefeCuadrilla = models.ForeignKey('Trabajador', related_name='jefe', on_delete=models.CASCADE)
+    nombreCuadrilla = models.CharField(max_length=50, blank = True)
+    ubicacionCuadrilla = models.CharField(max_length=50, blank = True)
+    estatus = (
+        ('C_A', 'Activa'),
+        ('C_I', 'Inactiva'),
+    )
+    estatusCuadrilla = models.CharField(max_length=3, choices=estatus, default='Activa')
 
     def Mostrar(self):
-        return "{}".format(self.nombre)
+        return "{} - {}".format(self.nombreCuadrilla, self.estatusCuadrilla)
 
     def __str__(self):
         return self.Mostrar()
@@ -97,7 +112,7 @@ class Productor(models.Model):
     telefono = models.CharField(max_length=10, blank = True)
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombre, self.apellidoP, self.apellidoM)
+        return "{} {} {}".format(self.nombre, self.apellidoP, self.apellidoM)
 
     def __str__(self):
         return self.Mostrar()
@@ -109,18 +124,22 @@ class Productor(models.Model):
         ordering= ['id']
 
 class Huerta(models.Model):
-    nombre = models.CharField(max_length=20, blank = True)
-    ubicacion = models.CharField(max_length=30, blank = True)
-    estatusHuerta = (
+    idProductor = models.ForeignKey('Productor', on_delete=models.CASCADE)
+    nombreHuerta = models.CharField(max_length=50, blank = True)
+    frutaHuerta = models.CharField(max_length=30, blank = True)
+    ubicacionHuerta = models.CharField(max_length=50, blank = True)
+    localizacionHuerta = models.CharField(max_length=300, blank = True)
+    claveSagarpaHuerta = models.CharField(max_length=100, blank = True)
+    estatusInocuidadHuerta = models.CharField(max_length=100, blank = True)
+    estatus = (
         ('H_A', 'Activo'),
         ('H_I', 'Inactivo'),
     )
-    estatus = models.CharField(max_length=3, choices=estatusHuerta, default='Activo')
-    idProductor = models.ForeignKey('Productor', on_delete=models.CASCADE)
-    fruta = models.CharField(max_length=20, blank = True)
+    estatusHuerta = models.CharField(max_length=3, choices=estatus, default='Activo')
+
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombre, self.estatus)
+        return "{}, {}".format(self.nombreHuerta, self.estatusHuerta)
 
     def __str__(self):
         return self.Mostrar()
@@ -131,22 +150,43 @@ class Huerta(models.Model):
         db_table= 'huerta'
         ordering= ['id']
 
-class Pedido(models.Model):
-    nombreCliente = models.CharField(max_length=20, blank = True)
+class Cliente(models.Model):
+    nombreCliente = models.CharField(max_length=40, blank = True)
     apellidoPCliente = models.CharField(max_length=20, blank = True) 
     apellidoMCliente = models.CharField(max_length=20, blank = True)
-    cantidad = models.FloatField(max_length=10, blank = True)
-    tipoFruta = models.CharField(max_length=20, blank = True)
-    fecha = models.DateField()
-    calidadFruta = models.CharField(max_length=20, blank = True)
-    estatusPedido = (
-        ('P_C', 'Por cumplir'),
-        ('Y_T', 'Terminado'),
-    )
-    estatus = models.CharField(max_length=3, choices=estatusPedido, default='Activo')
+    rfcCliente = models.CharField(max_length=20, blank = True)
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombreCliente, self.estatus)
+        return "{} {} {}".format(self.nombreCliente, self.apellidoPCliente, self.apellidoMCliente)
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'Cliente'
+        verbose_name_plural= 'Clientes'
+        db_table= 'cliente'
+        ordering= ['id']
+
+class Pedido(models.Model):
+    idTrabajador = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+    idCliente = models.ForeignKey('Cliente', on_delete=models.CASCADE)
+    numeroPedido = models.CharField(max_length=20, blank = True)
+    fechaPedido = models.DateField()
+    totalKilosPedido = models.IntegerField(blank=True)
+    totalPalletsPedido = models.IntegerField(blank=True)
+    estatusPedido = models.CharField(max_length=20, blank = True)
+    mercadoPedido = models.CharField(max_length=20, blank = True)
+    destinoPedido = models.CharField(max_length=20, blank = True)
+
+    estatus = (
+        ('P_P', 'Pendiente'),
+        ('P_T', 'Terminado'),
+    )
+    estatusPedido = models.CharField(max_length=3, choices=estatus, default='Pendiente')
+
+    def Mostrar(self):
+        return "Pedido: {} - {}".format(self.numeroPedido, self.get_estatusPedido_display())
 
     def __str__(self):
         return self.Mostrar()
@@ -157,20 +197,71 @@ class Pedido(models.Model):
         db_table= 'pedido'
         ordering= ['id']
 
-class OrdenCorte(models.Model):
-    cantidad = models.FloatField(max_length=10, blank = True)
-    tipoFruta = models.CharField(max_length=20, blank = True)
-    fecha = models.DateField()
-    calidadFruta = models.CharField(max_length=20, blank = True)
-    estatusOrden = (
-        ('P_C', 'Por cumplir'),
-        ('Y_T', 'Terminado'),
-    )
-    estatus = models.CharField(max_length=3, choices=estatusOrden, default='Activo')
-    idViaje = models.ForeignKey('Viaje', on_delete=models.CASCADE)
+class Calibre(models.Model):
+    numCalibre = models.IntegerField(blank=True)
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombreCliente, self.estatus)
+        return "Calibre: {}".format(self.numCalibre)
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'Calibre'
+        verbose_name_plural= 'Calibres'
+        db_table= 'calibre'
+        ordering= ['id']
+
+class Calidad(models.Model):
+    descripcionCalidad = models.CharField(max_length=500, blank = True)
+    numCalidad = models.IntegerField(blank=True)
+
+    def Mostrar(self):
+        return "Calidad: {}".format(self.numCalidad)
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'Calidad'
+        verbose_name_plural= 'Calidades'
+        db_table= 'calidad'
+        ordering= ['id']
+
+class PedidoCalibreCalidad(models.Model):
+    idPedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
+    idCalibre = models.ForeignKey('Calibre', on_delete=models.CASCADE)
+    idCalidad = models.ForeignKey('Calidad', on_delete=models.CASCADE)
+    cantidadCC = models.IntegerField(blank=True)
+
+    def Mostrar(self):
+        return "Pedido: {} - {} kg.".format(self.idPedido, self.cantidadCC)
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'PedidoCalibreCalidad'
+        verbose_name_plural= 'PedidosCalibreCalidad'
+        db_table= 'pedidocalibrecalidad'
+        ordering= ['id']
+
+class OrdenCorte(models.Model):
+    fechaOrden = models.DateField()
+    numeroOrden = models.CharField(max_length=20, blank = True)
+    cantidadFruta = models.FloatField(max_length=10, blank = True)
+    tipoFruta = models.CharField(max_length=20, blank = True)
+    calidadFruta = models.CharField(max_length=20, blank = True)
+    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE)
+    tipoCorte = models.CharField(max_length=20, blank = True)
+    estatus = (
+        ('O_P', 'Pendiente'),
+        ('O_T', 'Terminado'),
+    )
+    estatusOrden = models.CharField(max_length=3, choices=estatus, default='Pendiente')
+
+    def Mostrar(self):
+        return "Orden: {} - {}".format(self.numeroOrden, self.get_estatusOrden_display())
 
     def __str__(self):
         return self.Mostrar()
@@ -181,43 +272,48 @@ class OrdenCorte(models.Model):
         db_table= 'ordenCorte'
         ordering= ['id']
 
-class Viaje(models.Model):
-    fecha = models.DateField()
+class ViajeCorte(models.Model):
+    fechaViaje = models.DateField()
+    idCamionTransporte = models.ForeignKey('CamionTransporte', related_name='principal', on_delete=models.CASCADE)
+    idCamionSecundarioTransporte = models.ForeignKey('CamionTransporte', related_name='secundario', on_delete=models.CASCADE)
     horaSalida = models.TimeField(max_length=20, blank = True)
     horaLlegada = models.TimeField(max_length=20, blank = True)
-    estatusViaje = (
-        ('P_R', 'Por realizar'),
-        ('V_R', 'Realizado'),
+    idOrdenCorte = models.ForeignKey('OrdenCorte', on_delete=models.CASCADE)
+    idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
+    puntoReunion = models.CharField(max_length=500, blank = True)
+    estatus = (
+        ('V_P', 'No terminado'),
+        ('V_T', 'Terminado'),
     )
-    estatus = models.CharField(max_length=3, choices=estatusViaje, default='Activo')
-    idOrden = models.ForeignKey('OrdenCorte', on_delete=models.CASCADE)
-    idCamion = models.ForeignKey('Camion', on_delete=models.CASCADE)
+    estatusViaje = models.CharField(max_length=3, choices=estatus, default='No terminado')
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombreCliente, self.estatus)
+        return "Viaje del dia: {} - {}".format(self.fechaViaje, self.get_estatusViaje_display())
 
     def __str__(self):
         return self.Mostrar()
 
     class Meta:
-        verbose_name= 'Viaje'
-        verbose_name_plural= 'Viajes'
-        db_table= 'viaje'
+        verbose_name= 'ViajeCorte'
+        verbose_name_plural= 'ViajesCorte'
+        db_table= 'viajecorte'
         ordering= ['id']
 
 class ReporteCorte(models.Model):
     fecha = models.DateField()
     idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
-    archivo = models.FileField(upload_to = 'Reportes/Corte')
+    documento = models.FileField(upload_to = 'Reportes/Corte')
+    cajasCortadas = models.IntegerField(blank=True)
+    observacionesReporte = models.CharField(max_length=500, blank = True)
 
     def Mostrar(self):
-        return "{}, {}".format(self.fecha)
+        return "Reporte del dia: {} - {} cajas cortadas.".format(self.fecha, self.cajasCortadas)
 
     def __str__(self):
         return self.Mostrar()
 
     class Meta:
         verbose_name= 'ReporteCorte'
-        verbose_name_plural= 'ReportesCortes'
+        verbose_name_plural= 'ReporteCortes'
         db_table= 'reportecorte'
         ordering= ['id']

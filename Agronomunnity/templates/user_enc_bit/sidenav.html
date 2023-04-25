@@ -2,7 +2,7 @@
   <!--Usuario-->
   <a href="" class="brand-link" style="background:#a5e244">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text fs-6">{{request.user.trabajador.get_rol_display}}</span>
+    <span class="brand-text fs-6">{{request.user.trabajador.rol.nombreRol}}</span>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
@@ -50,8 +50,14 @@
                   <p>Ordenes de corte</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'or' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'or' %} class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'ct' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'ct' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-shipping-fast"></i>
+                  <p>Viajes</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'o' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'o' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-tree"></i>
                   <p>Huertas</p>
               </a>
