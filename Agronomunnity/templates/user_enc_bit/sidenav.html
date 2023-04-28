@@ -2,7 +2,7 @@
   <!--Usuario-->
   <a href="" class="brand-link" style="background:#a5e244">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text fs-6">{{request.user.trabajador.get_rol_display}}</span>
+    <span class="brand-text fs-6">{{request.user.trabajador.rol.nombreRol}}</span>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
@@ -14,40 +14,28 @@
                   <p>Inicio</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href="" class="nav-link inactive">
-                  <i class="nav-icon fas fa-file-text"></i>
-                  <p>Reportes</p>
-              </a>
-            </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'wr' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'wr' %} class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'w' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'w' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-drivers-license"></i>
                   <p>Trabajadores</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'pr' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'pr' %} class="nav-link inactive">
-                  <i class="nav-icon fas fa-id-badge"></i>
-                  <p>Productores</p>
-              </a>
-            </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href="" class="nav-link inactive">
-                  <i class="nav-icon fas fa-bar-chart"></i>
-                  <p>Pedidos</p>
-              </a>
-            </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'sr' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'sr' %} class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 's' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 's' %} class="nav-link inactive">
                   <i class="nav-icon fas fa-users"></i>
                   <p>Cuadrillas</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'tr' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'tr' %} class="nav-link inactive">
-                  <i class="nav-icon fas fa-truck"></i>
-                  <p>Transportes</p>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'o' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'o' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-tree"></i>
+                  <p>Huertas</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'vso' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href="{% url 'vso' %}" class="nav-link inactive">
+                  <i class="nav-icon fas fa-bar-chart"></i>
+                  <p>Pedidos</p>
               </a>
             </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
@@ -56,16 +44,36 @@
                   <p>Ordenes de corte</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'or' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 'or' %} class="nav-link inactive">
-                  <i class="nav-icon fas fa-tree"></i>
-                  <p>Huertas</p>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'ct' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href="{% url 'ct' %}" class="nav-link inactive">
+                  <i class="nav-icon fas fa-truck-fast"></i>
+                  <p>Viajes</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href="" class="nav-link inactive">
+                  <i class="nav-icon fas fa-circle-exclamation"></i>
+                  <p>Incidencias</p>
               </a>
             </li>
             <li class="nav-item">
               <a href={% url 'exit' %} class="nav-link inactive text-danger">
                   <i class="nav-icon fas fa-sign-out"></i>
                   <p>Cerrar Sesión</p>
+              </a>
+            </li>
+            ---
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href="" class="nav-link inactive">
+                  <i class="nav-icon fas fa-file-text"></i>
+                  <p>Reportes</p>
+              </a>
+            </li>
+            
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'p' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'p' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-id-badge"></i>
+                  <p>Productores</p>
               </a>
             </li>
           </ul>

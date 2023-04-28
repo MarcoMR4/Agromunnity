@@ -1,0 +1,228 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Huertas{% endblock %}
+
+{% block content %}
+
+    {% if error %}
+    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+        <strong>Error!</strong> {{error}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% elif mensaje %}
+    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+        <strong>Exito!</strong> {{mensaje}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="text-3 text-center">
+            <h3 class="py-5" id="exampleModalLabel">Huertas de aguacate</h3>
+        </div>
+        {% if nhuertas > 0 %}
+            <div class="my-2 text-end" style="width: 100%;">
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                    +<i class="fas fa-tree mr-2"></i> Nueva
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Localizacion</th>
+                            <th>Activa</th>
+                            <th>Productor</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in huertas %}
+                            <tr>
+                                <td>{{a.nombreHuerta}}</td>
+                                <td>{{a.localizacionHuerta}}</td>
+                                {% if a.estatusHuerta == 'H_A' %}
+                                    <td><i class="fa-solid fa-circle-check text-success"></i></td>
+                                {% else %}
+                                    <td><i class="fa-solid fa-circle-xmark text-danger"></i></td>
+                                {% endif %}
+                                <td>{{a.idProductor.nombre}} {{a.idProductor.apellidoP}} {{a.idProductor.apellidoM}}</td>
+                                <td>
+                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fas fa-edit text-primary"></i>
+                                    </button>
+                                    <div class="modal fade" id="modificar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de la huerta{{a.nombreHuerta}}</h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="modificar">
+                                                            <input type="hidden" name="Huerta" value={{a.id}}>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Nombre" value="{{a.nombreHuerta}}">
+                                                                <label>Nombre</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Fruta" value="{{a.frutaHuerta}}">
+                                                                <label>Fruta</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Ubicacion" value="{{a.ubicacionHuerta}}">
+                                                                <label>Municipio</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Localizacion" value={{a.localizacionHuerta}}>
+                                                                <label>Localizacion</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Clave" value={{a.claveSagarpaHuerta}}>
+                                                                <label>Clave de Sagarpa</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Inocuidad" value={{a.estatusInocuidadHuerta}}>
+                                                                <label>Estatus de inocuidad</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <select name="Estatus" class="form-control">
+                                                                    <option value="H_A" {% if a.estatusHuerta == 'H_A' %}selected{% endif %}>Activa</option>
+                                                                    <option value="H_I" {% if a.estatusHuerta == 'H_I' %}selected{% endif %}>Inactiva</option>
+                                                                </select>
+                                                                <label>Estatus</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <select name="Productor" class="form-control">
+                                                                    {% for p in productores %}
+                                                                        <option value="{{p.id}}" {% if p.id == a.productor.id %}selected{% endif %}>{{p.nombre}} {{p.apellidoP}} {{p.apellidoM}}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <label>Estatus</label>
+                                                            </p>
+                                                            <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
+                                                        </div>
+                                                    </form>
+                                                    <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                        <i class="nav-icon fas fa-trash text-danger"></i>
+                                    </button>
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="pt-4 text-center">
+                                                    <h1 class="fs-5">¿Seguro que deseas eliminar la huerta {{a.nombreHuerta}}?</h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Huerta" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5" style="background:#F6CECE">
+                <div class="card-body">
+                    <img src="/static/assets/img/icons/wo-users.png" width="70">
+                    <p class="mt-2 card-text"> <strong> No hay huertas registradas.</strong></p>
+                    {% if nproductores < 1 %}
+                    <p class="mt-2 card-text">Para poder registrar huertas primero asegurate que halla <br>minimo un productor.</p>
+                        <div class="text-center">
+                            <a href={% url 'p' %} class="btn inactive shadow" style="background-color: #FfCECA;">
+                                <i class="nav-icon fas fa-edit mt-2"></i>
+                                <p>Ir a registrar productor</p>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="my-2 text-center" style="width: 100%;">
+                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                                +<i class="fas fa-tree mr-2"></i> Nueva
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="modal fade" id="exampleModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Registrar Huertas</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <input type="hidden" name="Id" value="agregar">
+                                <p class="form-floating mb-3">
+                                    {{form.Nombre}}
+                                    <label>Nombre</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Ubicacion}}
+                                    <label>Municipio</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Fruta}}
+                                    <label>Fruta</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Localizacion}}
+                                    <label>Localizacion de la huerta</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Clave}}
+                                    <label>Clave de Sagarpa</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Inocuidad}}
+                                    <label>Estatus de inocuidad</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Estatus}}
+                                    <label>Estatus de la huerta</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Productor}}
+                                    <label>Productor</label>
+                                </p>
+                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

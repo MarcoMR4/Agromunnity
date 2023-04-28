@@ -23,19 +23,21 @@
         {% include 'layouts/navbar.html' %}
 
 
-        {% if request.user.trabajador.rol == 'E_V' %}
+        {% if request.user.trabajador.rol.nomenclaturaRol == 'E_V' %}
             {% include "user_enc_ventas/sidenav.html" %}
-        {% elif request.user.trabajador.rol == 'D_R' %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'D_R' %}
             {% include "user_dir_gral/sidenav.html" %}
-        {% elif request.user.trabajador.rol == 'I_C' %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'I_C' %}
             {% include "user_ing_campo/sidenav.html" %}
-        {% elif request.user.trabajador.rol == 'E_B' %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_B' %}
             {% include "user_enc_bit/sidenav.html" %}
-        {% elif request.user.trabajador.rol == 'G_C' %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_T' %}
+            {% include "user_enc_trans/sidenav.html" %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'G_C' %}
             {% include "user_ger_cuad/sidenav.html" %}
-        {% elif request.user.trabajador.rol == 'E_P' %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_P' %}
             {% include "user_enc_prod/sidenav.html" %}
-        {% elif request.user.trabajador.rol == 'ADM' %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'ADM' %}
             {% include "user_admin/sidenav.html" %}
         {% endif %}
         
