@@ -2,7 +2,7 @@
   <!--Usuario-->
   <a href="" class="brand-link" style="background:#a5e244">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text font-weight">{{request.user.user.tipouser}}</span>
+    <span class="brand-text font-weight text-sm">{{request.user.trabajador.rol.nombreRol}}</span>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
@@ -12,6 +12,24 @@
               <a href="" class="nav-link inactive">
                   <i class="nav-icon fas fa-house"></i>
                   <p>Inicio</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'so' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'so' %} class="nav-link inactive">
+                <i class="nav-icon fas fa-bar-chart"></i>
+                  <p>Pedidos</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'c' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'c' %} class="nav-link inactive">
+                <i class="nav-icon fas fa-user-tag"></i>
+                  <p>Clientes</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'q' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 'q' %} class="nav-link inactive">
+                <i class="nav-icon fas fa-ruler"></i>
+                  <p>Calidades</p>
               </a>
             </li>
             <li class="nav-item">
