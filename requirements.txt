@@ -3,6 +3,7 @@ Brotli==1.0.9
 cffi==1.15.1
 cssselect2==0.7.0
 Django==4.1
+django-widget-tweaks==1.4.12
 et-xmlfile==1.1.0
 fonttools==4.38.0
 html5lib==1.1

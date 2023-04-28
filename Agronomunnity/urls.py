@@ -41,6 +41,10 @@ urlpatterns = [
     path('tm/',views.transportModify, name="tm"),
     #Pedido
     path('so/',views.order, name="so"),
+    path('som/',views.orderModify, name="som"),
+    path('sor/',views.orderRegister, name="sor"),
+    path('sod/',views.orderDelete, name="sod"),
+    path('vso/',views.viewOrder, name="vso"),
     #Huerta
     path('o/',views.orchard, name="o"),
     path('om/',views.orchardModify, name="om"),
@@ -51,6 +55,18 @@ urlpatterns = [
     path('ctm/',views.tripModify, name="ctm"),
     path('ctr/',views.tripRegister, name="ctr"),
     path('ctd/',views.tripDelete, name="ctd"),
+    #Cliente
+    path('c/',views.client, name="c"),
+    path('cm/',views.clientModify, name="cm"),
+    path('cr/',views.clientRegister, name="cr"),
+    path('cd/',views.clientDelete, name="cd"),
+    #Calidad y calibre
+    path('q/',views.quality, name="q"),
+    path('qm/',views.qualityModify, name="qm"),
+    path('qrc/',views.qualityRegisterCaliber, name="qrc"),
+    path('qdc/',views.qualityDeleteCaliber, name="qdc"),
+    path('qrq/',views.qualityRegisterQuality, name="qrq"),
+    path('qdq/',views.qualityDeleteQuality, name="qdq"),
 ]
 
 

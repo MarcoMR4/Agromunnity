@@ -24,123 +24,153 @@
         <div class="text-3 text-center">
             <h3 class="py-5" id="exampleModalLabel">Vehiculos de carga</h3>
         </div>
-        <div class="table-responsive">
-            <table id="example" class="table table-striped text-center" style="width:100%">
-                <thead>
-                   <tr>
-                        <th>Placa</th>
-                        <th>Modelo</th>
-                        <th>Capacidad</th>
-                        <th>Conductor</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for a in camiones %}
-                        <tr>
-                            <td>{{a.placaTransporte}}</td>
-                            <td>{{a.modeloTransporte}}</td>
-                            <td>{{a.capacidadTransporte}} Toneladas</td>
-                            <td>{{a.idChoferTransporte.usuario.first_name}} {{a.idChoferTransporte.usuario.last_name}}</td>
-                            <td>
-                                <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
-                                    <i class="nav-icon fas fa-edit text-primary"></i>
-                                </button>
-                                <div class="modal fade" id="modificar{{a.id}}">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos del vehiculo</h1>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form method="POST" enctype="multipart/form-data">
-                                                    {% csrf_token %}
-                                                    <div class="text-center">
-                                                        <input type="hidden" name="Id" value="modificar">
-                                                        <input type="hidden" name="Camion" value={{a.id}}>
-                                                        <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Placa" value="{{a.placaTransporte}}">
-                                                            <label>Placa</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Modelo" value="{{a.modeloTransporte}}">
-                                                            <label>Modelo</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Capacidad" value="{{a.capacidadTransporte}}">
-                                                            <label>Capacidad</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Tipo" value="{{a.tipoTransporte}}">
-                                                            <label>Tipo de transporte</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionTransporte}}">
-                                                            <label>Descripcion</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            <input class="form-control" type="text" name="Candado" value="{{a.candadoTransporte}}">
-                                                            <label>Candado de Transporte</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            <select name="Estatus" class="form-control">
-                                                                <option value="A" {% if a.estatusTransporte == 'C_A' %}selected{% endif %}>Activo</option>
-                                                                <option value="I" {% if a.estatusTransporte == 'C_I' %}selected{% endif %}>Inactivo</option>
-                                                                <option value="M" {% if a.estatusTransporte == 'C_M' %}selected{% endif %}>Mantenimiento</option>
-                                                            </select>
-                                                            <label>Estatus</label>
-                                                        </p>
-                                                        <p class="form-floating mb-3">
-                                                            {{form.Chofer}}
-                                                            <label>Conductor</label>
-                                                        </p>
-                                                        <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
-                                                    </div>
-                                                </form>
-                                                <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                    <i class="nav-icon fas fa-trash text-danger"></i>
-                                </button>
-                                <div class="modal fade" id="eliminar{{a.id}}">
-                                    <div class="modal-dialog text-center">
-                                        <div class="modal-content">
-                                            <div class="pt-4 text-center">
-                                                <h1 class="fs-5">¿Seguro que deseas eliminar este vehiculo?</h1>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="text-center d-inline-block">
-                                                    <p class="form-floating">
-                                                        <form method="POST" enctype="multipart/form-data">
-                                                            {% csrf_token %}
-                                                            
-                                                                    <input type="hidden" name="Id" value="eliminar">
-                                                                    <input type="hidden" name="Camion" value={{a.id}}>
-                                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                                                </p>
-                                                            </div>
-                                                        </form>
-                                                        <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
-                                                    </p>
+        {% if ncamiones > 0 %}
+            <div class="my-2 text-end" style="width: 100%;">
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                    +<i class="fas fa-truck mr-2"></i> Nuevo
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                    <tr>
+                            <th>Placa</th>
+                            <th>Modelo</th>
+                            <th>Conductor</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in camiones %}
+                            <tr>
+                                <td>{{a.placaTransporte}}</td>
+                                <td>{{a.modeloTransporte}}</td>
+                                <td>{{a.idChoferTransporte.usuario.first_name}} {{a.idChoferTransporte.usuario.last_name}}</td>
+                                {% if a.estatusTransporte == 'C_A' %}
+                                    <td class="text-sm"><i class="fa-solid fa-truck-moving text-success"></i><br>Activo</td>
+                                {% elif a.estatusTransporte == 'C_I' %}
+                                    <td class="text-sm"><i class="fa-solid fa-times-circle text-danger"></i><br>Inactivo</td>
+                                {% else %}
+                                    <td class="text-sm"><i class="fa-solid fa-wrench text-warning"></i><br>En mantenimiento</td>
+                                {% endif %}
+                                <td>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                        <i class="nav-icon fas fa-trash text-danger"></i>
+                                    </button>
+                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fas fa-circle-plus text-primary"></i>
+                                    </button>
+                                    <div class="modal fade" id="modificar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos del vehiculo</h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="modificar">
+                                                            <input type="hidden" name="Camion" value={{a.id}}>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Placa" value="{{a.placaTransporte}}">
+                                                                <label>Placa</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Modelo" value="{{a.modeloTransporte}}">
+                                                                <label>Modelo</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Capacidad" value="{{a.capacidadTransporte}}">
+                                                                <label>Capacidad</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Tipo" value="{{a.tipoTransporte}}">
+                                                                <label>Tipo de transporte</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionTransporte}}">
+                                                                <label>Descripcion</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Candado" value="{{a.candadoTransporte}}">
+                                                                <label>Candado de Transporte</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <select name="Estatus" class="form-control">
+                                                                    <option value="C_A" {% if a.estatusTransporte == 'C_A' %}selected{% endif %}>Activo</option>
+                                                                    <option value="C_I" {% if a.estatusTransporte == 'C_I' %}selected{% endif %}>Inactivo</option>
+                                                                    <option value="C_M" {% if a.estatusTransporte == 'C_M' %}selected{% endif %}>Mantenimiento</option>
+                                                                </select>
+                                                                <label>Estatus</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <select name="Chofer" class="form-control">
+                                                                    {% for c in choferes %}
+                                                                        <option value="{{c.id}}" {% if c.id == a.idChoferTransporte.id %}selected{% endif %}>{{c.usuario.first_name}} {{c.usuario.last_name}} - {{c.rol.nombreRol}}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <label>Conductor</label>
+                                                            </p>
+                                                            <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
+                                                        </div>
+                                                    </form>
+                                                    <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-2 text-center" style="width: 100%;">
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                <i class="nav-icon fas fa-plus"></i>
-            </button>
-        </div>
+
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="pt-4 text-center">
+                                                    <h1 class="fs-5">¿Seguro que deseas eliminar este vehiculo?</h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Camion" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5" style="background:#F6CECE">
+                <div class="card-body">
+                    <img src="/static/assets/img/icons/wo-users.png" width="70">
+                    <p class="mt-2 card-text"> <strong> No hay camiones registrados.</strong></p>
+                    {% if nchoferes < 1 %}
+                    <p class="mt-2 card-text">No hay choferes disponibles para registrar camiones <br>comunicate con el encargado de bitacora para que dé de alta nuevos conductores.</p>
+                    {% else %}
+                        <div class="my-2 text-center" style="width: 100%;">
+                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                                +<i class="fas fa-truck mr-2"></i> Nuevo
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
         <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog">
                 <div class="modal-content">

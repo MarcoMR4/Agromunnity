@@ -175,7 +175,6 @@ class Pedido(models.Model):
     fechaPedido = models.DateField()
     totalKilosPedido = models.IntegerField(blank=True)
     totalPalletsPedido = models.IntegerField(blank=True)
-    estatusPedido = models.CharField(max_length=20, blank = True)
     mercadoPedido = models.CharField(max_length=20, blank = True)
     destinoPedido = models.CharField(max_length=20, blank = True)
 

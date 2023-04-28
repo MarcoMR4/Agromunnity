@@ -14,6 +14,12 @@
                   <p>Inicio</p>
               </a>
             </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 's' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 's' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-users"></i>
+                  <p>Cuadrillas</p>
+              </a>
+            </li>
             <li class="nav-item">
               <a href={% url 'exit' %} class="nav-link inactive text-danger">
                   <i class="nav-icon fas fa-sign-out"></i>
