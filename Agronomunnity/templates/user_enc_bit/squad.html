@@ -1,0 +1,167 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Cuadrillas{% endblock %}
+
+{% block content %}
+
+    {% if error %}
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+            <strong>Error!</strong> {{error}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% elif mensaje %}
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+            <strong>Exito!</strong> {{mensaje}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="text-3 text-center">
+            <h3 class="py-5" id="exampleModalLabel">Cuadrillas de corte</h3>
+        </div>
+        {% if ncuadrillas > 0 %}
+            <div class="my-2 text-end" style="width: 100%;">
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                    +<i class="fas fa-user-friends mr-2"></i> Nueva
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ubicación</th>
+                            <th>Activa</th>
+                            <th>Gerente</th>
+                            <th>Jefe</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in cuadrillas %}
+                            <tr>
+                                <td>{{a.nombreCuadrilla}}</td>
+                                <td>{{a.ubicacionCuadrilla}}</td>
+                                {% if a.estatusCuadrilla == 'C_A' %}
+                                    <td><i class="fa-solid fa-circle-check text-success"></i></td>
+                                {% else %}
+                                    <td><i class="fa-solid fa-circle-xmark text-danger"></i></td>
+                                {% endif %}
+                                <td>{{a.idGerenteCuadrilla.usuario.first_name}} {{a.idGerenteCuadrilla.usuario.last_name}}</td>
+                                <td>{{a.idJefeCuadrilla.usuario.first_name}} {{a.idJefeCuadrilla.usuario.last_name}}</td>
+                                <td>
+                                    <form method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        
+                                                <input type="hidden" name="Id" value="modificar">
+                                                <input type="hidden" name="Cuadrilla" value={{a.id}}>
+                                                <button type="submit" class="btn">
+                                                    <i class="nav-icon fas fa-edit text-primary"></i>
+                                                </button>
+                                            </p>
+                                        </div>
+                                    </form>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                        <i class="nav-icon fas fa-trash text-danger"></i>
+                                    </button>
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="pt-4 text-center">
+                                                    <h1 class="fs-5">¿Seguro que deseas eliminar la cuadrilla {{a.nombreCuadrilla}}?</h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Cuadrilla" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5" style="background:#F6CECE">
+                <div class="card-body">
+                    <img src="/static/assets/img/icons/wo-users.png" width="70">
+                    <p class="mt-2 card-text"> <strong> No hay cuadrillas registradas.</strong></p>
+                    {% if numJefGer < 2 %}
+                    <p class="mt-2 card-text">Para poder registrar primero asegurate que halla <br>minimo un usuario Gerente de cuadrilla y Jefe de cuadrilla.</p>
+                        <div class="text-center">
+                            <a href={% url 'w' %} class="btn inactive shadow" style="background-color: #FfCECA;">
+                                <i class="nav-icon fas fa-edit mt-2"></i>
+                                <p>Ir a registrar usuarios</p>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="my-2 text-center" style="width: 100%;">
+                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
+                                +<i class="fas fa-user-friends mr-2"></i> Nueva
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Cuadrilla</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <input type="hidden" name="Id" value="agregar">
+                                <p class="form-floating mb-3">
+                                    {{form.Nombre}}
+                                    <label>Nombre</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Ubicacion}}
+                                    <label>Ubicacion</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Estatus}}
+                                    <label>Estatus de la huerta</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Gerente}}
+                                    <label>Gerente de cuadrilla</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Jefe}}
+                                    <label>Jefe de cuadrilla</label>
+                                </p>
+                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

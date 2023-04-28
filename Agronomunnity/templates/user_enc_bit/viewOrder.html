@@ -1,0 +1,155 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="text-3 text-center">
+            <h3 class="py-5" id="exampleModalLabel">Pedidos de aguacate</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="text-center d-flex justify-content-between align-items-center py-3">
+                    <h5>Pendientes</h5>
+                    <i class="fa-solid fa-times-circle text-danger mr-2"></i>
+                </div>
+                <div class="table-responsive">
+                    {% if npedidosp > 0 %}
+                        <div class="table-responsive">
+                            <table id="example" class="table table-striped text-center" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>No. Pedido</th>
+                                        <th>Cliente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for a in pedidos %}
+                                        {% if a.estatusPedido == 'P_P' %}
+                                            <tr>
+                                                <td>{{a.numeroPedido}}</td>
+                                                <td>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</td>
+                                                <td>
+                                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                                        <i class="nav-icon fas fa-circle-plus text-success"></i>
+                                                    </button>
+                                                    <div class="modal fade" id="detalles{{a.id}}">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del pedido</h1>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="text-start">
+                                                                        
+                                                                        <span><strong>Pedido número: </strong>{{a.numeroPedido}}</span>
+                                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
+                                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
+                                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
+                                                                        <hr><br>
+                                                                        {% if a.estatusPedido == 'P_T' %}
+                                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El pedido ya tiene agendada una orden de corte.</label>
+                                                                        {% elif a.estatusPedido == 'P_P' %}
+                                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El pedido aun no tiene una orden de corte generada.</label>
+                                                                        {% endif %}
+                                                                        <hr>
+                                                                        <span><strong>Kilos: </strong>{{a.totalKilosPedido}}</span>
+                                                                        <span><strong>Mercado: </strong>{{a.mercadoPedido}}</span>
+                                                                        <span><strong>Destino: </strong>{{a.destinoPedido}}</span>
+                                                                    </div>
+                                                                    <button class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="card text-center shadow rounded" style="background:#F6CECE">
+                            <div class="card-body">
+                                <img src="/static/assets/img/icons/wo-users.png" width="70">
+                                <p class="mt-2 card-text">No hay pedidos pendientes.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center d-flex justify-content-between align-items-center py-3">
+                    <h5>Terminados</h5>
+                    <i class="fa-solid fa-circle-check text-success mr-2"></i>
+                </div>
+                <div class="table-responsive">
+                    {% if npedidost > 0 %}
+                        <div class="table-responsive">
+                            <table id="example" class="table table-striped text-center" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>No. Pedido</th>
+                                        <th>Cliente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for a in pedidos %}
+                                        {% if a.estatusPedido == 'P_T' %}
+                                            <tr>
+                                                <td>{{a.numeroPedido}}</td>
+                                                <td>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</td>
+                                                <td>
+                                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                                        <i class="nav-icon fas fa-circle-plus text-success"></i>
+                                                    </button>
+                                                    <div class="modal fade" id="detalles{{a.id}}">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del pedido</h1>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="text-start">
+                                                                        <span><strong>Pedido número: </strong>{{a.numeroPedido}}</span>
+                                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
+                                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
+                                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
+                                                                        <hr><br>
+                                                                        {% if a.estatusPedido == 'P_T' %}
+                                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El pedido ya tiene agendada una orden de corte.</label>
+                                                                        {% elif a.estatusPedido == 'P_P' %}
+                                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El pedido aun no tiene una orden de corte generada.</label>
+                                                                        {% endif %}
+                                                                        <hr>
+                                                                        <span><strong>Kilos: </strong>{{a.totalKilosPedido}}</span>
+                                                                        <span><strong>Mercado: </strong>{{a.mercadoPedido}}</span>
+                                                                        <span><strong>Destino: </strong>{{a.destinoPedido}}</span>
+                                                                    </div>
+                                                                    <button class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="card text-center shadow rounded" style="background:#F6CECE">
+                            <div class="card-body">
+                                <img src="/static/assets/img/icons/wo-users.png" width="70">
+                                <p class="mt-2 card-text">No hay pedidos completados.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

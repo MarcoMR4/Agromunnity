@@ -2,7 +2,7 @@
   <!--Usuario-->
   <a href="" class="brand-link" style="background:#a5e244">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text font-weight">{{request.user.user.tipouser}}</span>
+    <span class="brand-text font-weight">{{request.user.trabajador.rol.nombreRol}}</span>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
@@ -12,6 +12,12 @@
               <a href="" class="nav-link inactive">
                   <i class="nav-icon fas fa-house"></i>
                   <p>Inicio</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 's' %} style='background-color: #D8FBA7' {% endif %}>
+              <a href={% url 's' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-users"></i>
+                  <p>Cuadrillas</p>
               </a>
             </li>
             <li class="nav-item">

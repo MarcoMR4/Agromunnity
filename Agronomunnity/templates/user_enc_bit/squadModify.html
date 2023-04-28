@@ -29,16 +29,39 @@
             <div class="text-center">
                 <input type="hidden" name="Id" value="modificar">
                 <p class="form-floating mb-3">
-                    {{formc.Nombre}}
+                    <input class="form-control" type="text" name="Nombre" value="{{cuadrilla.nombreCuadrilla}}">
                     <label>Nombre</label>
                 </p>
                 <p class="form-floating mb-3">
-                    {{formc.ElegirGerente}}
-                    <label>Gerente</label>
+                    <input class="form-control" type="text" name="Ubicacion" value="{{cuadrilla.ubicacionCuadrilla}}">
+                    <label>Ubicacion</label>
                 </p>
                 <p class="form-floating mb-3">
-                    {{formc.ElegirCapataz}}
-                    <label>Capataz</label>
+                    <select name="Estatus" class="form-control">
+                        <option value="C_A" {% if cuadrilla.estatusCuadrilla == 'C_A' %}selected{% endif %}>Activa</option>
+                        <option value="C_I" {% if cuadrilla.estatusCuadrilla == 'C_I' %}selected{% endif %}>Inactiva</option>
+                    </select>
+                    <label>Estatus</label>
+                </p>
+                <p class="form-floating mb-3">
+                    <select name="Gerente" class="form-control">
+                        {% for g in trabajadores %}
+                            {% if g.rol.nomenclaturaRol == 'G_C' %}
+                            <option value="{{g.id}}" {% if g.id == cuadrilla.idGerenteCuadrilla %}selected{% endif %}>{{g.usuario.first_name}} {{g.usuario.last_name}} - {{g.rol.nombreRol}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label>Gerente de cuadrilla</label>
+                </p>
+                <p class="form-floating mb-3">
+                    <select name="Jefe" class="form-control">
+                        {% for g in trabajadores %}
+                            {% if g.rol.nomenclaturaRol == 'J_C' %}
+                            <option value="{{g.id}}" {% if g.id == cuadrilla.idGerenteCuadrilla %}selected{% endif %}>{{g.usuario.first_name}} {{g.usuario.last_name}} - {{g.rol.nombreRol}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label>Jefe de cuadrilla</label>
                 </p>
                 <button type="submit" class="btn" style="background-color: #a5e244;">Guardar</button>
             </div>
@@ -119,6 +142,10 @@
                                                     <input class="form-control" type="text" name="AM" value={{a.apellidoM}}>
                                                     <label>Apellido Materno</label>
                                                 </p>
+                                                <p class="form-floating mb-3">
+                                                    <input class="form-control" type="text" name="noImss" value={{a.noImss}}>
+                                                    <label>Numero de seguridad social</label>
+                                                </p>
                                                 <button type="submit" class="btn btn-danger">Guardar</button>
                                             </div>
                                         </form>
@@ -165,6 +192,10 @@
                             <p class="form-floating mb-3">
                                 {{formm.AM}}
                                 <label>Apellido Materno</label>
+                            </p>
+                            <p class="form-floating mb-3">
+                                {{formm.noImss}}
+                                <label>Numero de seguridad social</label>
                             </p>
                             <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
                         </div>
