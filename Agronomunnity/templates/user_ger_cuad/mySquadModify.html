@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Editar Cuadrilla{% endblock %}
+{% block title %}Editar mis cuadrillas{% endblock %}
 
 {% block content %}
 
@@ -32,25 +32,16 @@
             </div>
             {% csrf_token %}
             <div class="text-center">
-                <p class="form-floating mb-3">
-                    <input class="form-control" type="text" name="Nombre" value="{{cuadrilla.nombreCuadrilla}}">
-                    <label>Nombre</label>
-                </p>
+                
                 <div class="row">
                     <div class="col-md-6">
                         <p class="form-floating mb-3">
-                            <input class="form-control" type="text" name="Ubicacion" value="{{cuadrilla.ubicacionCuadrilla}}">
-                            <label>Ubicacion</label>
+                            <input class="form-control" type="text" name="Nombre" value="{{cuadrilla.nombreCuadrilla}}">
+                            <label>Nombre</label>
                         </p>
                         <p class="form-floating mb-3">
-                            <select name="Gerente" class="form-control">
-                                {% for g in trabajadores %}
-                                    {% if g.rol.nomenclaturaRol == 'G_C' %}
-                                    <option value="{{g.id}}" {% if g.id == cuadrilla.idGerenteCuadrilla %}selected{% endif %}>{{g.usuario.first_name}} {{g.usuario.last_name}} - {{g.rol.nombreRol}}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                            <label>Gerente de cuadrilla</label>
+                            <input class="form-control" type="text" name="Ubicacion" value="{{cuadrilla.ubicacionCuadrilla}}">
+                            <label>Ubicacion</label>
                         </p>
                     </div>
                     <div class="col-md-6">

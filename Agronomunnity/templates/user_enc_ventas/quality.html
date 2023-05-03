@@ -29,7 +29,7 @@
             <div class="col-md-6">
                 <div class="text-center d-flex justify-content-between align-items-center py-3">
                     <h5>Calibre</h5>
-                    <button type="button" class="btn btn-xs" data-bs-toggle="modal" data-bs-target="#registrarcalibre" style="background-color: #a5e244;">
+                    <button type="button" class="btn text-light text-xs" data-bs-toggle="modal" data-bs-target="#registrarcalibre" id="btnmodal" style="background: #4CAF50;">
                         +<i class="nav-icon fas fa-ruler-combined mr-2"></i> Nuevo
                     </button>
                 </div>
@@ -47,17 +47,20 @@
                                     <tr>
                                         <td>Calibre {{a.numCalibre}}</td>
                                         <td>
-                                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminarcalibre{{a.id}}">
+                                            <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminarcalibre{{a.id}}">
                                                 <i class="nav-icon fas fa-trash text-danger"></i>
                                             </button>
                                             <div class="modal fade" id="eliminarcalibre{{a.id}}">
                                                 <div class="modal-dialog text-center">
                                                     <div class="modal-content">
-                                                        <div class="pt-4 text-center">
-                                                            <h1 class="fs-5">¿Seguro que deseas eliminar este calibre?</h1>
-                                                            <p class="fs-10 text-danger mx-2">*Cuidado, al eliminar este registro tambien se eliminaran los pedidos que estan relacionados a el.</p>
+                                                        <div class="modal-header">
+                                                            <h1 class="fs-6">¿Seguro que quieres eliminar a este registro?</h1>
+                                                            <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                         </div>
                                                         <div class="modal-body">
+                                                            <div class="text-center mx-5 rounded">
+                                                                <p class="fs-10">*Cuidado, al eliminar este registro tambien se eliminaran todos los pedidos, ordenes de corte y viajes que involucren a este.</p>
+                                                            </div>
                                                             <div class="text-center d-inline-block">
                                                                 <p class="form-floating">
                                                                     <form method="POST" enctype="multipart/form-data">
@@ -65,11 +68,12 @@
                                                                         
                                                                                 <input type="hidden" name="Id" value="eliminarcalibre">
                                                                                 <input type="hidden" name="Calibre" value={{a.id}}>
-                                                                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                                <button type="submit" class="btn btn-danger">
+                                                                                    <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                                </button>
                                                                             </p>
                                                                         </div>
                                                                     </form>
-                                                                    <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -94,8 +98,8 @@
             <div class="col-md-6">
                 <div class="text-center d-flex justify-content-between align-items-center py-3">
                     <h5>Calidad</h5>
-                    <button type="button" class="btn btn-xs" data-bs-toggle="modal" data-bs-target="#registrarcalidad" style="background-color: #a5e244;">
-                        +<i class="nav-icon fas fa-star mr-2"></i> Nuevo
+                    <button type="button" class="btn text-light text-xs" data-bs-toggle="modal" data-bs-target="#registrarcalidad" id="btnmodal" style="background: #4CAF50;">
+                        +<i class="nav-icon fas fa-star mr-2"></i> Nueva
                     </button>
                 </div>
                 <div class="table-responsive">
@@ -105,7 +109,7 @@
                                 <tr>
                                     <th>Numero</th>
                                     <th>Descripción</th>
-                                    <th>Acciones</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -114,14 +118,15 @@
                                         <td>No. {{a.numCalidad}}</td>
                                         <td>{{a.descripcionCalidad}}</td>
                                         <td>
-                                            <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificarcalidad{{a.id}}">
-                                                <i class="nav-icon fas fa-edit text-primary"></i>
+                                            <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificarcalidad{{a.id}}">
+                                                <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                             </button>
                                             <div class="modal fade" id="modificarcalidad{{a.id}}">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de calidad</h1>
+                                                        <div class="modal-header align-items-center">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                            <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                         </div>
                                                         <div class="modal-body">
                                                             <form method="POST" enctype="multipart/form-data">
@@ -137,25 +142,30 @@
                                                                         <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionCalidad}}">
                                                                         <label>Descripcion</label>
                                                                     </p>
-                                                                    <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
+                                                                    <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
+                                                                        <i class="fa-solid fa-floppy-disk mr-2"></i>
+                                                                        Guardar
+                                                                    </button>
                                                                 </div>
                                                             </form>
-                                                            <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminarcalidad{{a.id}}">
+                                            <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminarcalidad{{a.id}}">
                                                 <i class="nav-icon fas fa-trash text-danger"></i>
                                             </button>
                                             <div class="modal fade" id="eliminarcalidad{{a.id}}">
                                                 <div class="modal-dialog text-center">
                                                     <div class="modal-content">
-                                                        <div class="pt-4 text-center">
-                                                            <h1 class="fs-5">¿Seguro que deseas eliminar esta calidad?</h1>
-                                                            <p class="fs-10 text-danger mx-2">*Cuidado, al eliminar este registro tambien se eliminaran los pedidos que estan relacionados a el.</p>
+                                                        <div class="modal-header">
+                                                            <h1 class="fs-6">¿Seguro que quieres eliminar este parametro?</h1>
+                                                            <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                         </div>
                                                         <div class="modal-body">
+                                                            <div class="text-center mx-5 rounded">
+                                                                <p class="fs-10">*Cuidado, al eliminar este registro tambien se eliminaran todos los pedidos, ordenes de corte y viajes que involucren a este.</p>
+                                                            </div>
                                                             <div class="text-center d-inline-block">
                                                                 <p class="form-floating">
                                                                     <form method="POST" enctype="multipart/form-data">
@@ -163,11 +173,12 @@
                                                                         
                                                                                 <input type="hidden" name="Id" value="eliminarcalidad">
                                                                                 <input type="hidden" name="Calidad" value={{a.id}}>
-                                                                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                                <button type="submit" class="btn btn-danger">
+                                                                                    <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                                </button>
                                                                             </p>
                                                                         </div>
                                                                     </form>
-                                                                    <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -194,8 +205,9 @@
         <div class="modal fade" id="registrarcalidad">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Registrar Calidad</h1>
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">
@@ -210,7 +222,9 @@
                                     {{formcalidad.Descripcion}}
                                     <label>Descripcion</label>
                                 </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-ruler mr-2"></i>Registrar
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -221,8 +235,9 @@
         <div class="modal fade" id="registrarcalibre">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Registrar Calibre</h1>
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">
@@ -233,7 +248,9 @@
                                     {{formcalibre.Numero}}
                                     <label>Número de calibre</label>
                                 </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-ruler mr-2"></i>Registrar
+                                </button>
                             </div>
                         </form>
                     </div>

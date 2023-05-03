@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 from django import forms
 from django.db.models.functions import Concat
-from .models import Productor, Trabajador, RolTrabajador, Cliente, CamionTransporte, OrdenCorte, Cuadrilla
+from .models import Productor, Trabajador, Huerta, Pedido, RolTrabajador, Cliente, CamionTransporte, OrdenCorte, Cuadrilla, Calibre, Calidad
 
 
 class UserLoginForm(AuthenticationForm):
@@ -271,25 +271,36 @@ class AddOrder(forms.Form):
 
     Numero = forms.FloatField(
         widget=forms.NumberInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true', 'inputmode':'numeric'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
         )
     )
 
+    Tkilos = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric', 'readonly':''}
+        ),
+        required=False,
+        initial=None
+    )
+
+
+
     Kilos = forms.FloatField(
         widget=forms.NumberInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true', 'inputmode':'numeric'}
-        )
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
+        ),
+        required=False
     )
 
     Mercado = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
 
     Destino = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
 
@@ -300,6 +311,25 @@ class AddOrder(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
         )
     )
+
+    Calidad = forms.ModelChoiceField(
+        queryset = Calidad.objects.all(),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        ),
+        required=False,
+    )
+
+    Calibre = forms.ModelChoiceField(
+        queryset = Calibre.objects.all(),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        ),
+        required=False,
+    )
+
 
 class AddClient(forms.Form): 
 
@@ -351,40 +381,17 @@ class AddCaliber(forms.Form):
 
 class AddTrip(forms.Form): 
 
-    Fecha = forms.DateField(
-        widget=forms.DateInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
-        )
-    )
-
     Salida = forms.TimeField(
         widget=forms.TimeInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': 'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': 'true', 'type': 'time'}
         )
     )
 
-    Llegada = forms.TimeField(
-        widget=forms.TimeInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': 'true'}
-        )
-    )
 
     Punto = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false'}
         )
-    )
-
-    estatusViaje = (
-    ('V_P', 'No terminado'),
-    ('V_T', 'Terminado'),
-    )
-
-    Estatus = forms.ChoiceField(
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        ),
-        choices=estatusViaje
     )
 
     Camion1 = forms.ModelChoiceField(
@@ -404,7 +411,7 @@ class AddTrip(forms.Form):
     )
 
     Orden = forms.ModelChoiceField(
-        queryset = OrdenCorte.objects.all().order_by('fechaOrden'),
+        queryset = OrdenCorte.objects.all().filter(idPedido__estatusPedido='P_O'),
         empty_label="(Seleccione)",
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
@@ -413,6 +420,77 @@ class AddTrip(forms.Form):
 
     Cuadrilla = forms.ModelChoiceField(
         queryset = Cuadrilla.objects.all().order_by('nombreCuadrilla'),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    )
+
+    Huerta = forms.ModelChoiceField(
+        queryset = Huerta.objects.all().order_by('nombreHuerta'),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    )
+
+class AddIncident(forms.Form):
+
+    Descripcion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'false', 'rows': '3'}
+        )
+    )
+
+    Fecha = forms.DateField(
+        
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true', 'type': 'date'}
+        )
+    )
+
+    temas = (
+        ('B_T','Bitacoras'),
+        ('C_M','Camiones'),
+        ('C_A','Calidad'),
+        ('C_L','Clientes'),
+        ('C_D','Cuadrillas'),
+        ('D_C','Documentos'),
+        ('E_N','Encargados'),
+        ('G_R','Gerentes'),
+        ('H_R','Huertas'),
+        ('G_F','Jefes'),
+        ('O_C','Ordenes de corte'),
+        ('P_D','Pedidos'),
+        ('P_T','Productores'),
+        ('T_B','Trabajadores'),
+        ('T_P','Transportes'),
+        ('V_J','Viajes'),
+    )
+
+    Tema = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        ),
+        choices=temas
+    )
+
+class AddCourtOrder(forms.Form):
+
+    Fruta = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    Corte = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    Pedido = forms.ModelChoiceField(
+        queryset = Pedido.objects.filter(estatusPedido='P_I'),
         empty_label="(Seleccione)",
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 

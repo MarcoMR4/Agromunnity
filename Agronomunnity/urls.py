@@ -34,6 +34,7 @@ urlpatterns = [
     path('smr/',views.squadMemberRegister, name="smr"),
     path('smm/',views.squadMemberModify, name="smm"),
     path('sms/',views.squadMemberSave, name="sms"),
+    path('vs/',views.viewSquad, name="vs"),
     #Transporte
     path('t/',views.transport, name="t"),
     path('td/',views.transportDelete, name="td"),
@@ -50,11 +51,18 @@ urlpatterns = [
     path('om/',views.orchardModify, name="om"),
     path('or/',views.orchardRegister, name="or"),
     path('od/',views.orchardDelete, name="od"),
+    path('vo/',views.viewOrchard, name="vo"),
     #Viaje
     path('ct/',views.trip, name="ct"),
     path('ctm/',views.tripModify, name="ctm"),
     path('ctr/',views.tripRegister, name="ctr"),
     path('ctd/',views.tripDelete, name="ctd"),
+    path('mt/',views.myTrips, name="mt"),
+    #Orden de corte
+    path('co/',views.courtOrder, name="co"),
+    path('com/',views.courtOrderModify, name="com"),
+    path('cor/',views.courtOrderRegister, name="cor"),
+    path('cod/',views.courtOrderDelete, name="cod"),
     #Cliente
     path('c/',views.client, name="c"),
     path('cm/',views.clientModify, name="cm"),
@@ -67,6 +75,30 @@ urlpatterns = [
     path('qdc/',views.qualityDeleteCaliber, name="qdc"),
     path('qrq/',views.qualityRegisterQuality, name="qrq"),
     path('qdq/',views.qualityDeleteQuality, name="qdq"),
+    #Incidente
+    path('i/',views.incident, name="i"),
+    path('id/',views.incidentDelete, name="id"),
+    path('ir/',views.incidentRegister, name="ir"),
+    #Cambiar estatus inocuidad huerta
+    path('ss/',views.safetyStatus, name="ss"),
+    path('ssm/',views.safetyStatusModify, name="ssm"),
+    #Finalizar Proceso
+    path('ft',views.finishTrip, name="ft"),
+    path('ftr/',views.finishTripRegister, name="ftr"),
+    #Mis cuadrillas
+    path('ms/',views.mySquad, name="ms"),
+    path('msd/',views.mySquadDelete, name="msd"),
+    path('msr/',views.mySquadRegister, name="msr"),
+    path('msm/',views.mySquadModify, name="msm"),
+    path('msmd/',views.mySquadMemberDelete, name="msmd"),
+    path('msmr/',views.mySquadMemberRegister, name="msmr"),
+    path('msmm/',views.mySquadMemberModify, name="msmm"),
+    path('msms/',views.mySquadMemberSave, name="msms"),
+    #Jefe de cuadrilla
+    path("sl/", views.squadLeader, name="sl"),
+    path("slr/", views.squadLeaderRegister, name="slr"),
+    path("sld/", views.squadLeaderDelete, name="sld"),
+    path("slm/", views.squadLeaderModify, name="slm"),
 ]
 
 

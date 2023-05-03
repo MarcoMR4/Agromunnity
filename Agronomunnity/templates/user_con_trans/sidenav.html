@@ -2,28 +2,28 @@
   <!--Usuario-->
   <a href="" class="brand-link" style="background:#4CAF50">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text font-weight text-sm text-light">{{request.user.trabajador.rol.nombreRol}}</span>
+    <span class="brand-text font-weight text-light text-sm">{{request.user.trabajador.rol.nombreRol}}</span>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
       <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'index' %} style='background-color: #c9e7cb' {% endif %}>
-              <a href="" class="nav-link inactive">
+              <a href="{% url 'index' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Inicio</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'ft' %} style='background-color: #c9e7cb' {% endif %}>
-              <a href="{% url 'ft' %}" class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'mt' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'mt' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-truck-fast"></i>
-                  <p>Viajes en curso</p>
+                  <p>Mis viajes</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'vso' %} style='background-color: #c9e7cb' {% endif %}>
-              <a href="{% url 'vso' %}" class="nav-link inactive">
-                  <i class="nav-icon fa-solid fa-bar-chart"></i>
-                  <p>Pedidos</p>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'vs' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'vs' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-users"></i>
+                  <p>Cuadrillas</p>
               </a>
             </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'i' %} style='background-color: #c9e7cb' {% endif %}>
