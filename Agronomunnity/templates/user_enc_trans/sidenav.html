@@ -14,6 +14,12 @@
                   <p>Inicio</p>
               </a>
             </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 't' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 't' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-truck"></i>
+                  <p>Transportes</p>
+              </a>
+            </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'o' %} style='background-color: #c9e7cb' {% endif %}>
               <a href="{% url 'o' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-tree"></i>
