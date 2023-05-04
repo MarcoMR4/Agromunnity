@@ -1,154 +1,263 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Viajes{% endblock %}
+{% block title %}Viajes de corte{% endblock %}
 
 {% block content %}
+
+    {% if error %}
+    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+        <strong>Error!</strong> {{error}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% elif mensaje %}
+    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+        <strong>Exito!</strong> {{mensaje}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Viajes de corte</h3>
+
+        <div class="text-center d-flex justify-content-between align-items-center py-3">
+            <div>
+                <h3 class="py-3">Viajes de corte</h3>
+            </div>
+            {% if nop > 0 %}
+                <div class="my-2 text-end" style="width: 100%;">
+                    <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                        +<i class="nav-icon fas fa-tasks"></i> Nuevo
+                    </button>
+                </div>
+            {% endif %}
+            
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="text-center d-flex justify-content-between align-items-center py-3">
-                    <h5>Pendientes</h5>
-                    <i class="fa-solid fa-times-circle text-danger mr-2"></i>
-                </div>
-                <div class="table-responsive">
-                    {% if nviajes > 0 %}
-                        <div class="table-responsive">
-                            <table id="example" class="table table-striped text-center" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Orden de corte</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for a in viajes %}
-                                        {% if a.estatusPedido == 'V_P' %}
-                                            <tr>
-                                                <td>{{a.fechaViaje}}</td>
-                                                <td>{{a.idOrdenCorte}}</td>
-                                                <td>
-                                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
-                                                        <i class="nav-icon fas fa-circle-plus text-success"></i>
-                                                    </button>
-                                                    <div class="modal fade" id="detalles{{a.id}}">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del pedido</h1>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="text-start">
-                                                                        
-                                                                        <span><strong>Pedido número: </strong>{{a.numeroPedido}}</span>
-                                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
-                                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
-                                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
-                                                                        <hr><br>
-                                                                        {% if a.estatusPedido == 'P_T' %}
-                                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El pedido ya tiene agendada una orden de corte.</label>
-                                                                        {% elif a.estatusPedido == 'P_P' %}
-                                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El pedido aun no tiene una orden de corte generada.</label>
-                                                                        {% endif %}
-                                                                        <hr>
-                                                                        <span><strong>Kilos: </strong>{{a.totalKilosPedido}}</span>
-                                                                        <span><strong>Mercado: </strong>{{a.mercadoPedido}}</span>
-                                                                        <span><strong>Destino: </strong>{{a.destinoPedido}}</span>
-                                                                    </div>
-                                                                    <button class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
-                                                                </div>
+        {% if nop > 0 %}
+            <div class="alert alert-danger" role="alert">
+                <i class="fa-solid fa-info-circle mr-2"></i>Hay ordenes de corte esperando a que generes su viaje de corte.
+            </div>
+        {% endif %}
+        {% if nvc > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No. viaje</th>
+                            <th>Cuadrilla</th>
+                            <th>Huerta</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in vc %}
+                            <tr>
+                                <td>{{a.idOrdenCorte.idPedido.numeroPedido}}</td>
+                                <td>{{a.idCuadrilla.nombreCuadrilla}}</td>
+                                <td>{{a.idHuerta.nombreHuerta}}</td>
+                                {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery-three-quarters text-info"></i><br>En viaje</td>
+                                {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery text-success"></i><br>Completado</td>
+                                {% endif %}
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div class="modal fade" id="detalles{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title">Panel de detalles</h5>
+                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
+                                                            <div class="alert alert-info" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene una orden de corte y esta en viaje, proximo a completarse.
                                                             </div>
-                                                        </div>
+                                                        {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
+                                                            <div class="alert alert-success" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="card text-center shadow rounded" style="background:#F6CECE">
-                            <div class="card-body">
-                                <img src="/static/assets/img/icons/viajeT.png" width="70">
-                                <p class="mt-2 card-text">No hay viajes Terminados.</p>
-                            </div>
-                        </div>
-                    {% endif %}
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Orden número:</p>
+                                                        <p>{{a.idOrdenCorte.numeroOrden}}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Fecha:</p>
+                                                        <p>{{a.fechaViaje}}</p>
+                                                    </div>
+                                                </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                    <p class="fw-bold mb-0">Para el cliente:</p>
+                                                    <p>{{a.idOrdenCorte.idPedido.idCliente.nombreCliente}} {{a.idOrdenCorte.idPedido.idCliente.apellidoPCliente}} {{a.idOrdenCorte.idPedido.idCliente.apellidoMCliente}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Contiene:</p>
+                                                    <p>{{a.idOrdenCorte.idPedido.totalPalletsPedido}} pallets.</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Destino:</p>
+                                                    <p>{{a.idOrdenCorte.idPedido.destinoPedido}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                  <p class="fw-bold mb-0">Generada por:</p>
+                                                  <p>{{a.idOrdenCorte.idPedido.idTrabajador.usuario.first_name}} {{a.idOrdenCorte.idPedido.idPedido.idTrabajador.usuario.last_name}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Kilos:</p>
+                                                  <p>{{a.idOrdenCorte.idPedido.totalKilosPedido}}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Mercado:</p>
+                                                  <p>{{a.idOrdenCorte.idPedido.mercadoPedido}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="align-items-center">
+                                                    <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
+                                                </div>
+                                                <div class="col-12 table-responsive" >
+                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                                        <thead>
+                                                            <tr class="align-items-center">
+                                                                <th>Calibre</th>
+                                                                <th>Calidad</th>
+                                                                <th>Kg</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for b in pcc %}
+                                                                {% if a.idOrdenCorte.idPedido.id == b.idPedido.id %}
+                                                                    <tr>
+                                                                        <td>{{b.idCalibre.numCalibre}}</td>
+                                                                        <td>{{b.idCalidad.numCalidad}}</td>
+                                                                        <td>{{b.cantidadCC}}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                              <button type="button" class="btn text-xs bg-danger px-5" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                <i class="nav-icon fas fa-trash text-light"></i>Eliminar
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar a este viaje?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Cuidado, al eliminar este registro puedes ocasionar problemas en la logistica asi como pedidos que se queden sin cubrirse.</p>
+                                                    </div>
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Viaje" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay viajes de corte registrados</h5>
+                    <p class="card-text">Actualmente no hay viajes de corte. Por favor, consulte si hay ordenes de corte pendientes para que genere su respectiva viaje.</p>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="text-center d-flex justify-content-between align-items-center py-3">
-                    <h5>Terminados</h5>
-                    <i class="fa-solid fa-circle-check text-success mr-2"></i>
-                </div>
-                <div class="table-responsive">
-                    {% if nviajes > 0 %}
-                        <div class="table-responsive">
-                            <table id="example" class="table table-striped text-center" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Orden de corte</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for a in viajes %}
-                                        {% if a.estatusPedido == 'V_P' %}
-                                            <tr>
-                                                <td>{{a.fechaViaje}}</td>
-                                                <td>{{a.idOrdenCorte}}</td>
-                                                <td>
-                                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
-                                                        <i class="nav-icon fas fa-circle-plus text-success"></i>
-                                                    </button>
-                                                    <div class="modal fade" id="detalles{{a.id}}">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del pedido</h1>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="text-start">
-                                                                        
-                                                                        <span><strong>Fecha: </strong>{{a.fechaViaje}}</span>
-                                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
-                                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
-                                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
-                                                                        <hr><br>
-                                                                        {% if a.estatusPedido == 'P_T' %}
-                                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El viaje ya esta terminado.</label>
-                                                                        {% elif a.estatusPedido == 'P_P' %}
-                                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El viaje aun no esta terminado.</label>
-                                                                        {% endif %}
-                                                                        <hr>
-                                                                        <span><strong>Kilos: </strong>{{a.totalKilosPedido}}</span>
-                                                                        <span><strong>Mercado: </strong>{{a.mercadoPedido}}</span>
-                                                                        <span><strong>Destino: </strong>{{a.destinoPedido}}</span>
-                                                                    </div>
-                                                                    <button class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="card text-center shadow rounded" style="background:#F6CECE">
-                            <div class="card-body">
-                                <img src="/static/assets/img/icons/viajeP.png" width="70">
-                                <p class="mt-2 card-text">No hay viajes pendientes.</p>
+        {% endif %}
+        
+        <div class="modal fade" id="exampleModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <input type="hidden" name="Id" value="agregar">
+                                <p class="form-floating mb-3">
+                                    {{form.Salida}}
+                                    <label>Hora de salida</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Punto}}
+                                    <label>Punto de reunión</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Camion1}}
+                                    <label>Camión encargado del viaje</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Camion2}}
+                                    <label>Camión de apoyo</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Orden}}
+                                    <label>Orden de corte</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Cuadrilla}}
+                                    <label>Cuadrilla encargada del corte</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{form.Huerta}}
+                                    <label>Huerta donde se cortará</label>
+                                </p>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-tasks mr-2"></i>Registrar
+                                </button>
                             </div>
-                        </div>
-                    {% endif %}
+                        </form>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
 {% endblock content %}

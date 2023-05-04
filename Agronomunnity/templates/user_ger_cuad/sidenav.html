@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-light-primary elevation-3 position-fixed">
   <!--Usuario-->
-  <a href="" class="brand-link" style="background:#a5e244">
+  <a href="" class="brand-link" style="background:#4CAF50">
     <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
     <span class="brand-text font-weight">{{request.user.trabajador.rol.nombreRol}}</span>
   </a>
@@ -8,21 +8,33 @@
   <div class="sidebar">
       <nav class="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'index' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href="" class="nav-link inactive">
-                  <i class="nav-icon fas fa-house"></i>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'index' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'index' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-house"></i>
                   <p>Inicio</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 's' %} style='background-color: #D8FBA7' {% endif %}>
-              <a href={% url 's' %} class="nav-link inactive">
-                  <i class="nav-icon fas fa-users"></i>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name in 'sl' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href={% url 'sl' %} class="nav-link inactive">
+                  <i class="nav-icon fas fa-hard-hat"></i>
+                  <p>Jefes de cuadrilla</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name in 'ms, msm' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href={% url 'ms' %} class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-users"></i>
                   <p>Cuadrillas</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'i' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'i' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-circle-exclamation"></i>
+                  <p>Incidencias</p>
               </a>
             </li>
             <li class="nav-item">
               <a href={% url 'exit' %} class="nav-link inactive text-danger">
-                  <i class="nav-icon fas fa-sign-out"></i>
+                  <i class="nav-icon fa-solid fa-sign-out"></i>
                   <p>Cerrar Sesión</p>
               </a>
             </li>

@@ -21,15 +21,17 @@
     {% endif %}
     
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Pedidos de aguacate</h3>
-        </div>
-        {% if npedidos > 0 %}
+        <div class="text-center d-flex justify-content-between align-items-center py-3">
+            <div class="text-2">
+                <h3 class="py-3">Pedidos</h3>
+            </div>
             <div class="my-2 text-end" style="width: 100%;">
-                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                    +<i class="fas fa-user-friends mr-2"></i> Nuevo
+                <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                    +<i class="nav-icon fas fa-file mr-2"></i> Nuevo
                 </button>
             </div>
+        </div>
+        {% if npedidos > 0 %}
             <div class="table-responsive">
                 <table id="example" class="table table-striped text-center" style="width:100%">
                     <thead>
@@ -38,7 +40,7 @@
                             <th>Fecha</th>
                             <th>Cliente</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th> </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,73 +49,137 @@
                                 <td>{{a.numeroPedido}}</td>
                                 <td>{{a.fechaPedido}}</td>
                                 <td>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</td>
-                                {% if a.estatusPedido == 'P_T' %}
-                                    <td class="text-sm"><i class="fa-solid fa-truck-moving text-success"></i><br>Terminado</td>
-                                {% elif a.estatusPedido == 'P_P' %}
-                                    <td class="text-sm"><i class="fa-solid fa-times-circle text-danger"></i><br>Pendiente</td>
+                                {% if a.estatusPedido == 'P_I' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery-quarter text-danger"></i><br>Iniciado</td>
+                                {% elif a.estatusPedido == 'P_O' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery-half text-warning"></i><br>Ordenado</td>
+                                {% elif a.estatusPedido == 'P_V' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery-three-quarters text-info"></i><br>En viaje</td>
+                                {% elif a.estatusPedido == 'P_C' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery text-success"></i><br>Completado</td>
                                 {% endif %}
                                 <td>
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                        <i class="nav-icon fas fa-trash text-danger"></i>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                        <i class="nav-icon fas fa-ellipsis-v"></i>
                                     </button>
-                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
-                                        <i class="nav-icon fas fa-circle-plus text-primary"></i>
-                                    </button>
-                                    <div class="modal fade" id="modificar{{a.id}}">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos del pedido</h1>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="text-start">
-                                                        
-                                                        <span><strong>Pedido número: </strong>{{a.numeroPedido}}</span>
-                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
-                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
-                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
-                                                        <hr><br>
-                                                        {% if a.estatusPedido == 'P_T' %}
-                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El pedido ya tiene agendada una orden de corte.</label>
-                                                        {% elif a.estatusPedido == 'P_P' %}
-                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El pedido aun no tiene una orden de corte generada.</label>
+                                    
+                                    <div class="modal fade" id="detalles{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title">Panel de detalles</h5>
+                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        {% if a.estatusPedido == 'P_I' %}
+                                                            <div class="alert alert-danger" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta en estado inicial, no se le ha agendado orden de corte ni viaje.
+                                                            </div>
+                                                        {% elif a.estatusPedido == 'P_O' %}
+                                                            <div class="alert alert-warning" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene generada una orden de corte, a la espera de que se le asigne un viaje.
+                                                            </div>
+                                                        {% elif a.estatusPedido == 'P_V' %}
+                                                            <div class="alert alert-info" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene una orden de corte y esta en viaje, proximo a completarse.
+                                                            </div>
+                                                        {% elif a.estatusPedido == 'P_C' %}
+                                                            <div class="alert alert-success" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
+                                                            </div>
                                                         {% endif %}
-                                                        <hr>
                                                     </div>
-                                                    <form method="POST" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        <div class="text-center">
-                                                            <input type="hidden" name="Id" value="modificar">
-                                                            <input type="hidden" name="Pedido" value={{a.id}}>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Kilos" value="{{a.totalKilosPedido}}">
-                                                                <label>Kilos</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Mercado" value="{{a.mercadoPedido}}">
-                                                                <label>Mercado</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Destino" value="{{a.destinoPedido}}">
-                                                                <label>Destino</label>
-                                                            </p>
-                                                            <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
-                                                        </div>
-                                                    </form>
-                                                    <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Pedido número:</p>
+                                                        <p>{{a.numeroPedido}}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Fecha:</p>
+                                                        <p>{{a.fechaPedido}}</p>
+                                                    </div>
+                                                </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                    <p class="fw-bold mb-0">Para el cliente:</p>
+                                                    <p>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Contiene:</p>
+                                                    <p>{{a.totalPalletsPedido}} pallets.</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Destino:</p>
+                                                    <p>{{a.destinoPedido}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                  <p class="fw-bold mb-0">Generada por:</p>
+                                                  <p>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Kilos:</p>
+                                                  <p>{{a.totalKilosPedido}}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Mercado:</p>
+                                                  <p>{{a.mercadoPedido}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="align-items-center">
+                                                    <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
+                                                </div>
+                                                <div class="col-12 table-responsive" >
+                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                                        <thead>
+                                                            <tr class="align-items-center">
+                                                                <th>Calibre</th>
+                                                                <th>Calidad</th>
+                                                                <th>Kg</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for b in pcc %}
+                                                                {% if a.id == b.idPedido.id %}
+                                                                    <tr>
+                                                                        <td>{{b.idCalibre.numCalibre}}</td>
+                                                                        <td>{{b.idCalidad.numCalidad}}</td>
+                                                                        <td>{{b.cantidadCC}}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
+                                              <button type="button" class="btn text-xs bg-danger px-5" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                <i class="nav-icon fas fa-trash text-light"></i>Eliminar
+                                              </button>
+                                            </div>
+                                          </div>
                                         </div>
-                                    </div>
+                                      </div>
 
                                     <div class="modal fade" id="eliminar{{a.id}}">
                                         <div class="modal-dialog text-center">
                                             <div class="modal-content">
-                                                <div class="pt-4 text-center">
-                                                    <h1 class="fs-5">¿Seguro que deseas eliminar este pedido?</h1>
-                                                    <p class="fs-10 text-danger mx-2">*Cuidado, al eliminar el pedido se eliminara la orden de corte, viajes y todos los registros que esten ligados a el.</p>
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar a este pedido?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                 </div>
                                                 <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Cuidado, al eliminar el pedido tambien se eliminaran la orden de corte y orden de viaje relacionadas a este pedido.</p>
+                                                    </div>
                                                     <div class="text-center d-inline-block">
                                                         <p class="form-floating">
                                                             <form method="POST" enctype="multipart/form-data">
@@ -121,11 +187,12 @@
                                                                 
                                                                         <input type="hidden" name="Id" value="eliminar">
                                                                         <input type="hidden" name="Pedido" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
                                                                     </p>
                                                                 </div>
                                                             </form>
-                                                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -139,61 +206,114 @@
                 </table>
             </div>
         {% else %}
-            <div class="card text-center shadow rounded mx-5" style="background:#F6CECE">
-                <div class="card-body">
-                    <img src="/static/assets/img/icons/orderF.png" width="70">
-                    <p class="mt-2 card-text"> <strong> No hay pedidos registrados.</strong></p>
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay pedidos registrados.</h5>
+                    <p class="card-text">Actualmente no hay pedidos registrados en el sistema.</p>
                     {% if nclientes < 1 %}
-                    <p class="mt-2 card-text">Para poder registrar primero asegurate que halla <br>clientes registrados.</p>
-                        <div class="text-center">
-                            <a href={% url 'w' %} class="btn inactive shadow" style="background-color: #FfCECA;">
-                                <i class="nav-icon fas fa-edit mt-2"></i>
-                                <p>Ir a registrar cliente</p>
-                            </a>
-                        </div>
-                    {% else %}
-                        <div class="my-2 text-center" style="width: 100%;">
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                                +<i class="fas fa-user-friends mr-2"></i> Nuevo
-                            </button>
-                        </div>
+                        <p class="mt-2 card-text">Para poder realizar un pedido primero asegurate que halla <br>clientes registrados.</p>
                     {% endif %}
                 </div>
             </div>
         {% endif %}
-        
         <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Pedido</h1>
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="text-center">
                                 <input type="hidden" name="Id" value="agregar">
-                                <p class="form-floating mb-3">
-                                    {{form.Numero}}
-                                    <label>Número de pedido</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Kilos}}
-                                    <label>Total (en kilogramos)</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Mercado}}
-                                    <label>Mercado</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Destino}}
-                                    <label>Destino</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Cliente}}
-                                    <label>Cliente</label>
-                                </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                                <input type="text" id="completo" value="" style="display:none" required>
+                                <div class="row">
+                                    <div class="col-xl-6 col-sm-6 col-xs-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Numero}}
+                                            <label>Número de pedido</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-xl-6 col-sm-6 col-xs-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Cliente}}
+                                            <label>Cliente</label>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xl-6 col-sm-6 col-xs-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Mercado}}
+                                            <label>Mercado</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-xl-6 col-sm-6 col-xs-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Destino}}
+                                            <label>Destino</label>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="align-items-center">
+                                        <p class="text-xs">Seleccion de Kg.</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="form-floating mb-3">
+                                            {{form.Calibre}}
+                                            <label id="e3">Calibre</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="form-floating mb-3">
+                                            {{form.Calidad}}
+                                            <label id="e1">Calidad</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="form-floating">
+                                            {{form.Kilos}}
+                                            <label id="e2">Kg.</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        
+                                    </div>  
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 table-responsive" >
+                                        <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                            <thead>
+                                                <tr class="align-items-center">
+                                                    <th>Calidad</th>
+                                                    <th>Calibre</th>
+                                                    <th>Kg</th>
+                                                    <th>
+                                                        <button type="button" id="agregartabla" class="btn btn-xs rounded-circle text-light" style="background-color: #4CAF50;">
+                                                            <i class="nav-icon fas fa-plus"></i>
+                                                        </button>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p class="form-floating mb-3">
+                                            {{form.Tkilos}}
+                                            <label>Total (en kilogramos)</label>
+                                        </p>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="nav-icon fas fa-file mr-2"></i> Registrar
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -203,3 +323,7 @@
     </div>
 
 {% endblock content %}
+
+{% block javascripts %}
+    <script src="/static/assets/js/rder.js"></script>
+{% endblock javascripts %}

@@ -19,17 +19,18 @@
             </button>
         </div>
     {% endif %}
-    
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Vehiculos de carga</h3>
-        </div>
-        {% if ncamiones > 0 %}
+        <div class="text-center d-flex justify-content-between align-items-center py-3">
+            <div class="text-2">
+                <h3 class="py-3">Vehiculos</h3>
+            </div>
             <div class="my-2 text-end" style="width: 100%;">
-                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                    +<i class="fas fa-truck mr-2"></i> Nuevo
+                <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                    +<i class="nav-icon fas fa-truck mr-2"></i> Nuevo
                 </button>
             </div>
+        </div>
+        {% if ncamiones < 0 %}
             <div class="table-responsive">
                 <table id="example" class="table table-striped text-center" style="width:100%">
                     <thead>
@@ -38,7 +39,7 @@
                             <th>Modelo</th>
                             <th>Conductor</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,24 +49,25 @@
                                 <td>{{a.modeloTransporte}}</td>
                                 <td>{{a.idChoferTransporte.usuario.first_name}} {{a.idChoferTransporte.usuario.last_name}}</td>
                                 {% if a.estatusTransporte == 'C_A' %}
-                                    <td class="text-sm"><i class="fa-solid fa-truck-moving text-success"></i><br>Activo</td>
+                                    <td class="text-xs"><i class="fa-solid fa-truck-moving text-success"></i><br>Activo</td>
                                 {% elif a.estatusTransporte == 'C_I' %}
-                                    <td class="text-sm"><i class="fa-solid fa-times-circle text-danger"></i><br>Inactivo</td>
+                                    <td class="text-xs"><i class="fa-solid fa-times-circle text-danger"></i><br>Inactivo</td>
                                 {% else %}
-                                    <td class="text-sm"><i class="fa-solid fa-wrench text-warning"></i><br>En mantenimiento</td>
+                                    <td class="text-xs"><i class="fa-solid fa-wrench text-warning"></i><br>En mantenimiento</td>
                                 {% endif %}
                                 <td>
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                        <i class="nav-icon fas fa-trash text-danger"></i>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                     </button>
-                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
-                                        <i class="nav-icon fas fa-circle-plus text-primary"></i>
+                                    <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                        <i class="nav-icon fas fa-trash text-danger"></i>
                                     </button>
                                     <div class="modal fade" id="modificar{{a.id}}">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos del vehiculo</h1>
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                 </div>
                                                 <div class="modal-body">
                                                     <form method="POST" enctype="multipart/form-data">
@@ -83,7 +85,7 @@
                                                             </p>
                                                             <p class="form-floating mb-3">
                                                                 <input class="form-control" type="text" name="Capacidad" value="{{a.capacidadTransporte}}">
-                                                                <label>Capacidad</label>
+                                                                <label>Capacidad (en toneladas)</label>
                                                             </p>
                                                             <p class="form-floating mb-3">
                                                                 <input class="form-control" type="text" name="Tipo" value="{{a.tipoTransporte}}">
@@ -113,10 +115,12 @@
                                                                 </select>
                                                                 <label>Conductor</label>
                                                             </p>
-                                                            <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
+                                                            <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
+                                                                <i class="fa-solid fa-floppy-disk mr-2"></i>
+                                                                Guardar
+                                                            </button>
                                                         </div>
                                                     </form>
-                                                    <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -125,10 +129,14 @@
                                     <div class="modal fade" id="eliminar{{a.id}}">
                                         <div class="modal-dialog text-center">
                                             <div class="modal-content">
-                                                <div class="pt-4 text-center">
-                                                    <h1 class="fs-5">¿Seguro que deseas eliminar este vehiculo?</h1>
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar a este vehiculo?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                 </div>
                                                 <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Cuidado, al eliminar este vehiculo tambien se eliminaran los elementos que estan relacionados a el, como viajes, ordenes de corte, choferes, etc.</p>
+                                                    </div>
                                                     <div class="text-center d-inline-block">
                                                         <p class="form-floating">
                                                             <form method="POST" enctype="multipart/form-data">
@@ -136,11 +144,12 @@
                                                                 
                                                                         <input type="hidden" name="Id" value="eliminar">
                                                                         <input type="hidden" name="Camion" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
                                                                     </p>
                                                                 </div>
                                                             </form>
-                                                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -154,19 +163,10 @@
                 </table>
             </div>
         {% else %}
-            <div class="card text-center shadow rounded mx-5" style="background:#F6CECE">
+            <div class="card text-center shadow">
                 <div class="card-body">
-                    <img src="/static/assets/img/icons/no-camion.png" width="70">
-                    <p class="mt-2 card-text"> <strong> No hay camiones registrados.</strong></p>
-                    {% if nchoferes < 1 %}
-                    <p class="mt-2 card-text">No hay choferes disponibles para registrar camiones <br>comunicate con el encargado de bitacora para que dé de alta nuevos conductores.</p>
-                    {% else %}
-                        <div class="my-2 text-center" style="width: 100%;">
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                                +<i class="fas fa-truck mr-2"></i> Nuevo
-                            </button>
-                        </div>
-                    {% endif %}
+                    <img src="/static/assets/img/icons/wo-users.png" width="70">
+                    <p class="card-text">No hay vehiculos registrados.</p>
                 </div>
             </div>
         {% endif %}
@@ -174,8 +174,9 @@
         <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Camion</h1>
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">
@@ -214,7 +215,9 @@
                                     {{form.Chofer}}
                                     <label>Conductor</label>
                                 </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-truck mr-2"></i>Registrar
+                                </button>
                             </div>
                         </form>
                     </div>

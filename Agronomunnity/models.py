@@ -179,8 +179,10 @@ class Pedido(models.Model):
     destinoPedido = models.CharField(max_length=20, blank = True)
 
     estatus = (
-        ('P_P', 'Pendiente'),
-        ('P_T', 'Terminado'),
+        ('P_I', 'Iniciado'),
+        ('P_O', 'Ordenado'),
+        ('P_V', 'En viaje'),
+        ('P_C', 'Completado'),
     )
     estatusPedido = models.CharField(max_length=3, choices=estatus, default='Pendiente')
 
@@ -248,19 +250,12 @@ class PedidoCalibreCalidad(models.Model):
 class OrdenCorte(models.Model):
     fechaOrden = models.DateField()
     numeroOrden = models.CharField(max_length=20, blank = True)
-    cantidadFruta = models.FloatField(max_length=10, blank = True)
     tipoFruta = models.CharField(max_length=20, blank = True)
-    calidadFruta = models.CharField(max_length=20, blank = True)
-    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE)
     tipoCorte = models.CharField(max_length=20, blank = True)
-    estatus = (
-        ('O_P', 'Pendiente'),
-        ('O_T', 'Terminado'),
-    )
-    estatusOrden = models.CharField(max_length=3, choices=estatus, default='Pendiente')
+    idPedido = models.OneToOneField(Pedido, on_delete=models.CASCADE, null=True)
 
     def Mostrar(self):
-        return "Orden: {} - {}".format(self.numeroOrden, self.get_estatusOrden_display())
+        return "Orden: {} - {}".format(self.numeroOrden, self.fechaOrden)
 
     def __str__(self):
         return self.Mostrar()
@@ -268,7 +263,7 @@ class OrdenCorte(models.Model):
     class Meta:
         verbose_name= 'OrdenCorte'
         verbose_name_plural= 'OrdenesCorte'
-        db_table= 'ordenCorte'
+        db_table= 'ordencorte'
         ordering= ['id']
 
 class ViajeCorte(models.Model):
@@ -276,18 +271,14 @@ class ViajeCorte(models.Model):
     idCamionTransporte = models.ForeignKey('CamionTransporte', related_name='principal', on_delete=models.CASCADE)
     idCamionSecundarioTransporte = models.ForeignKey('CamionTransporte', related_name='secundario', on_delete=models.CASCADE)
     horaSalida = models.TimeField(max_length=20, blank = True)
-    horaLlegada = models.TimeField(max_length=20, blank = True)
+    horaLlegada = models.TimeField(max_length=20, blank = True, null=True)
     idOrdenCorte = models.ForeignKey('OrdenCorte', on_delete=models.CASCADE)
     idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
+    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE, null=True)
     puntoReunion = models.CharField(max_length=500, blank = True)
-    estatus = (
-        ('V_P', 'No terminado'),
-        ('V_T', 'Terminado'),
-    )
-    estatusViaje = models.CharField(max_length=3, choices=estatus, default='No terminado')
 
     def Mostrar(self):
-        return "Viaje del dia: {} - {}".format(self.fechaViaje, self.get_estatusViaje_display())
+        return "Viaje del dia: {} - {}".format(self.fechaViaje, self.horaSalida)
 
     def __str__(self):
         return self.Mostrar()
@@ -315,4 +306,48 @@ class ReporteCorte(models.Model):
         verbose_name= 'ReporteCorte'
         verbose_name_plural= 'ReporteCortes'
         db_table= 'reportecorte'
+        ordering= ['id']
+
+class Incidencia(models.Model):
+    descripcionIncidencia = models.CharField(max_length=500, blank = True)
+    idTrabajador = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+    fechaIncidencia = models.DateField()
+    descripcionSolucion = models.CharField(max_length=500, blank = True)
+
+    temas = (
+        ('B_T','Bitacoras'),
+        ('C_M','Camiones'),
+        ('C_A','Calidad'),
+        ('C_L','Clientes'),
+        ('C_D','Cuadrillas'),
+        ('D_C','Documentos'),
+        ('E_N','Encargados'),
+        ('G_R','Gerentes'),
+        ('H_R','Huertas'),
+        ('G_F','Jefes'),
+        ('O_C','Ordenes de corte'),
+        ('P_D','Pedidos'),
+        ('P_T','Productores'),
+        ('T_B','Trabajadores'),
+        ('T_P','Transportes'),
+        ('V_J','Viajes'),
+    )
+    temaIncidencia = models.CharField(max_length=3, choices=temas, default='B_T')
+
+    estatus = (
+        ('I_P', 'Pendiente'),
+        ('I_R', 'Resuelta'),
+    )
+    estatusIncidencia = models.CharField(max_length=3, choices=estatus, default='I_P')
+
+    def Mostrar(self):
+        return "Incidencia: {} - {}".format(self.id, self.get_estatusIncidencia_display())
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'Incidencia'
+        verbose_name_plural= 'Incidencias'
+        db_table= 'incidencia'
         ordering= ['id']

@@ -21,14 +21,16 @@
     {% endif %}
     
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Productores de aguacate</h3>
-        </div>
-        <div class="my-2 text-end" style="width: 100%;">
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background-color: #a5e244;">
-                <i class="nav-icon fas fa-user-plus"></i> Nuevo
-            </button>
-        </div>
+        <div class="text-center d-flex justify-content-between align-items-center py-3">
+            <div class="text-2">
+                <h3 class="py-3">Productores</h3>
+            </div>
+            <div class="my-2 text-end" style="width: 100%;">
+                <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                    <i class="nav-icon fas fa-user-plus"></i> Nuevo
+                </button>
+            </div>
+        </div>  
         <div class="table-responsive">
             {% if nproductores > 0 %}
                 <table id="example" class="table table-striped text-center" style="width:100%">
@@ -36,7 +38,7 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Telefono</th>
-                            <th>Acciones</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,14 +47,15 @@
                                 <td>{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
                                 <td>{{a.telefono}}</td>
                                 <td>
-                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
-                                        <i class="nav-icon fas fa-edit text-primary"></i>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                     </button>
                                     <div class="modal fade" id="modificar{{a.id}}">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar datos de {{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</h1>
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                 </div>
                                                 <div class="modal-body">
                                                     <form method="POST" enctype="multipart/form-data">
@@ -76,25 +79,30 @@
                                                                 <input class="form-control" type="text" name="Telefono" value={{a.telefono}}>
                                                                 <label>Telefono</label>
                                                             </p>
-                                                            <button type="submit" class="btn mb-2" style="background-color: #a5e244;">Guardar</button>
+                                                            <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
+                                                                <i class="fa-solid fa-floppy-disk mr-2"></i>
+                                                                Guardar
+                                                            </button>
                                                         </div>
                                                     </form>
-                                                    <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                    <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
                                         <i class="nav-icon fas fa-trash text-danger"></i>
                                     </button>
                                     <div class="modal fade" id="eliminar{{a.id}}">
                                         <div class="modal-dialog text-center">
                                             <div class="modal-content">
-                                                <div class="pt-4 text-center">
-                                                    <h1 class="fs-5">¿Seguro que deseas eliminar a {{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}?</h1>
-                                                    <p class="fs-10 text-danger mx-2">*Cuidado, al eliminar este productor tambien se eliminaran las huertas que estan relacionadas a el.</p>
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar a este productor?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                 </div>
                                                 <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Cuidado, al eliminar este productor tambien se eliminaran las huertas que tenga a su cargo, tasi como los registros que esten vinculados a ella.</p>
+                                                    </div>
                                                     <div class="text-center d-inline-block">
                                                         <p class="form-floating">
                                                             <form method="POST" enctype="multipart/form-data">
@@ -102,11 +110,12 @@
                                                                 
                                                                         <input type="hidden" name="Id" value="eliminar">
                                                                         <input type="hidden" name="Productor" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
                                                                     </p>
                                                                 </div>
                                                             </form>
-                                                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -119,7 +128,7 @@
                     </tbody>
                 </table>
             {% else %}
-                <div class="card text-center shadow rounded" style="background:#F6CECE">
+                <div class="card text-center shadow rounded">
                     <div class="card-body">
                         <img src="/static/assets/img/icons/wo-users.png" width="70">
                         <p class="mt-2 card-text">No hay productores registrados.</p>
@@ -131,8 +140,9 @@
         <div class="modal fade" id="exampleModal" tabindex="1" aria-labelledby="exampleModalLabel">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Productor</h1>
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                     </div>
                     <div class="modal-body">
                         <form method="POST" enctype="multipart/form-data">
@@ -155,7 +165,9 @@
                                     {{form.Telefono}}
                                     <label>Telefono</label>
                                 </p>
-                                <button type="submit" class="btn" style="background-color: #a5e244;">Registrar</button>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-address-card mr-2"></i>Registrar
+                                </button>
                             </div>
                         </form>
                     </div>
