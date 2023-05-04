@@ -43,6 +43,8 @@
             {% include "user_enc_ino/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'ADM' %}
             {% include "user_admin/sidenav.html" %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'J_C' %}
+            {% include "user_admin/sidenav.html" %}
         {% endif %}
         
 

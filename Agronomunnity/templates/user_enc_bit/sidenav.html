@@ -62,20 +62,8 @@
                   <p>Cerrar Sesión</p>
               </a>
             </li>
-            ---
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'inde' %} style='background-color: ##c9e7cb' {% endif %}>
-              <a href="" class="nav-link inactive">
-                  <i class="nav-icon fas fa-file-text"></i>
-                  <p>Reportes</p>
-              </a>
-            </li>
             
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'p' %} style='background-color: ##c9e7cb' {% endif %}>
-              <a href={% url 'p' %} class="nav-link inactive">
-                  <i class="nav-icon fas fa-id-badge"></i>
-                  <p>Productores</p>
-              </a>
-            </li>
+            
           </ul>
       </nav>
   </div>
