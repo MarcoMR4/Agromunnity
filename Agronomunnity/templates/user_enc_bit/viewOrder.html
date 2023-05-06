@@ -4,13 +4,13 @@
 
 {% block content %}
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-3 text-center">
-            <h3 class="py-5" id="exampleModalLabel">Pedidos de aguacate</h3>
+        <div class="text-3 text-start">
+            <h3 class="py-5" id="exampleModalLabel">Consulta de pedidos</h3>
         </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="text-center d-flex justify-content-between align-items-center py-3">
-                    <h5>Pendientes</h5>
+                    <h5>No terminados</h5>
                     <i class="fa-solid fa-times-circle text-danger mr-2"></i>
                 </div>
                 <div class="table-responsive">
@@ -21,47 +21,122 @@
                                     <tr>
                                         <th>No. Pedido</th>
                                         <th>Cliente</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for a in pedidos %}
-                                        {% if a.estatusPedido == 'P_P' %}
+                                        {% if a.estatusPedido != 'P_C' %}
                                             <tr>
                                                 <td>{{a.numeroPedido}}</td>
                                                 <td>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</td>
                                                 <td>
-                                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
-                                                        <i class="nav-icon fas fa-circle-plus text-success"></i>
+                                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                                        <i class="nav-icon fas fa-ellipsis-v"></i>
                                                     </button>
+                                                    
                                                     <div class="modal fade" id="detalles{{a.id}}">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del pedido</h1>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="text-start">
-                                                                        
-                                                                        <span><strong>Pedido número: </strong>{{a.numeroPedido}}</span>
-                                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
-                                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
-                                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
-                                                                        <hr><br>
-                                                                        {% if a.estatusPedido == 'P_T' %}
-                                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El pedido ya tiene agendada una orden de corte.</label>
-                                                                        {% elif a.estatusPedido == 'P_P' %}
-                                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El pedido aun no tiene una orden de corte generada.</label>
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                          <div class="modal-content">
+                                                            <div class="modal-header">
+                                                              <h5 class="modal-title">Panel de detalles</h5>
+                                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        {% if a.estatusPedido == 'P_I' %}
+                                                                            <div class="alert alert-danger" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta en estado inicial, no se le ha agendado orden de corte ni viaje.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_O' %}
+                                                                            <div class="alert alert-warning" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene generada una orden de corte, a la espera de que se le asigne un viaje.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_V' %}
+                                                                            <div class="alert alert-info" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene una orden de corte y esta en viaje, proximo a completarse.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_C' %}
+                                                                            <div class="alert alert-success" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
+                                                                            </div>
                                                                         {% endif %}
-                                                                        <hr>
-                                                                        <span><strong>Kilos: </strong>{{a.totalKilosPedido}}</span>
-                                                                        <span><strong>Mercado: </strong>{{a.mercadoPedido}}</span>
-                                                                        <span><strong>Destino: </strong>{{a.destinoPedido}}</span>
                                                                     </div>
-                                                                    <button class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <p class="fw-bold mb-0">Pedido número:</p>
+                                                                        <p>{{a.numeroPedido}}</p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <p class="fw-bold mb-0">Fecha:</p>
+                                                                        <p>{{a.fechaPedido}}</p>
+                                                                    </div>
+                                                                </div>
+                                                              <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <p class="fw-bold mb-0">Para el cliente:</p>
+                                                                    <p>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Contiene:</p>
+                                                                    <p>{{a.totalPalletsPedido}} pallets.</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Destino:</p>
+                                                                    <p>{{a.destinoPedido}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-md-12">
+                                                                  <p class="fw-bold mb-0">Generada por:</p>
+                                                                  <p>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-md-6">
+                                                                  <p class="fw-bold mb-0">Kilos:</p>
+                                                                  <p>{{a.totalKilosPedido}}</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                  <p class="fw-bold mb-0">Mercado:</p>
+                                                                  <p>{{a.mercadoPedido}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="align-items-center">
+                                                                    <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
+                                                                </div>
+                                                                <div class="col-12 table-responsive" >
+                                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                                                        <thead>
+                                                                            <tr class="align-items-center">
+                                                                                <th>Calibre</th>
+                                                                                <th>Calidad</th>
+                                                                                <th>Kg</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for b in pcc %}
+                                                                                {% if a.id == b.idPedido.id %}
+                                                                                    <tr>
+                                                                                        <td>{{b.idCalibre.numCalibre}}</td>
+                                                                                        <td>{{b.idCalidad.numCalidad}}</td>
+                                                                                        <td>{{b.cantidadCC}}</td>
+                                                                                    </tr>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
                                                             </div>
+                                                            </div>
+                                                          </div>
                                                         </div>
-                                                    </div>
+                                                      </div>
                                                 </td>
                                             </tr>
                                         {% endif %}
@@ -70,7 +145,7 @@
                             </table>
                         </div>
                     {% else %}
-                        <div class="card text-center shadow rounded" style="background:#F6CECE">
+                        <div class="card text-center shadow rounded">
                             <div class="card-body">
                                 <img src="/static/assets/img/icons/wo-users.png" width="70">
                                 <p class="mt-2 card-text">No hay pedidos pendientes.</p>
@@ -92,46 +167,122 @@
                                     <tr>
                                         <th>No. Pedido</th>
                                         <th>Cliente</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for a in pedidos %}
-                                        {% if a.estatusPedido == 'P_T' %}
+                                        {% if a.estatusPedido == 'P_C' %}
                                             <tr>
                                                 <td>{{a.numeroPedido}}</td>
                                                 <td>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</td>
                                                 <td>
-                                                    <button type="submit" class="btn" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
-                                                        <i class="nav-icon fas fa-circle-plus text-success"></i>
+                                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                                        <i class="nav-icon fas fa-ellipsis-v"></i>
                                                     </button>
+                                                    
                                                     <div class="modal fade" id="detalles{{a.id}}">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalles del pedido</h1>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="text-start">
-                                                                        <span><strong>Pedido número: </strong>{{a.numeroPedido}}</span>
-                                                                        <hr><br><span><strong>Contiene: </strong>{{a.totalPalletsPedido}} pallets.</span>
-                                                                        <hr><br><span><strong>Para el cliente: </strong>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</span>
-                                                                        <hr><br><span><strong>Generada por: </strong>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}.</span>
-                                                                        <hr><br>
-                                                                        {% if a.estatusPedido == 'P_T' %}
-                                                                            <label><i class="fa-solid fa-truck-moving text-success mr-2"></i>El pedido ya tiene agendada una orden de corte.</label>
-                                                                        {% elif a.estatusPedido == 'P_P' %}
-                                                                            <label><i class="fa-solid fa-times-circle text-danger mr-2"></i>El pedido aun no tiene una orden de corte generada.</label>
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                          <div class="modal-content">
+                                                            <div class="modal-header">
+                                                              <h5 class="modal-title">Panel de detalles</h5>
+                                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        {% if a.estatusPedido == 'P_I' %}
+                                                                            <div class="alert alert-danger" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta en estado inicial, no se le ha agendado orden de corte ni viaje.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_O' %}
+                                                                            <div class="alert alert-warning" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene generada una orden de corte, a la espera de que se le asigne un viaje.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_V' %}
+                                                                            <div class="alert alert-info" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene una orden de corte y esta en viaje, proximo a completarse.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_C' %}
+                                                                            <div class="alert alert-success" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
+                                                                            </div>
                                                                         {% endif %}
-                                                                        <hr>
-                                                                        <span><strong>Kilos: </strong>{{a.totalKilosPedido}}</span>
-                                                                        <span><strong>Mercado: </strong>{{a.mercadoPedido}}</span>
-                                                                        <span><strong>Destino: </strong>{{a.destinoPedido}}</span>
                                                                     </div>
-                                                                    <button class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <p class="fw-bold mb-0">Pedido número:</p>
+                                                                        <p>{{a.numeroPedido}}</p>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <p class="fw-bold mb-0">Fecha:</p>
+                                                                        <p>{{a.fechaPedido}}</p>
+                                                                    </div>
+                                                                </div>
+                                                              <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <p class="fw-bold mb-0">Para el cliente:</p>
+                                                                    <p>{{a.idCliente.nombreCliente}} {{a.idCliente.apellidoPCliente}} {{a.idCliente.apellidoMCliente}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Contiene:</p>
+                                                                    <p>{{a.totalPalletsPedido}} pallets.</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Destino:</p>
+                                                                    <p>{{a.destinoPedido}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-md-12">
+                                                                  <p class="fw-bold mb-0">Generada por:</p>
+                                                                  <p>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-md-6">
+                                                                  <p class="fw-bold mb-0">Kilos:</p>
+                                                                  <p>{{a.totalKilosPedido}}</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                  <p class="fw-bold mb-0">Mercado:</p>
+                                                                  <p>{{a.mercadoPedido}}</p>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="align-items-center">
+                                                                    <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
+                                                                </div>
+                                                                <div class="col-12 table-responsive" >
+                                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                                                        <thead>
+                                                                            <tr class="align-items-center">
+                                                                                <th>Calibre</th>
+                                                                                <th>Calidad</th>
+                                                                                <th>Kg</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for b in pcc %}
+                                                                                {% if a.id == b.idPedido.id %}
+                                                                                    <tr>
+                                                                                        <td>{{b.idCalibre.numCalibre}}</td>
+                                                                                        <td>{{b.idCalidad.numCalidad}}</td>
+                                                                                        <td>{{b.cantidadCC}}</td>
+                                                                                    </tr>
+                                                                                {% endif %}
+                                                                            {% endfor %}
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
                                                             </div>
+                                                            </div>
+                                                          </div>
                                                         </div>
-                                                    </div>
+                                                      </div>
                                                 </td>
                                             </tr>
                                         {% endif %}
@@ -140,7 +291,7 @@
                             </table>
                         </div>
                     {% else %}
-                        <div class="card text-center shadow rounded" style="background:#F6CECE">
+                        <div class="card text-center shadow rounded">
                             <div class="card-body">
                                 <img src="/static/assets/img/icons/wo-users.png" width="70">
                                 <p class="mt-2 card-text">No hay pedidos completados.</p>

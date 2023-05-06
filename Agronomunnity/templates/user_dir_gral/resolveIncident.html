@@ -1,0 +1,197 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Incidencias{% endblock %}
+
+{% block content %}
+
+    {% if error %}
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
+            <strong>Error!</strong> {{error}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% elif mensaje %}
+        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
+            <strong>Exito!</strong> {{mensaje}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="text-center d-flex justify-content-between align-items-center py-4">
+            <div>
+                <h4>Incidencias</h4>
+            </div>
+        </div>
+        {% if nincidencias > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Tema</th>
+                            <th>Descripcion</th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in incidencias %}
+                            <tr>
+                                {% if a.estatusIncidencia == 'I_R' %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Resuelta</td>
+                                {% else %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Pendiente</td>
+                                {% endif %}
+                                <td>{{a.fechaIncidencia}}</td>
+                                <td>{{a.get_temaIncidencia_display}}</td>
+                                <td>{{a.descripcionIncidencia}}</td>
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="modal fade" id="detalles{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title">Panel de detalles</h5>
+                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                      {% if a.estatusIncidencia == 'I_R' %}
+                                                        <div class="alert alert-success" role="alert">
+                                                          <i class="fa-solid fa-check-circle mr-2"></i>Ya diste solución a este reporte.
+                                                        </div>
+                                                      {% elif a.estatusIncidencia == 'I_P' %}
+                                                        <div class="alert alert-danger" role="alert">
+                                                          <i class="fa-solid fa-times-circle mr-2"></i>No le has dado solución a este reporte.
+                                                        </div>
+                                                      {% endif %}
+                                                    </div>
+                                                </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                  <p class="fw-bold mb-0">Trabajador que reporta:</p>
+                                                  <p>{{a.idTrabajador.usuario.first_name}} {{a.idTrabajador.usuario.last_name}}</p>
+                                                </div>
+                                              </div>
+                                              {% if a.estatusIncidencia == 'I_R' %}
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                    <p class="fw-bold mb-0">Solucion:</p>
+                                                    <p>{{a.descripcionSolucion}}</p>
+                                                    </div>
+                                                </div>
+                                              {% endif %}
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                  <div class="col-md-12">
+                                                        <p class="fw-bold mb-0">Area encargada:</p>
+                                                        <p>{{a.get_temaIncidencia_display}}</p>
+                                                  </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Fecha:</p>
+                                                  <p>{{a.fechaIncidencia}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                  <p class="fw-bold mb-0">Descripcion:</p>
+                                                  <p>{{a.descripcionIncidencia}}</p>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                <button type="submit" class="btn btn-danger text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                    <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                </button>
+                                                {% if a.estatusIncidencia == 'I_P' %}
+                                                    <button type="submit" class="btn btn-success text-xs" data-bs-toggle="modal" data-bs-target="#solucionar{{a.id}}">
+                                                        <i class="nav-icon fas fa-check-square mr-2"></i>Solucionar
+                                                    </button>
+                                                {% endif %}
+                                                
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar este reporte?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Mantener los reportes en nuestros registros nos ayuda a saber que problemas se presentan mas y asi ponerles mas atencion.</p>
+                                                    </div>
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Incidencia" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="solucionar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Enviar solucion</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="agregar">
+                                                            <input type="hidden" name="Incidencia" value={{a.id}}>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Solucion">
+                                                                <label>Descripción</label>
+                                                            </p>
+                                                            <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                                                Enviar<i class="fa-solid fa-comment ml-2"></i>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay incidencias hasta el momento</h5>
+                    <p class="card-text">Por suerte no han tenido que reportar ninguna incidencia.</p>
+                </div>
+            </div>
+        {% endif %}
+        
+    </div>
+
+{% endblock content %}

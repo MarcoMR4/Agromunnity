@@ -1,7 +1,41 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
-    <div class='text-center'>
-        Acceso Denegado
-    </div>
+<div class='text-center'>
+    <select id="calidad">
+        <option value="calidad1">Calidad 1</option>
+        <option value="calidad2">Calidad 2</option>
+        <option value="calidad3">Calidad 3</option>
+      </select>
+      
+      <select id="calibre">
+        <option value="calibre1">Calibre 1</option>
+        <option value="calibre2">Calibre 2</option>
+        <option value="calibre3">Calibre 3</option>
+      </select>
+      
+      <input type="number" id="kg" placeholder="Cantidad en kg">
+      
+      <button id="agregar">Agregar</button>
+      
+      <table id="tabla">
+          <thead>
+<tr>
+  <th>Calidad</th>
+  <th>Calibre</th>
+  <th>Kg</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+      </table>
+      
+      <input type="number" id="total-kg" readonly placeholder="0">
+      
+      
+</div>
 {% endblock content %}
+
+{% block javascripts %}
+    <script src="/static/assets/js/addOrder.js"></script>
+{% endblock javascripts %}
