@@ -44,7 +44,7 @@
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'ADM' %}
             {% include "user_admin/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'J_C' %}
-            {% include "user_admin/sidenav.html" %}
+            {% include "user_jefe_cuad/sidenav.html" %}
         {% endif %}
         
 
