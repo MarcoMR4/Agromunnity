@@ -47,16 +47,21 @@ class AddWorker(forms.Form):
         empty_label="(Seleccione)", #Esto solo es el mensaje que sale al inicio de la lista que crea
         to_field_name="nombreRol", #Especifica que fila de la tabla o datos se usara
         widget=forms.Select( #Esto pone el estilo que teniamos antes pero vez que Claudio quiere que se note mas que son listas de seleccion
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+            attrs={'class': 'form-control', 'required':'true', 'style': 'font-size: 12px;'} 
         )
     ) 
 
     Telefono = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
-
+    def clean_Telefono(self):
+        telefono=self.cleaned_data['Telefono']
+        if not telefono.isdigit():
+            raise forms.ValidationError('El número de teléfono debe contener solo digitos')
+        if len(telefono) != 10:
+            raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
 
 class AddTransport(forms.Form):
 
