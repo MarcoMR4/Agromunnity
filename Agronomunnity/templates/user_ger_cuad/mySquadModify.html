@@ -52,6 +52,7 @@
                             </select>
                             <label>Estatus</label>
                         </p>
+                        {% if request.user.trabajador.rol.nomenclaturaRol == 'G_C' %}
                         <p class="form-floating mb-3">
                             <select name="Jefe" class="form-control">
                                 {% for g in trabajadores %}
@@ -62,6 +63,12 @@
                             </select>
                             <label>Jefe de cuadrilla</label>
                         </p>
+                        {% else %}
+                        <p class="form-floating mb-3">
+                            <input class="form-control" type="text" name="Gerente" value="{{cuadrilla.idGerenteCuadrilla.usuario.first_name}} {{cuadrilla.idGerenteCuadrilla.usuario.last_name}}" readOnly>
+                            <label>Gerente de cuadrilla</label>
+                        </p>
+                        {% endif %}
                     </div>
                 </div>
                 <input type="hidden" name="Id" value="modificar">

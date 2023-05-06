@@ -25,7 +25,7 @@
             <div>
                 <h3>Mis cuadrillas</h3>
             </div>
-            {% if numJefGer > 0 %}
+            {% if numJefGer > 0 and request.user.trabajador.rol.nomenclaturaRol == 'G_C'%}
                 <div class="text-end" style="width: 100%;">
                     <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
                         +<i class="nav-icon fas fa-user-friends"></i> Nueva
@@ -112,7 +112,7 @@
                 <div class="card-body text-center">
                     <h5 class="card-titl">No hay cuadrillas registradas</h5>
                     <p class="card-text">Actualmente no hay cuadrillas registradas en el sistema. Por favor, registre una nueva cuadrilla para poder asignar trabajadores a ella.</p>
-                    {% if numJefGer < 2 %}
+                    {% if numJefGer < 2 and request.user.trabajador.rol.nomenclaturaRol == 'G_C'%}
                         <p class="mt-2 card-text">Para poder registrar primero asegurate que halla <br>minimo un usuario Gerente de cuadrilla y Jefe de cuadrilla.</p>
                         <div class="text-center">
                             <a href={% url 'w' %} class="btn inactive shadow">

@@ -99,6 +99,10 @@ urlpatterns = [
     path("slr/", views.squadLeaderRegister, name="slr"),
     path("sld/", views.squadLeaderDelete, name="sld"),
     path("slm/", views.squadLeaderModify, name="slm"),
+    #Solucion de incidencias
+    path('si/',views.solveIncident, name="si"),
+    path('sid/',views.solveIncidentDelete, name="sid"),
+    path('sir/',views.solveIncidentRegister, name="sir"),
 ]
 
 

@@ -2120,9 +2120,9 @@ def viewSquad(request):
 
 @login_required
 def mySquad(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
-        form = AddSquad()
-        cuadrillas = Cuadrilla.objects.filter(idGerenteCuadrilla=request.user.trabajador.id)
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
+        form = AddSquad() 
+        cuadrillas = Cuadrilla.objects.filter(Q(idGerenteCuadrilla=request.user.trabajador.id) | Q(idJefeCuadrilla=request.user.trabajador.id))
         ncuadrillas = cuadrillas.count()
         numJefGer = Trabajador.objects.filter(Q(rol__nomenclaturaRol__exact='J_C')).count()
         #si se envia un formulario
@@ -2191,7 +2191,7 @@ def mySquad(request):
 
 @login_required
 def mySquadDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         try:
             #Se obtiene la cuadrilla y elimina
             cuadrilla = request.session.get('Cuadrilla')
@@ -2213,7 +2213,7 @@ def mySquadDelete(request):
 
 @login_required
 def mySquadRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         try:
             #Se obtienen los datos y se crea la cuadrilla
             gerente=Trabajador.objects.get(id=request.user.trabajador.id)
@@ -2240,7 +2240,7 @@ def mySquadRegister(request):
 
 @login_required
 def mySquadModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         cuadrilla = Cuadrilla.objects.get(id=request.session.get('Cuadrilla'))
         formm = AddSquadMember()
         miembros = MiembroCuadrilla.objects.filter(idCuadrilla=cuadrilla.id)
@@ -2275,7 +2275,8 @@ def mySquadModify(request):
                     request.session['Nombre'] = request.POST['Nombre']
                     request.session['Ubicacion'] = request.POST['Ubicacion']
                     request.session['Estatus'] = request.POST['Estatus']
-                    request.session['Jefe'] = request.POST['Jefe']
+                    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+                        request.session['Jefe'] = request.POST['Jefe']
                     url = reverse('msms')
                     return redirect(url)
                 except Exception as e:
@@ -2328,16 +2329,18 @@ def mySquadModify(request):
 
 @login_required
 def mySquadMemberSave(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         try:
             #Se obtienen los datos y se modifican
-            jefe=Trabajador.objects.get(id=request.session.get('Jefe'))
+            if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+                jefe=Trabajador.objects.get(id=request.session.get('Jefe'))
 
             cuadrilla = Cuadrilla.objects.get(id=request.session.get('Cuadrilla'))
             cuadrilla.nombreCuadrilla=request.session.get('Nombre')
             cuadrilla.estatusCuadrilla=request.session.get('Estatus')
             cuadrilla.ubicacionCuadrilla=request.session.get('Ubicacion')
-            cuadrilla.idJefeCuadrilla=jefe
+            if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+                cuadrilla.idJefeCuadrilla=jefe
             cuadrilla.save()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
             
@@ -2354,7 +2357,7 @@ def mySquadMemberSave(request):
 
 @login_required
 def mySquadMemberDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         try:
             #Se obtiene el miembro y elimina
             miembro = request.session.get('Miembro')
@@ -2375,7 +2378,7 @@ def mySquadMemberDelete(request):
 
 @login_required
 def mySquadMemberModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         try:
             #Se obtienen los datos y se modifican
             miembro = MiembroCuadrilla.objects.get(id=request.session.get('Miembro'))
@@ -2399,7 +2402,7 @@ def mySquadMemberModify(request):
 
 @login_required
 def mySquadMemberRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C', 'J_C'):
         try:
             cuadrilla = Cuadrilla.objects.get(id=request.session.get('Cuadrilla'))
             #Se obtienen los datos y se crea el miembro
@@ -2583,3 +2586,88 @@ def squadLeaderModify(request):
         return redirect(url)
     else: 
         return render(request, 'denied.html')
+
+
+@login_required
+def solveIncident(request):
+    incidencias = Incidencia.objects.all()
+    nincidencias = incidencias.count()
+    #si se envia un formulario
+    if request.method == 'POST':
+        if request.POST['Id']=='eliminar':
+            try:
+                request.session['Incidencia'] = request.POST['Incidencia']
+                url = reverse('sid')
+                return redirect(url)
+            except Exception as e:
+                request.session['Operacion'] = 0
+                request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                url = reverse('si')
+                return redirect(url)
+        elif request.POST['Id']=='agregar':
+            try:
+                request.session['Incidencia'] = request.POST['Incidencia']
+                request.session['Solucion'] = request.POST['Solucion']
+                url = reverse('sir')
+                return redirect(url)
+            except Exception as e:
+                request.session['Operacion'] = 0
+                request.session['Error'] = "No se pudo enviar el cometido, intente de nuevo."
+                url = reverse('si')
+                return redirect(url)
+    else:
+        if request.session.get('Operacion')==1:
+            request.session['Operacion'] = -1
+            return render(request, 'user_dir_gral/resolveIncident.html', {
+                "mensaje": request.session['Mensaje'],
+                'incidencias': incidencias,
+                'nincidencias': nincidencias
+            })
+        elif request.session.get('Operacion')==0:
+            request.session['Operacion'] = -1
+            return render(request, 'user_dir_gral/resolveIncident.html', {
+                "error": request.session['Error'],
+                'incidencias': incidencias,
+                'nincidencias': nincidencias
+            })
+        else:
+            return render(request, 'user_dir_gral/resolveIncident.html', {
+                'incidencias': incidencias,
+                'nincidencias': nincidencias
+            })
+
+@login_required
+def solveIncidentDelete(request):
+    try:
+        #Se obtiene el miembro y elimina
+        incidencia = request.session.get('Incidencia')
+        i = Incidencia.objects.get(id=incidencia)
+        i.delete()
+        #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+        
+        request.session['Operacion'] = 1
+        request.session['Mensaje'] = "Reporte eliminado correctamente."
+    except Exception as e:
+        request.session['Operacion'] = 0
+        request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+        
+    url = reverse('si')
+    return redirect(url)
+
+@login_required
+def solveIncidentRegister(request):
+    try:
+        #Se obtienen los datos y se crea el reporte
+        i = Incidencia.objects.get(id=request.session.get('Incidencia'))
+        i.estatusIncidencia='I_R'
+        i.descripcionSolucion= request.session.get('Solucion')
+        i.save()
+
+        request.session['Operacion'] = 1
+        request.session['Mensaje'] = "Se mando la solución de la incidencia correctamente."
+    except Exception as e:
+        request.session['Operacion'] = 0
+        request.session['Error'] = "No se pudo realizar la acción, intente de nuevo."
+        
+    url = reverse('si')
+    return redirect(url)
