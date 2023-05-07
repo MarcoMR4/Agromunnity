@@ -56,12 +56,15 @@ class AddWorker(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
+
     def clean_Telefono(self):
+        cleaned_data = super().clean()
         telefono=self.cleaned_data['Telefono']
         if not telefono.isdigit():
             raise forms.ValidationError('El número de teléfono debe contener solo digitos')
         if len(telefono) != 10:
             raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
+        return telefono
 
 class AddTransport(forms.Form):
 
@@ -144,6 +147,12 @@ class AddProducer(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )
+    def clean(self, *args, **kwargs):
+        cleaned_data = super(AddProducer, self).clean(*args, **kwargs)
+        telefono = cleaned_data.get('Telefono', None)
+        if telefono is not None:
+            if len(telefono) != 10:
+                self.add_error('telefono', 'El número de teléfono debe tener solo 10 digitos')
 
 class AddOrchard(forms.Form):
 

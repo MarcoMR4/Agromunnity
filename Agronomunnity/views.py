@@ -40,7 +40,7 @@ def lo(request):
 def worker(request):
     if request.user.trabajador.rol.nomenclaturaRol == 'E_B':
         #Consultas necesarias para mostrar en plantilla
-        form = AddWorker()
+        form = AddWorker(request.POST)
         trabajadores = Trabajador.objects.all()
         ntrabajadores = Trabajador.objects.count()
         roles = RolTrabajador.objects.all().order_by('nombreRol')
@@ -57,19 +57,30 @@ def worker(request):
                     url = reverse('w')
                     return redirect(url)
             elif request.POST['Id']=='agregar':
-                try:
-                    request.session['Nombres'] = request.POST['Nombre']
-                    request.session['Apellidos'] = request.POST['AP']+' '+request.POST['AM']
-                    request.session['Telefono'] = request.POST['Telefono']
-                    request.session['Correo'] = request.POST['Correo']
-                    request.session['Rol'] = request.POST['Rol']
-                    url = reverse('wr')
-                    return redirect(url)
-                except Exception as e:
-                    request.session['Operacion'] = 0
-                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-                    url = reverse('w')
-                    return redirect(url)
+                form = AddWorker(request.POST)
+                if form.is_valid():
+                    try:
+                        request.session['Nombres'] = request.POST['Nombre']
+                        request.session['Apellidos'] = request.POST['AP']+' '+request.POST['AM']
+                        request.session['Telefono'] = request.POST['Telefono']
+                        request.session['Correo'] = request.POST['Correo']
+                        request.session['Rol'] = request.POST['Rol']
+                        url = reverse('wr')
+                        return redirect(url)
+                    except Exception as e:
+                        request.session['Operacion'] = 0
+                        request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                        url = reverse('w')
+                        return redirect(url)
+                else:
+                    request.session['Error'] = "Datos incorrectos para el registro, intente nuevamente."
+                    return render(request, "user_enc_bit/worker.html", {
+                        'form':form,
+                        'trabajadores': trabajadores,
+                        'ntrabajadores': ntrabajadores,
+                        'roles' : roles,
+                        "error": request.session['Error']
+                    })
             elif request.POST['Id']=='modificar':
                 try:
                     request.session['Trabajador'] = request.POST['Trabajador']
@@ -211,7 +222,7 @@ def workerModify(request):
 def producer(request):
     if request.user.trabajador.rol.nomenclaturaRol == 'I_C':
         #Consultas necesarias para mostrar en plantilla
-        form = AddProducer()
+        form = AddProducer(request.POST)
         productores = Productor.objects.all()
         nproductores = Productor.objects.count()
         #si se envia un formulario
