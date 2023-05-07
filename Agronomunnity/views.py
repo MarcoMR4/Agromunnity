@@ -238,18 +238,28 @@ def producer(request):
                     url = reverse('p')
                     return redirect(url)
             elif request.POST['Id']=='agregar':
-                try:
-                    request.session['Nombre'] = request.POST['Nombre']
-                    request.session['AP'] = request.POST['AP']
-                    request.session['AM'] = request.POST['AM']
-                    request.session['Telefono'] = request.POST['Telefono']
-                    url = reverse('pr')
-                    return redirect(url)
-                except Exception as e:
-                    request.session['Operacion'] = 0
-                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-                    url = reverse('p')
-                    return redirect(url)
+                form = AddProducer(request.POST)
+                if form.is_valid():
+                    try:
+                        request.session['Nombre'] = request.POST['Nombre']
+                        request.session['AP'] = request.POST['AP']
+                        request.session['AM'] = request.POST['AM']
+                        request.session['Telefono'] = request.POST['Telefono']
+                        url = reverse('pr')
+                        return redirect(url)
+                    except Exception as e:
+                        request.session['Operacion'] = 0
+                        request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                        url = reverse('p')
+                        return redirect(url)
+                else:
+                    request.session['Error'] = "Datos incorrectos para el registro, intente nuevamente."
+                    return render(request, 'user_ing_campo/producer.html', {
+                        'form':form,
+                        "error": request.session['Error'],
+                        'productores': productores,
+                        'nproductores': nproductores
+                    })
             elif request.POST['Id']=='modificar':
                 try:
                     request.session['Productor'] = request.POST['Productor']
@@ -367,7 +377,7 @@ def producerModify(request):
 @login_required
 def squad(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'G_C'):
-        form = AddSquad()
+        form = AddSquad(request.POST)
         cuadrillas = Cuadrilla.objects.all()
         ncuadrillas = Cuadrilla.objects.all().count()
         numJefGer = Trabajador.objects.filter(Q(rol__nomenclaturaRol__exact='G_C') | Q(rol__nomenclaturaRol__exact='J_C')).count()
@@ -384,19 +394,30 @@ def squad(request):
                     url = reverse('s')
                     return redirect(url)
             elif request.POST['Id']=='agregar':
-                try:
-                    request.session['Nombre'] = request.POST['Nombre']
-                    request.session['Gerente'] = request.POST['Gerente']
-                    request.session['Jefe'] = request.POST['Jefe']
-                    request.session['Ubicacion'] = request.POST['Ubicacion']
-                    request.session['Estatus'] = request.POST['Estatus']
-                    url = reverse('sr')
-                    return redirect(url)
-                except Exception as e:
-                    request.session['Operacion'] = 0
-                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-                    url = reverse('s')
-                    return redirect(url)
+                form = AddSquad(request.POST)
+                if form.is_valid():
+                    try:
+                        request.session['Nombre'] = request.POST['Nombre']
+                        request.session['Gerente'] = request.POST['Gerente']
+                        request.session['Jefe'] = request.POST['Jefe']
+                        request.session['Ubicacion'] = request.POST['Ubicacion']
+                        request.session['Estatus'] = request.POST['Estatus']
+                        url = reverse('sr')
+                        return redirect(url)
+                    except Exception as e:
+                        request.session['Operacion'] = 0
+                        request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                        url = reverse('s')
+                        return redirect(url)
+                else:
+                    request.session['Error'] = "Datos incorrectos para el registro, intente nuevamente."
+                    return render(request, 'user_enc_bit/squad.html', {
+                        'form':form,
+                        'numJefGer':numJefGer,
+                        'ncuadrillas':ncuadrillas,
+                        "error": request.session['Error'],
+                        'cuadrillas': cuadrillas
+                    })
             elif request.POST['Id']=='modificar':
                 try:
                     request.session['Cuadrilla'] = request.POST['Cuadrilla']
@@ -681,7 +702,7 @@ def squadMemberRegister(request):
 @login_required
 def transport(request):
     if request.user.trabajador.rol.nomenclaturaRol == 'E_T':
-        form = AddTransport()
+        form = AddTransport(request.POST)
         camiones = CamionTransporte.objects.all()
         ncamiones = camiones.count()
         choferes = Trabajador.objects.filter(rol__nomenclaturaRol__exact='C_T')
@@ -699,22 +720,34 @@ def transport(request):
                     url = reverse('t')
                     return redirect(url)
             elif request.POST['Id']=='agregar':
-                try:
-                    request.session['Chofer'] = request.POST['Chofer']
-                    request.session['Placa'] = request.POST['Placa']
-                    request.session['Modelo'] = request.POST['Modelo']
-                    request.session['Capacidad'] = request.POST['Capacidad']
-                    request.session['Tipo'] = request.POST['Tipo']
-                    request.session['Descripcion'] = request.POST['Descripcion']
-                    request.session['Candado'] = request.POST['Candado']
-                    request.session['Estatus'] = request.POST['Estatus']
-                    url = reverse('tr')
-                    return redirect(url)
-                except Exception as e:
-                    request.session['Operacion'] = 0
-                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-                    url = reverse('t')
-                    return redirect(url)
+                form = AddTransport(request.POST) 
+                if form.is_valid():
+                    try:
+                        request.session['Chofer'] = request.POST['Chofer']
+                        request.session['Placa'] = request.POST['Placa']
+                        request.session['Modelo'] = request.POST['Modelo']
+                        request.session['Capacidad'] = request.POST['Capacidad']
+                        request.session['Tipo'] = request.POST['Tipo']
+                        request.session['Descripcion'] = request.POST['Descripcion']
+                        request.session['Candado'] = request.POST['Candado']
+                        request.session['Estatus'] = request.POST['Estatus']
+                        url = reverse('tr')
+                        return redirect(url)
+                    except Exception as e:
+                        request.session['Operacion'] = 0
+                        request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                        url = reverse('t')
+                        return redirect(url)
+                else:
+                    request.session['Error'] = "Datos incorrectos para el registro, intente nuevamente."
+                    return render(request, 'user_enc_trans/transport.html', {
+                        'form':form,
+                        "error": request.session['Error'],
+                        'choferes': choferes,
+                        'camiones': camiones,
+                        'nchoferes': nchoferes,
+                        'ncamiones': ncamiones
+                    })
             elif request.POST['Id']=='modificar':
                 try:
                     request.session['Camion'] = request.POST['Camion']
@@ -849,7 +882,7 @@ def transportModify(request):
 def orchard(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C'):
 
-        form = AddOrchard()
+        form = AddOrchard(request.POST)
         huertas = Huerta.objects.all()
         nhuertas = huertas.count()
         productores = Productor.objects.all().order_by('apellidoP')
@@ -867,23 +900,35 @@ def orchard(request):
                     url = reverse('o')
                     return redirect(url)
             elif request.POST['Id']=='agregar':
-                try:
-                    request.session['Nombre'] = request.POST['Nombre']
-                    request.session['Fruta'] = request.POST['Fruta']
-                    request.session['Ubicacion'] = request.POST['Ubicacion']
-                    request.session['Localizacion'] = request.POST['Localizacion']
-                    request.session['Clave'] = request.POST['Clave']
-                    request.session['Inocuidad'] = request.POST['Inocuidad']
-                    request.session['Productor'] = request.POST['Productor']
-                    request.session['Estatus'] = request.POST['Estatus']
-                    url = reverse('or')
-                    return redirect(url)
-                except Exception as e:
-                    print(e)
-                    request.session['Operacion'] = 0
-                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-                    url = reverse('o')
-                    return redirect(url)
+                form = AddOrchard(request.POST)
+                if form.is_valid():
+                    try:
+                        request.session['Nombre'] = request.POST['Nombre']
+                        request.session['Fruta'] = request.POST['Fruta']
+                        request.session['Ubicacion'] = request.POST['Ubicacion']
+                        request.session['Localizacion'] = request.POST['Localizacion']
+                        request.session['Clave'] = request.POST['Clave']
+                        request.session['Inocuidad'] = request.POST['Inocuidad']
+                        request.session['Productor'] = request.POST['Productor']
+                        request.session['Estatus'] = request.POST['Estatus']
+                        url = reverse('or')
+                        return redirect(url)
+                    except Exception as e:
+                        print(e)
+                        request.session['Operacion'] = 0
+                        request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                        url = reverse('o')
+                        return redirect(url)
+                else:
+                    request.session['Error'] = "Datos incorrectos para el registro, intente nuevamente."
+                    return render(request, 'user_enc_bit/orchard.html', {
+                        'form':form,
+                        "error": request.session['Error'],
+                        'huertas': huertas,
+                        'nhuertas': nhuertas,
+                        'nproductores': nproductores,
+                        'productores': productores
+                    })
             elif request.POST['Id']=='modificar':
                 try:
                     request.session['Huerta'] = request.POST['Huerta']

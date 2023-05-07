@@ -20,25 +20,25 @@ class AddWorker(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     AP = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     AM = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     Correo = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'placeholder':'Debe contener dominio @morelia.tecnm.mx'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'placeholder':'Debe contener dominio @morelia.tecnm.mx' ,'required':'true'}
         )
     )
 
@@ -65,6 +65,12 @@ class AddWorker(forms.Form):
         if len(telefono) != 10:
             raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
         return telefono
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
 
 class AddTransport(forms.Form):
 
@@ -125,34 +131,44 @@ class AddTransport(forms.Form):
         )
     )
 
+    #Puse la validacion en el view pero no se que se debe validar de esta
+
 class AddProducer(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
     AP = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
     AM = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
     Telefono = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'required':'true', 'style': 'font-size: 12px;'}
         )
     )
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(AddProducer, self).clean(*args, **kwargs)
-        telefono = cleaned_data.get('Telefono', None)
-        if telefono is not None:
-            if len(telefono) != 10:
-                self.add_error('telefono', 'El número de teléfono debe tener solo 10 digitos')
+    def clean_Telefono(self):
+        cleaned_data = super().clean()
+        telefono=self.cleaned_data['Telefono']
+        if not telefono.isdigit():
+            raise forms.ValidationError('El número de teléfono debe contener solo digitos')
+        if len(telefono) != 10:
+            raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
+        return telefono
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
 
 class AddOrchard(forms.Form):
 
@@ -213,17 +229,30 @@ class AddOrchard(forms.Form):
         )
     )
 
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
+    def clean_Fruta(self):
+        cleaned_data = super().clean()
+        fruta=self.cleaned_data['Fruta']
+        if fruta.isdigit():
+            raise forms.ValidationError('El nombre de la fruta no debe tener numeros')
+        return fruta
+
 class AddSquad(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     Ubicacion = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
@@ -234,7 +263,7 @@ class AddSquad(forms.Form):
 
     Estatus = forms.ChoiceField(
         widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         ),
         choices=estatusCuadrilla
     )
@@ -254,6 +283,13 @@ class AddSquad(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
         )
     )
+
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
 
 class AddSquadMember(forms.Form):
 
