@@ -71,6 +71,18 @@ class AddWorker(forms.Form):
         if nombre.isdigit():
             raise forms.ValidationError('El nombre no debe tener numeros')
         return nombre
+    def clean_AP(self):
+        cleaned_data = super().clean()
+        ap=self.cleaned_data['AP']
+        if ap.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return ap
+    def clean_AM(self):
+        cleaned_data = super().clean()
+        am=self.cleaned_data['AM']
+        if am.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return am
 
 class AddTransport(forms.Form):
 
@@ -169,7 +181,19 @@ class AddProducer(forms.Form):
         if nombre.isdigit():
             raise forms.ValidationError('El nombre no debe tener numeros')
         return nombre
-
+    def clean_AP(self):
+        cleaned_data = super().clean()
+        ap=self.cleaned_data['AP']
+        if ap.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return ap
+    def clean_AM(self):
+        cleaned_data = super().clean()
+        am=self.cleaned_data['AM']
+        if am.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return am
+    
 class AddOrchard(forms.Form):
 
     Nombre = forms.CharField(
@@ -333,8 +357,6 @@ class AddOrder(forms.Form):
         initial=None
     )
 
-
-
     Kilos = forms.FloatField(
         widget=forms.NumberInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
@@ -436,7 +458,6 @@ class AddTrip(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': 'true', 'type': 'time'}
         )
     )
-
 
     Punto = forms.CharField(
         widget=forms.TextInput(
