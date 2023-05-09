@@ -20,25 +20,25 @@ class AddWorker(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     AP = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     AM = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     Correo = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'placeholder':'Debe contener dominio @morelia.tecnm.mx'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'placeholder':'Debe contener dominio @morelia.tecnm.mx' ,'required':'true'}
         )
     )
 
@@ -47,16 +47,42 @@ class AddWorker(forms.Form):
         empty_label="(Seleccione)", #Esto solo es el mensaje que sale al inicio de la lista que crea
         to_field_name="nombreRol", #Especifica que fila de la tabla o datos se usara
         widget=forms.Select( #Esto pone el estilo que teniamos antes pero vez que Claudio quiere que se note mas que son listas de seleccion
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+            attrs={'class': 'form-control', 'required':'true', 'style': 'font-size: 12px;'} 
         )
     ) 
 
     Telefono = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
+    def clean_Telefono(self):
+        cleaned_data = super().clean()
+        telefono=self.cleaned_data['Telefono']
+        if not telefono.isdigit():
+            raise forms.ValidationError('El número de teléfono debe contener solo digitos')
+        if len(telefono) != 10:
+            raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
+        return telefono
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
+    def clean_AP(self):
+        cleaned_data = super().clean()
+        ap=self.cleaned_data['AP']
+        if ap.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return ap
+    def clean_AM(self):
+        cleaned_data = super().clean()
+        am=self.cleaned_data['AM']
+        if am.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return am
 
 class AddTransport(forms.Form):
 
@@ -117,29 +143,57 @@ class AddTransport(forms.Form):
         )
     )
 
+    #Puse la validacion en el view pero no se que se debe validar de esta
+
 class AddProducer(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
     AP = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
     AM = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
     Telefono = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'required':'true', 'style': 'font-size: 12px;'}
         )
     )
-
+    def clean_Telefono(self):
+        cleaned_data = super().clean()
+        telefono=self.cleaned_data['Telefono']
+        if not telefono.isdigit():
+            raise forms.ValidationError('El número de teléfono debe contener solo digitos')
+        if len(telefono) != 10:
+            raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
+        return telefono
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
+    def clean_AP(self):
+        cleaned_data = super().clean()
+        ap=self.cleaned_data['AP']
+        if ap.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return ap
+    def clean_AM(self):
+        cleaned_data = super().clean()
+        am=self.cleaned_data['AM']
+        if am.isdigit():
+            raise forms.ValidationError('El apellido no debe tener numeros')
+        return am
+    
 class AddOrchard(forms.Form):
 
     Nombre = forms.CharField(
@@ -199,17 +253,30 @@ class AddOrchard(forms.Form):
         )
     )
 
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
+    def clean_Fruta(self):
+        cleaned_data = super().clean()
+        fruta=self.cleaned_data['Fruta']
+        if fruta.isdigit():
+            raise forms.ValidationError('El nombre de la fruta no debe tener numeros')
+        return fruta
+
 class AddSquad(forms.Form):
 
     Nombre = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
     Ubicacion = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
 
@@ -220,7 +287,7 @@ class AddSquad(forms.Form):
 
     Estatus = forms.ChoiceField(
         widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         ),
         choices=estatusCuadrilla
     )
@@ -240,6 +307,13 @@ class AddSquad(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
         )
     )
+
+    def clean_Nombre(self):
+        cleaned_data = super().clean()
+        nombre=self.cleaned_data['Nombre']
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no debe tener numeros')
+        return nombre
 
 class AddSquadMember(forms.Form):
 
@@ -282,8 +356,6 @@ class AddOrder(forms.Form):
         required=False,
         initial=None
     )
-
-
 
     Kilos = forms.FloatField(
         widget=forms.NumberInput(
@@ -386,7 +458,6 @@ class AddTrip(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': 'true', 'type': 'time'}
         )
     )
-
 
     Punto = forms.CharField(
         widget=forms.TextInput(
