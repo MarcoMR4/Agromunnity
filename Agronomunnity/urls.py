@@ -103,6 +103,9 @@ urlpatterns = [
     path('si/',views.solveIncident, name="si"),
     path('sid/',views.solveIncidentDelete, name="sid"),
     path('sir/',views.solveIncidentRegister, name="sir"),
+
+    #Parte progresiva 
+    path('', include('pwa.urls')),
 ]
 
 
