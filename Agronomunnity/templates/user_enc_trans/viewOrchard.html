@@ -3,23 +3,6 @@
 {% block title %}Huertas{% endblock %}
 
 {% block content %}
-
-    {% if error %}
-    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-        <strong>Error!</strong> {{error}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% elif mensaje %}
-    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-        <strong>Exito!</strong> {{mensaje}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
-    
     <div class="mx-5 align-items-center justify-content-center">
 
         <div class="text-center d-flex justify-content-between align-items-center py-3">

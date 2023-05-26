@@ -3,7 +3,128 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-  <div class='text-center'>
-    
+  <div class="text-center pt-3">
+    <h3 class="py-3">Bienvenido {{request.user.trabajador.usuario.first_name}} </h3>
+    <h6>Estos son los pendientes que tienes para hoy.</h6>
   </div>
+  <div class="row justify-content-center px-5 py-1 text-center">
+
+    <div class="card text-center align-items-center mx-md-2 col-md-3 col-6">
+      <p class="text-sm my-2"><i class="fa-solid fa-circle text-xs text-danger"></i> Hay nuevos pedidos realizados </p>
+      <img src="/static/assets/img/icons/package.jpg" width="80"/>
+      <a href={% url 'vso' %} class="nav-link inactive">
+        <i class="fa-solid fa-external-link"></i> Detalles
+      </a>
+    </div>
+
+    <div class="card text-center align-items-center  mx-md-2 col-md-3 col-6">
+      <p class="text-xs my-2"><i class="fa-solid fa-circle text-xs text-danger"></i> Tienes pendiente por generar nuevas ordenes de corte. </p>
+      <img src="/static/assets/img/icons/checklist.png" width="50"/>
+      <a href={% url 'co' %} class="nav-link inactive">
+        <i class="fa-solid fa-external-link"></i> Ir
+      </a>
+    </div>
+
+    <div class="card text-center align-items-center mx-md-2 col-md-3 col-6">
+      <p class="text-xs my-2"><i class="fa-solid fa-circle text-xs text-danger"></i> Tienes pendiente por generar nuevos viajes. </p>
+      <img src="/static/assets/img/icons/truck.jpg" width="60"/>
+      <a href={% url 'ct' %} class="nav-link inactive">
+        <i class="fa-solid fa-external-link"></i> Ver
+      </a>
+    </div>
+
+    <div class="card text-center align-items-center mx-md-2 col-md-3 col-6">
+      <p class="text-xs my-2"><i class="fa-solid fa-circle text-xs text-danger"></i> No se han resuelto algunas de tus incidencias. </p>
+      <img src="/static/assets/img/icons/alert.jpg" width="60"/>
+      <a href={% url 'i' %} class="nav-link inactive">
+        <i class="fa-solid fa-external-link"></i> Ir
+      </a>
+    </div>
+  </div>
+
+  <div class="text-center pt-3">
+    <h6>Estadisticos.</h6>
+  </div>
+  <div class="row row-cols-md-4 justify-content-center px-5 py-1 text-center">
+
+    <div class="card text-center mx-3">
+      <p class="text-lg my-2">Resumen de cuadrillas</p>
+      <canvas id="cuadrillas"></canvas>
+      <a href={% url 's' %} class="nav-link inactive">
+        <i class="fa-solid fa-external-link"></i> Detalles
+      </a>
+    </div>
+
+    <div class="card text-center mx-3">
+      <p class="text-lg my-2 mb-md-5">Resumen de huertas</p>
+      <canvas id="huertas"></canvas>
+      <a href={% url 'o' %} class="nav-link inactive mt-md-5">
+        <i class="fa-solid fa-external-link"></i> ir
+      </a>
+    </div>
+
+    <div class="card text-center mx-3">
+      <p class="text-lg my-2">pedidos</p>
+      <canvas id="pedidos"></canvas>
+      <a href={% url 'vso' %} class="nav-link inactive">
+        <i class="fa-solid fa-external-link"></i> Detalles
+      </a>
+    </div>
+  </div>
+  
+  <script>
+    var ctx = document.getElementById('huertas').getContext('2d');
+    var barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Activas', 'Inactivas'],
+        datasets: [{
+          label: 'Estado de las huertas',
+          data: [{{ha}}, {{hi}}],
+          backgroundColor: '#6BAEF4'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    var ctx = document.getElementById('cuadrillas').getContext('2d');
+    var pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['En proceso de corte', 'Libres'],
+        datasets: [{
+          data: [{{ca}}, {{ci}}],
+          backgroundColor: ['#FFBCB4', '#A0ED8E']
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+
+    var ctx = document.getElementById('pedidos').getContext('2d');
+    var pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['En estado inicial', 'Con orden de corte', 'Con orden de viaje', 'Terminados'],
+        datasets: [{
+          data: [{{pi}}, {{po}}, {{pv}}, {{pc}}],
+          backgroundColor: ['#FF918E', '#F2F473', '#6BAEF4', '#A0ED8E']
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+  </script>
 {% endblock content %}
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+{% endblock javascripts %}

@@ -3,25 +3,8 @@
 {% block title %}Indicadores de calidad{% endblock %}
 
 {% block content %}
-
-    {% if error %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-            <strong>Error!</strong> {{error}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% elif mensaje %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-            <strong>Exito!</strong> {{mensaje}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endif %}
-    
-    <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-center d-flex justify-content-between align-items-center py-3">
+    <div class="mx-5">
+        <div class="text-center d-flex justify-content-center align-items-center py-3">
             <h3>Indicadores de calidad</h3>
         </div>
 
@@ -39,17 +22,56 @@
                             <thead>
                                 <tr>
                                     <th>Tamaño</th>
-                                    <th>Acciones</th>
+                                    <th>Descripcion</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for a in calibres %}
                                     <tr>
                                         <td>Calibre {{a.numCalibre}}</td>
+                                        <td>{{a.descripcionCalibre}}</td>
                                         <td>
-                                            <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminarcalibre{{a.id}}">
-                                                <i class="nav-icon fas fa-trash text-danger"></i>
+                                            <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificarcalibre{{a.id}}">
+                                                <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                             </button>
+                                            <div class="modal fade" id="modificarcalibre{{a.id}}">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header align-items-center">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                            <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                <div class="text-center">
+                                                                    <input type="hidden" name="Id" value="modificarcalibre">
+                                                                    <input type="hidden" name="Calibre" value={{a.id}}>
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Numero" value="{{a.numCalibre}}">
+                                                                        <label>Número de calibre</label>
+                                                                    </p>
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionCalibre}}">
+                                                                        <label>Descripcion</label>
+                                                                    </p>
+                                                                    <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                        <button type="button" class="btn btn-danger text-xs mx-1" data-bs-toggle="modal" data-bs-target="#eliminarcalibre{{a.id}}">
+                                                                            <i class="nav-icon fas fa-trash"></i>Eliminar
+                                                                        </button>
+                                                                        
+                                                                        <button type="submit" class="btn text-light text-xs mx-1" style="background-color: #4CAF50;">
+                                                                            <i class="fa-solid fa-floppy-disk"></i>
+                                                                            Guardar
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="modal fade" id="eliminarcalibre{{a.id}}">
                                                 <div class="modal-dialog text-center">
                                                     <div class="modal-content">
@@ -132,7 +154,7 @@
                                                             <form method="POST" enctype="multipart/form-data">
                                                                 {% csrf_token %}
                                                                 <div class="text-center">
-                                                                    <input type="hidden" name="Id" value="modificar">
+                                                                    <input type="hidden" name="Id" value="modificarcalidad">
                                                                     <input type="hidden" name="Calidad" value={{a.id}}>
                                                                     <p class="form-floating mb-3">
                                                                         <input class="form-control" type="text" name="Numero" value="{{a.numCalidad}}">
@@ -142,19 +164,22 @@
                                                                         <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionCalidad}}">
                                                                         <label>Descripcion</label>
                                                                     </p>
-                                                                    <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
-                                                                        <i class="fa-solid fa-floppy-disk mr-2"></i>
-                                                                        Guardar
-                                                                    </button>
+                                                                    <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                        <button type="button" class="btn btn-danger text-xs mx-1" data-bs-toggle="modal" data-bs-target="#eliminarcalidad{{a.id}}">
+                                                                            <i class="nav-icon fas fa-trash"></i>Eliminar
+                                                                        </button>
+                                                                        
+                                                                        <button type="submit" class="btn text-light text-xs mx-1" style="background-color: #4CAF50;">
+                                                                            <i class="fa-solid fa-floppy-disk"></i>
+                                                                            Guardar
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminarcalidad{{a.id}}">
-                                                <i class="nav-icon fas fa-trash text-danger"></i>
-                                            </button>
                                             <div class="modal fade" id="eliminarcalidad{{a.id}}">
                                                 <div class="modal-dialog text-center">
                                                     <div class="modal-content">
@@ -247,6 +272,10 @@
                                 <p class="form-floating mb-3">
                                     {{formcalibre.Numero}}
                                     <label>Número de calibre</label>
+                                </p>
+                                <p class="form-floating mb-3">
+                                    {{formcalibre.Descripcion}}
+                                    <label>Descripcion</label>
                                 </p>
                                 <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
                                     +<i class="fa-solid fa-ruler mr-2"></i>Registrar

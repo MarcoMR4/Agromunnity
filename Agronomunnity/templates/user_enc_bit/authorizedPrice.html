@@ -1,0 +1,194 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Precios{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-md-4 text-md-start">
+                <h3 class="py-3">Precios autorizados</h3>
+            </div>
+            <div class="col-md-4 col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar precio...">
+            </div>
+            <div class="my-2 col-md-4 col-6 text-end" style="width: 100%;">
+                <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                    +<i class="nav-icon fa-solid fa-usd mr-2"></i> Nuevo
+                </button>
+            </div>
+        </div>
+        {% if precios.count > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Precio Actual</th>
+                            <th>Aplica en </th>
+                            <th>Vigencia</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in precios %}
+                            <tr>
+                                <td>{{a.descripcion}}</td>
+                                <td>${{a.precioActual}}</td>
+                                <td>{{a.get_estadoAplica_display}}</td>
+                                <td>{{a.vigencia}}</td>
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div class="modal fade" id="modificar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="modificar">
+                                                            <input type="hidden" name="Precio" value={{a.id}}>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Descripcion" value="{{a.descripcion}}">
+                                                                <label>Descripción</label>
+                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="currency" name="Fijo" value={{a.precioFijo}} readOnly>
+                                                                        <label>Precio Fijo (MXN)</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="currency" name="Actual" value={{ a.precioActual}}>
+                                                                        <label>Precio Actual (MXN)</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="date" name="Vigencia" value="{{ a.vigencia|date:'Y-m-d' }}">
+                                                                <label>Vigencia</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <select class="form-control" name="Estado">
+                                                                    <option value="{{ a.estadoAplica }}" selected>{{ a.get_estadoAplica_display }}</option>
+                                                                    {% for estado in psr %}
+                                                                    <option value="{{ estado.0 }}">{{ estado.1 }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <label>Estado donde aplica</label>
+                                                            </p>
+                                                            <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                <button type="button" class="btn btn-danger text-xs mx-1" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                                    <i class="nav-icon fas fa-trash"></i>Eliminar
+                                                                </button>
+                                                                
+                                                                <button type="submit" class="btn text-light text-xs mx-1" style="background-color: #4CAF50;">
+                                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar este precio?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Cuidado, toma en cuenta que se necestia este dato para generar las bitacoras, reemplazalo lo antes posible.</p>
+                                                    </div>
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Precio" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay Precios registrados aun</h5>
+                    <img src="/static/assets/img/icons/orchard.png" width="70">
+                    <p class="card-text">Actualmente no hay precios en el sistema. Por favor, registre los precios actiualizados lo antes posible ya que son datos importantes para la generación de los archivos de bitacoras.</p>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="modal fade" id="exampleModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <input type="hidden" name="Id" value="agregar">
+                                <p class="form-floating mb-3">
+                                    {{form.Descripcion}}
+                                    <label>Descripcion</label>
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Vigencia}}
+                                            <label>Vigencia</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Estado}}
+                                            <label>Estado en que aplica</label>
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="form-floating mb-3">
+                                    {{form.Fijo}}
+                                    <label>Precio Inicial (en pesos mexicanos)</label>
+                                </p>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-usd mr-2"></i>Registrar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

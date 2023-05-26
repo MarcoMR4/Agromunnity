@@ -3,27 +3,13 @@
 {% block title %}Incidencias{% endblock %}
 
 {% block content %}
-
-    {% if error %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-            <strong>Error!</strong> {{error}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% elif mensaje %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-            <strong>Exito!</strong> {{mensaje}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endif %}
-    
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-center d-flex justify-content-between align-items-center py-4">
-            <div>
-                <h4>Incidencias</h4>
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-md-6 text-md-start">
+                <h3 class="py-3">Incidencias</h3>
+            </div>
+            <div class="col-md-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar incidencias...">
             </div>
         </div>
         {% if nincidencias > 0 %}
@@ -64,11 +50,11 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                       {% if a.estatusIncidencia == 'I_R' %}
-                                                        <div class="alert alert-success" role="alert">
+                                                        <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
                                                           <i class="fa-solid fa-check-circle mr-2"></i>Ya diste solución a este reporte.
                                                         </div>
                                                       {% elif a.estatusIncidencia == 'I_P' %}
-                                                        <div class="alert alert-danger" role="alert">
+                                                        <div class="alert alert-danger rounded-pill mx-5 text-xs" role="alert">
                                                           <i class="fa-solid fa-times-circle mr-2"></i>No le has dado solución a este reporte.
                                                         </div>
                                                       {% endif %}
@@ -108,7 +94,7 @@
                                               </div>
                                             </div>
                                             <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                <button type="submit" class="btn btn-danger text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                <button type="button" class="btn btn-danger text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
                                                     <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
                                                 </button>
                                                 {% if a.estatusIncidencia == 'I_P' %}
@@ -116,7 +102,6 @@
                                                         <i class="nav-icon fas fa-check-square mr-2"></i>Solucionar
                                                     </button>
                                                 {% endif %}
-                                                
                                             </div>
                                           </div>
                                         </div>

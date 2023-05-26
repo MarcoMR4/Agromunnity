@@ -1,41 +1,14 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
-<div class='text-center'>
-    <select id="calidad">
-        <option value="calidad1">Calidad 1</option>
-        <option value="calidad2">Calidad 2</option>
-        <option value="calidad3">Calidad 3</option>
-      </select>
-      
-      <select id="calibre">
-        <option value="calibre1">Calibre 1</option>
-        <option value="calibre2">Calibre 2</option>
-        <option value="calibre3">Calibre 3</option>
-      </select>
-      
-      <input type="number" id="kg" placeholder="Cantidad en kg">
-      
-      <button id="agregar">Agregar</button>
-      
-      <table id="tabla">
-          <thead>
-<tr>
-  <th>Calidad</th>
-  <th>Calibre</th>
-  <th>Kg</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-      </table>
-      
-      <input type="number" id="total-kg" readonly placeholder="0">
-      
-      
+<div class="mx-5 align-items-center justify-content-center">
+  <div class="text-center d-flex justify-content-center align-items-center py-3">
+      <div>
+          <h3 class="py-5">Acceso denegado</h3>
+          <img src="/static/assets/img/icons/denied.png" alt="logo" height="200" />
+          <h6 class="py-3">Parece que no tienes acceso a esta función</h6>
+      </div>
+  </div>
 </div>
-{% endblock content %}
 
-{% block javascripts %}
-    <script src="/static/assets/js/addOrder.js"></script>
-{% endblock javascripts %}
+{% endblock content %}

@@ -2,17 +2,34 @@ from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from datetime import date
-import requests
 from django.contrib.auth.decorators import login_required
-from .forms import UserLoginForm, AddWorker, AddCourtOrder, AddProducer, AddTransport, AddSquad, AddOrchard, AddSquadMember, AddOrder, AddClient, AddCaliber, AddQuality, AddTrip, AddIncident
+from .forms import UserLoginForm, AddWorker, AddCourtOrder, AddProducer, AddTransport, AddSquad, AddOrchard, AddSquadMember, AddOrder, AddClient, AddCaliber, AddQuality, AddTrip, AddIncident, AddPrice, AddFruit, AddRol, AddReport
 from django.contrib.auth import authenticate, logout, login
-from .models import Trabajador, RolTrabajador, User, CamionTransporte, Cuadrilla, Productor, Huerta, MiembroCuadrilla, Cliente, Pedido, Calibre, Calidad, PedidoCalibreCalidad, OrdenCorte, ViajeCorte, ReporteCorte, Incidencia
+from .models import Trabajador, RolTrabajador, User, CamionTransporte, Cuadrilla, Productor, Huerta, MiembroCuadrilla, Cliente, Pedido, Calibre, Calidad, PedidoCalibreCalidad, OrdenCorte, ViajeCorte, ReporteCorte, Incidencia, PrecioAutorizado, FrutaHuerta
 from django.contrib.auth.hashers import make_password
 
 #dashboard 
 @login_required
 def index(request):
-    return render(request, 'index.html')
+    ca = Cuadrilla.objects.filter(estatusCuadrilla='C_A').count()
+    ci = Cuadrilla.objects.filter(estatusCuadrilla='C_I').count()
+    ha = Huerta.objects.filter(estatusHuerta="H_A").count()
+    hi = Huerta.objects.filter(estatusHuerta="H_I").count()
+    pi = Pedido.objects.filter(estatusPedido="P_I").count() 
+    po = Pedido.objects.filter(estatusPedido="P_O").count()
+    pv = Pedido.objects.filter(estatusPedido="P_V").count()
+    pc = Pedido.objects.filter(estatusPedido="P_C").count()
+
+    return render(request, 'index.html', {
+        "ca": ca, "ci": ci,
+        "ha": ha, "hi": hi,
+        "pi": pi, "po": po,
+        "pv": pv, "pc": pc,
+    })
+
+@login_required
+def help(request):
+    return render(request, 'help.html')
 
 def li(request):
     if request.method == 'GET':
@@ -38,7 +55,7 @@ def lo(request):
 #Trabajador
 @login_required
 def worker(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_B':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
         #Consultas necesarias para mostrar en plantilla
         form = AddWorker(request.POST)
         trabajadores = Trabajador.objects.all()
@@ -128,7 +145,7 @@ def worker(request):
 
 @login_required
 def workerDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_B':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
         try:
             #Se obtiene el trabajador y elimina
             trabajador = request.session.get('Trabajador')
@@ -152,7 +169,7 @@ def workerDelete(request):
 
 @login_required
 def workerRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_B':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
         try:
             nombres=request.session.get('Nombres')
             apellidos=request.session.get('Apellidos')
@@ -178,7 +195,6 @@ def workerRegister(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Trabajador registrado correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -189,7 +205,7 @@ def workerRegister(request):
 
 @login_required
 def workerModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_B':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
         try:
             #Se obtienen los datos y se modifican
             trabajador = Trabajador.objects.get(id=request.session.get('Trabajador'))
@@ -208,7 +224,6 @@ def workerModify(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
             
@@ -220,7 +235,7 @@ def workerModify(request):
 #Productor
 @login_required
 def producer(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'I_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('I_C', 'E_A'):
         #Consultas necesarias para mostrar en plantilla
         form = AddProducer(request.POST)
         productores = Productor.objects.all()
@@ -302,7 +317,7 @@ def producer(request):
 
 @login_required
 def producerRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'I_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('I_C', 'E_A'):
         try:
 
             Productor.objects.create(
@@ -327,14 +342,12 @@ def producerRegister(request):
 
 @login_required
 def producerDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'I_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('I_C', 'E_A'):
         try:
             #Se obtiene el trabajador y elimina
             productor = request.session.get('Productor')
             p = Productor.objects.get(id=productor)
             p.delete()
-            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
-
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Productor eliminado correctamente."
         except Exception as e:
@@ -349,7 +362,7 @@ def producerDelete(request):
 
 @login_required
 def producerModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'I_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('I_C', 'E_A'):
         try:
             #Se obtienen los datos y se modifican
             productor = Productor.objects.get(id=request.session.get('Productor'))
@@ -363,8 +376,6 @@ def producerModify(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
         except Exception as e:
-            print(e)
-
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
             
@@ -484,7 +495,6 @@ def squadRegister(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'G_C'):
         try:
             #Se obtienen los datos y se crea la cuadrilla
-            print(request.session.get('Gerente'))
             gerente=Trabajador.objects.get(id=request.session.get('Gerente'))
             jefe=Trabajador.objects.get(id=request.session.get('Jefe'))
             Cuadrilla.objects.create(
@@ -499,7 +509,6 @@ def squadRegister(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Cuadrilla registrada correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -689,7 +698,6 @@ def squadMemberRegister(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Miembro registrado correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -701,7 +709,7 @@ def squadMemberRegister(request):
 #Encargado de transporte
 @login_required
 def transport(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_T':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_T'):
         form = AddTransport(request.POST)
         camiones = CamionTransporte.objects.all()
         ncamiones = camiones.count()
@@ -801,7 +809,7 @@ def transport(request):
 
 @login_required
 def transportDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_T':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_T'):
         try:
             #Se obtiene el miembro y elimina
             camion = request.session.get('Camion')
@@ -822,7 +830,7 @@ def transportDelete(request):
 
 @login_required
 def transportRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_T':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_T'):
         try:
             chofer = Trabajador.objects.get(id=request.session.get('Chofer'))
             #Se obtienen los datos y se crea el miembro
@@ -852,7 +860,7 @@ def transportRegister(request):
 
 @login_required
 def transportModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_T':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_T'):
         try:
             #Se obtienen los datos y se modifican
             chofer = Trabajador.objects.get(id=request.session.get('Chofer'))
@@ -880,7 +888,7 @@ def transportModify(request):
         return render(request, 'denied.html')
 
 def orchard(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C', 'E_A'):
 
         form = AddOrchard(request.POST)
         huertas = Huerta.objects.all()
@@ -914,7 +922,6 @@ def orchard(request):
                         url = reverse('or')
                         return redirect(url)
                     except Exception as e:
-                        print(e)
                         request.session['Operacion'] = 0
                         request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
                         url = reverse('o')
@@ -943,7 +950,6 @@ def orchard(request):
                     url = reverse('om')
                     return redirect(url)
                 except Exception as e:
-                    print(e)
                     request.session['Operacion'] = 0
                     request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
                     url = reverse('o')
@@ -982,7 +988,7 @@ def orchard(request):
 
 @login_required
 def orchardDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C', 'E_A'):
         try:
             #Se obtiene el miembro y elimina
             huerta = request.session.get('Huerta')
@@ -1003,11 +1009,10 @@ def orchardDelete(request):
 
 @login_required
 def orchardRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C', 'E_A'):
         try:
             #Se obtienen los datos y se crea el miembro
             productor = Productor.objects.get(nombre=request.session.get('Productor'))
-            print(productor)
             Huerta.objects.create(
                 nombreHuerta=request.session.get('Nombre'),
                 frutaHuerta=request.session.get('Fruta'),
@@ -1021,9 +1026,8 @@ def orchardRegister(request):
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
             request.session['Operacion'] = 1
-            request.session['Mensaje'] = "Vehiculo registrado correctamente."
+            request.session['Mensaje'] = "Huerta registrada correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -1034,7 +1038,7 @@ def orchardRegister(request):
 
 @login_required
 def orchardModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C', 'E_A'):
         try:
             #Se obtienen los datos y se modifican
             productor=Productor.objects.get(id=request.session.get('Productor'))
@@ -1110,7 +1114,6 @@ def trip(request):
                     url = reverse('ctm')
                     return redirect(url)
                 except Exception as e:
-                    print(e)
                     request.session['Operacion'] = 0
                     request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
                     url = reverse('ct')
@@ -1199,7 +1202,6 @@ def tripRegister(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Viaje registrado correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -1244,7 +1246,7 @@ def tripModify(request):
 
 @login_required
 def order(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         form = AddOrder()
         pedidos = Pedido.objects.all()
         npedidos = pedidos.count()
@@ -1269,6 +1271,7 @@ def order(request):
                     request.session['Mercado'] = request.POST['Mercado']
                     request.session['Destino'] = request.POST['Destino']
                     request.session['Cliente'] = request.POST['Cliente']
+                    request.session['Observacion'] = request.POST['Observacion']
                     url = reverse('sor')
                     return redirect(url)
                 except Exception as e:
@@ -1323,7 +1326,7 @@ def order(request):
 
 @login_required
 def orderDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtiene el miembro y elimina
             p = Pedido.objects.get(id=request.session.get('Pedido'))
@@ -1343,7 +1346,7 @@ def orderDelete(request):
 
 @login_required
 def orderRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se crea el miembro
             cliente = Cliente.objects.get(id=request.session.get('Cliente'))
@@ -1357,6 +1360,7 @@ def orderRegister(request):
                 totalKilosPedido=kilos,
                 totalPalletsPedido = pallets, 
                 mercadoPedido=request.session.get('Mercado'),
+                observacionPedido=request.session.get('Observacion'),
                 destinoPedido=request.session.get('Destino'),
                 estatusPedido='P_I'
             )
@@ -1375,7 +1379,7 @@ def orderRegister(request):
 
 @login_required
 def orderModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se modifican
             kilos = float(request.session.get('Kilos'))
@@ -1402,7 +1406,7 @@ def orderModify(request):
 
 @login_required
 def client(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         form = AddClient()
         clientes = Cliente.objects.all()
         nclientes = clientes.count()
@@ -1473,7 +1477,7 @@ def client(request):
 
 @login_required
 def clientDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtiene el miembro y elimina
             c = Cliente.objects.get(id=request.session.get('Cliente'))
@@ -1493,7 +1497,7 @@ def clientDelete(request):
 
 @login_required
 def clientRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se crea el miembro
             Cliente.objects.create(
@@ -1507,7 +1511,6 @@ def clientRegister(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Cliente registrado correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -1518,7 +1521,7 @@ def clientRegister(request):
 
 @login_required
 def clientModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se modifican
 
@@ -1543,7 +1546,7 @@ def clientModify(request):
 
 @login_required
 def quality(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         formcalibre = AddCaliber()
         formcalidad = AddQuality()
         calidades = Calidad.objects.all()
@@ -1575,6 +1578,7 @@ def quality(request):
             elif request.POST['Id']=='agregarcalibre':
                 try:
                     request.session['Numero'] = request.POST['Numero']
+                    request.session['Descripcion'] = request.POST['Descripcion']
                     url = reverse('qrc')
                     return redirect(url)
                 except Exception as e:
@@ -1593,12 +1597,24 @@ def quality(request):
                     request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
                     url = reverse('q')
                     return redirect(url)
-            elif request.POST['Id']=='modificar':
+            elif request.POST['Id']=='modificarcalidad':
                 try:
                     request.session['Calidad'] = request.POST['Calidad']
                     request.session['Numero'] = request.POST['Numero']
                     request.session['Descripcion'] = request.POST['Descripcion']
-                    url = reverse('qm')
+                    url = reverse('qmq')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('q')
+                    return redirect(url)
+            elif request.POST['Id']=='modificarcalibre':
+                try:
+                    request.session['Calibre'] = request.POST['Calibre']
+                    request.session['Numero'] = request.POST['Numero']
+                    request.session['Descripcion'] = request.POST['Descripcion']
+                    url = reverse('qmc')
                     return redirect(url)
                 except Exception as e:
                     request.session['Operacion'] = 0
@@ -1642,19 +1658,17 @@ def quality(request):
 
 @login_required
 def qualityDeleteQuality(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtiene el miembro y elimina
             c = Calidad.objects.get(id=request.session.get('Calidad'))
             c.delete()
-            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
-            
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Calidad eliminada correctamente."
         except Exception as e:
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
-            
+
         url = reverse('q')
         return redirect(url)
     else: 
@@ -1662,7 +1676,7 @@ def qualityDeleteQuality(request):
 
 @login_required
 def qualityDeleteCaliber(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtiene el miembro y elimina
             c = Calibre.objects.get(id=request.session.get('Calibre'))
@@ -1682,7 +1696,7 @@ def qualityDeleteCaliber(request):
 
 @login_required
 def qualityRegisterQuality(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se crea el miembro
             Calidad.objects.create(
@@ -1704,11 +1718,12 @@ def qualityRegisterQuality(request):
 
 @login_required
 def qualityRegisterCaliber(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se crea el miembro
             Calibre.objects.create(
-                numCalibre=request.session.get('Numero')
+                numCalibre=request.session.get('Numero'),
+                descripcionCalibre=request.session.get('Descripcion')
             )
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
@@ -1724,8 +1739,8 @@ def qualityRegisterCaliber(request):
         return render(request, 'denied.html')
 
 @login_required
-def qualityModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'E_V':
+def qualityModifyQuality(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         try:
             #Se obtienen los datos y se modifican
 
@@ -1733,6 +1748,28 @@ def qualityModify(request):
             calidad.numCalidad = request.session.get('Numero')
             calidad.descripcionCalidad = request.session.get('Descripcion')
             calidad.save()
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('q')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+def qualityModifyCaliber(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
+        try:
+            #Se obtienen los datos y se modifican
+
+            calibre = Calibre.objects.get(id=request.session.get('Calibre'))
+            calibre.numCalibre = request.session.get('Numero')
+            calibre.descripcionCalibre = request.session.get('Descripcion')
+            calibre.save()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
             
             request.session['Operacion'] = 1
@@ -1841,8 +1878,6 @@ def courtOrderRegister(request):
 
         try:
             pedido = Pedido.objects.get(id=request.session.get('Pedido'))
-            pedido.estatusPedido='P_O'
-            pedido.save()
             #Se obtienen los datos y se crea el miembro
             OrdenCorte.objects.create(
                 fechaOrden=date.today(),
@@ -1851,11 +1886,14 @@ def courtOrderRegister(request):
                 tipoCorte=request.session.get('Corte'),
                 idPedido=pedido
             )
+            pedido.estatusPedido='P_O'
+            pedido.save()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Orden de corte registrada correctamente."
         except Exception as e:
+            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -1890,7 +1928,7 @@ def courtOrderModify(request):
 
 @login_required
 def viewOrder(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'I_C', 'E_P'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'I_C', 'E_R', 'E_A'):
         pedidos = Pedido.objects.all()
         p = Pedido.objects.filter(~Q(estatusPedido='P_C'))
         npedidosp = p.count()
@@ -1993,7 +2031,6 @@ def incidentRegister(request):
         request.session['Operacion'] = 1
         request.session['Mensaje'] = "Se mando el reporte de la incidencia correctamente."
     except Exception as e:
-        print(e)
         request.session['Operacion'] = 0
         request.session['Error'] = "No se pudo enviar el reporte, intente de nuevo."
         
@@ -2064,7 +2101,7 @@ def safetyStatusModify(request):
         return render(request, 'denied.html')
 
 def finishTrip(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_P'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_R'):
         vc = ViajeCorte.objects.filter(idOrdenCorte__idPedido__estatusPedido='P_V')
         nvc = vc.count()
         pcc = PedidoCalibreCalidad.objects.all()
@@ -2083,7 +2120,7 @@ def finishTrip(request):
         else:
             if request.session.get('Operacion')==1:
                 request.session['Operacion'] = -1
-                return render(request, 'user_enc_prod/finishTrip.html', {
+                return render(request, 'user_enc_rec/finishTrip.html', {
                     "mensaje": request.session['Mensaje'],
                     'nvc': nvc,
                     'vc': vc,
@@ -2091,14 +2128,14 @@ def finishTrip(request):
                 })
             elif request.session.get('Operacion')==0:
                 request.session['Operacion'] = -1
-                return render(request, 'user_enc_prod/finishTrip.html', {
+                return render(request, 'user_enc_rec/finishTrip.html', {
                     "error": request.session['Error'],
                     'nvc': nvc,
                     'vc': vc,
                     'pcc': pcc
                 })
             else:
-                return render(request, 'user_enc_prod/finishTrip.html', {
+                return render(request, 'user_enc_rec/finishTrip.html', {
                     'nvc': nvc,
                     'vc': vc,
                     'pcc': pcc
@@ -2108,7 +2145,7 @@ def finishTrip(request):
 
 @login_required
 def finishTripRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_P'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_R'):
         try:
             #Se obtienen los datos y se crea el miembro
             viaje = ViajeCorte.objects.get(id=request.session.get('Viaje'))
@@ -2144,9 +2181,9 @@ def viewOrchard(request):
     else: 
         return render(request, 'denied.html')
 def myTrips(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('C_T'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('C_T','J_C'):
 
-        viajes = ViajeCorte.objects.filter(Q(idCamionTransporte__idChoferTransporte=request.user.trabajador.id) | Q(idCamionSecundarioTransporte__idChoferTransporte=request.user.trabajador.id))
+        viajes = ViajeCorte.objects.filter(Q(idCamionTransporte__idChoferTransporte=request.user.trabajador.id) | Q(idCuadrilla__idJefeCuadrilla=request.user.trabajador.id) | Q(idCamionSecundarioTransporte__idChoferTransporte=request.user.trabajador.id))
         viajes.order_by('-fechaViaje')
         nv = viajes.count()
         pcc = PedidoCalibreCalidad.objects.all()
@@ -2474,7 +2511,6 @@ def mySquadMemberRegister(request):
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Miembro registrado correctamente."
         except Exception as e:
-            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
             
@@ -2485,7 +2521,7 @@ def mySquadMemberRegister(request):
 
 @login_required
 def squadLeader(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'G_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
         #Consultas necesarias para mostrar en plantilla
         form = AddWorker()
         jefes = Trabajador.objects.filter(rol__nomenclaturaRol='J_C')
@@ -2558,7 +2594,7 @@ def squadLeader(request):
 
 @login_required
 def squadLeaderDelete(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'G_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
         try:
             #Se obtiene el trabajador y elimina
             trabajador = request.session.get('Trabajador')
@@ -2582,7 +2618,7 @@ def squadLeaderDelete(request):
 
 @login_required
 def squadLeaderRegister(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'G_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
         try:
             nombres=request.session.get('Nombres')
             apellidos=request.session.get('Apellidos')
@@ -2618,7 +2654,7 @@ def squadLeaderRegister(request):
 
 @login_required
 def squadLeaderModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol == 'G_C':
+    if request.user.trabajador.rol.nomenclaturaRol in ('G_C'):
         try:
             #Se obtienen los datos y se modifican
             trabajador = Trabajador.objects.get(id=request.session.get('Trabajador'))
@@ -2646,84 +2682,663 @@ def squadLeaderModify(request):
 
 @login_required
 def solveIncident(request):
-    incidencias = Incidencia.objects.all()
-    nincidencias = incidencias.count()
-    #si se envia un formulario
-    if request.method == 'POST':
-        if request.POST['Id']=='eliminar':
-            try:
-                request.session['Incidencia'] = request.POST['Incidencia']
-                url = reverse('sid')
-                return redirect(url)
-            except Exception as e:
-                request.session['Operacion'] = 0
-                request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
-                url = reverse('si')
-                return redirect(url)
-        elif request.POST['Id']=='agregar':
-            try:
-                request.session['Incidencia'] = request.POST['Incidencia']
-                request.session['Solucion'] = request.POST['Solucion']
-                url = reverse('sir')
-                return redirect(url)
-            except Exception as e:
-                request.session['Operacion'] = 0
-                request.session['Error'] = "No se pudo enviar el cometido, intente de nuevo."
-                url = reverse('si')
-                return redirect(url)
-    else:
-        if request.session.get('Operacion')==1:
-            request.session['Operacion'] = -1
-            return render(request, 'user_dir_gral/resolveIncident.html', {
-                "mensaje": request.session['Mensaje'],
-                'incidencias': incidencias,
-                'nincidencias': nincidencias
-            })
-        elif request.session.get('Operacion')==0:
-            request.session['Operacion'] = -1
-            return render(request, 'user_dir_gral/resolveIncident.html', {
-                "error": request.session['Error'],
-                'incidencias': incidencias,
-                'nincidencias': nincidencias
-            })
+    if request.user.trabajador.rol.nomenclaturaRol in ('D_G'):
+        incidencias = Incidencia.objects.all()
+        nincidencias = incidencias.count()
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Incidencia'] = request.POST['Incidencia']
+                    url = reverse('sid')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('si')
+                    return redirect(url)
+            elif request.POST['Id']=='agregar':
+                try:
+                    request.session['Incidencia'] = request.POST['Incidencia']
+                    request.session['Solucion'] = request.POST['Solucion']
+                    url = reverse('sir')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo enviar el cometido, intente de nuevo."
+                    url = reverse('si')
+                    return redirect(url)
         else:
-            return render(request, 'user_dir_gral/resolveIncident.html', {
-                'incidencias': incidencias,
-                'nincidencias': nincidencias
-            })
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, 'user_dir_gral/resolveIncident.html', {
+                    "mensaje": request.session['Mensaje'],
+                    'incidencias': incidencias,
+                    'nincidencias': nincidencias
+                })
+            elif request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, 'user_dir_gral/resolveIncident.html', {
+                    "error": request.session['Error'],
+                    'incidencias': incidencias,
+                    'nincidencias': nincidencias
+                })
+            else:
+                return render(request, 'user_dir_gral/resolveIncident.html', {
+                    'incidencias': incidencias,
+                    'nincidencias': nincidencias
+                })
+    else:
+        return render(request, 'denied.html')
 
 @login_required
 def solveIncidentDelete(request):
-    try:
-        #Se obtiene el miembro y elimina
-        incidencia = request.session.get('Incidencia')
-        i = Incidencia.objects.get(id=incidencia)
-        i.delete()
-        #Se guarda en memoria la operacion exitosa y redirige a la url de origen
-        
-        request.session['Operacion'] = 1
-        request.session['Mensaje'] = "Reporte eliminado correctamente."
-    except Exception as e:
-        request.session['Operacion'] = 0
-        request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
-        
-    url = reverse('si')
-    return redirect(url)
+    if request.user.trabajador.rol.nomenclaturaRol in ('D_G'):
+        try:
+            #Se obtiene el miembro y elimina
+            incidencia = request.session.get('Incidencia')
+            i = Incidencia.objects.get(id=incidencia)
+            i.delete()
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Reporte eliminado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('si')
+        return redirect(url)
+    else:
+        return render(request, 'denied.html')
 
 @login_required
 def solveIncidentRegister(request):
-    try:
-        #Se obtienen los datos y se crea el reporte
-        i = Incidencia.objects.get(id=request.session.get('Incidencia'))
-        i.estatusIncidencia='I_R'
-        i.descripcionSolucion= request.session.get('Solucion')
-        i.save()
+    if request.user.trabajador.rol.nomenclaturaRol in ('D_G'):
+        try:
+            #Se obtienen los datos y se crea el reporte
+            i = Incidencia.objects.get(id=request.session.get('Incidencia'))
+            i.estatusIncidencia='I_R'
+            i.descripcionSolucion= request.session.get('Solucion')
+            i.save()
 
-        request.session['Operacion'] = 1
-        request.session['Mensaje'] = "Se mando la solución de la incidencia correctamente."
-    except Exception as e:
-        request.session['Operacion'] = 0
-        request.session['Error'] = "No se pudo realizar la acción, intente de nuevo."
-        
-    url = reverse('si')
-    return redirect(url)
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se mando la solución de la incidencia correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la acción, intente de nuevo."
+            
+        url = reverse('si')
+        return redirect(url)
+    else:
+        return render(request, 'denied.html')
+
+@login_required
+def authorizedPrice(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        #Consultas necesarias para mostrar en plantilla
+        estados = (
+            ('AGS', 'Aguascalientes'),
+            ('BC', 'Baja California'),
+            ('BCS', 'Baja California Sur'),
+            ('CAM', 'Campeche'),
+            ('CHIS', 'Chiapas'),
+            ('CHIH', 'Chihuahua'),
+            ('CDMX', 'Ciudad de México'),
+            ('COAH', 'Coahuila'),
+            ('COL', 'Colima'),
+            ('DGO', 'Durango'),
+            ('GTO', 'Guanajuato'),
+            ('GRO', 'Guerrero'),
+            ('HGO', 'Hidalgo'),
+            ('JAL', 'Jalisco'),
+            ('MEX', 'México'),
+            ('MIC', 'Michoacán'),
+            ('MOR', 'Morelos'),
+            ('NAY', 'Nayarit'),
+            ('NL', 'Nuevo León'),
+            ('OAX', 'Oaxaca'),
+            ('PUE', 'Puebla'),
+            ('QRO', 'Querétaro'),
+            ('QR', 'Quintana Roo'),
+            ('SLP', 'San Luis Potosí'),
+            ('SIN', 'Sinaloa'),
+            ('SON', 'Sonora'),
+            ('TAB', 'Tabasco'),
+            ('TAMPS', 'Tamaulipas'),
+            ('TLAX', 'Tlaxcala'),
+            ('VER', 'Veracruz'),
+            ('YUC', 'Yucatán'),
+            ('ZAC', 'Zacatecas'),
+        )
+        form = AddPrice()
+        precios = PrecioAutorizado.objects.all()
+        pcr = PrecioAutorizado.objects.values_list('estadoAplica', flat=True).distinct()
+        psr = [estado for estado in estados if estado[0] not in pcr]
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Precio'] = request.POST['Precio']
+                    url = reverse('apd')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('ap')
+                    return redirect(url)
+            elif request.POST['Id']=='agregar':
+                try:
+                    request.session['Fijo'] = request.POST['Fijo']
+                    request.session['Descripcion'] = request.POST['Descripcion']
+                    request.session['Vigencia'] = request.POST['Vigencia']
+                    request.session['Estado'] = request.POST['Estado']
+                    url = reverse('apr')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                    url = reverse('ap')
+                    return redirect(url)
+            elif request.POST['Id']=='modificar':
+                try:
+                    request.session['Precio'] = request.POST['Precio']
+                    request.session['Descripcion'] = request.POST['Descripcion']
+                    request.session['Actual'] = request.POST['Actual']
+                    request.session['Vigencia'] = request.POST['Vigencia']
+                    request.session['Estado'] = request.POST['Estado']
+                    url = reverse('apm')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('ap')
+                    return redirect(url)
+        else:
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_bit/authorizedPrice.html", {
+                    'form':form,
+                    'estados': estados,
+                    'precios': precios,
+                    'psr': psr,
+                    "mensaje": request.session['Mensaje']
+                })
+            elif request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_bit/authorizedPrice.html", {
+                    'form':form,
+                    'estados': estados,
+                    'precios': precios,
+                    'psr': psr,
+                    "error": request.session['Error']
+                })
+            else:
+                return render(request, "user_enc_bit/authorizedPrice.html", {
+                    'form':form,
+                    'estados': estados,
+                    'precios': precios,
+                    'psr': psr,
+                })
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def authorizedPriceDelete(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        try:
+            #Se obtiene el trabajador y elimina
+            precio = request.session.get('Precio')
+            p = PrecioAutorizado.objects.get(id=precio)
+            p.delete()
+
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Precio eliminado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('ap')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def authorizedPriceRegister(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        try:
+            PrecioAutorizado.objects.create(
+                precioFijo=request.session.get('Fijo'),
+                descripcion=request.session.get('Descripcion'),
+                precioActual=request.session.get('Fijo'),
+                vigencia=request.session.get('Vigencia'),
+                estadoAplica=request.session.get('Estado'),
+            )
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Precio registrado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+            
+        url = reverse('ap')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def authorizedPriceModify(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        try:
+            #Se obtienen los datos y se modifican
+            precio = PrecioAutorizado.objects.get(id=request.session.get('Precio'))
+            precio.descripcion =request.session.get('Descripcion')
+            pa = request.session.get('Actual')
+            pa = pa.replace(',', '.')
+            precio.precioActual=float(pa)
+            precio.vigencia=request.session.get('Vigencia')
+            precio.estadoAplica=request.session.get('Estado')
+            precio.save()
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            print(e)
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('ap')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def fruit(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_A'):
+        #Consultas necesarias para mostrar en plantilla
+        form = AddFruit()
+        huertas = Huerta.objects.exclude(frutahuerta__isnull=False)
+        fruta = FrutaHuerta.objects.all()
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Fruta'] = request.POST['Fruta']
+                    url = reverse('fd')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('f')
+                    return redirect(url)
+            elif request.POST['Id']=='agregar':
+                try:
+                    request.session['Huerta'] = request.POST['Huerta']
+                    request.session['Descripcion'] = request.POST['Descripcion']
+                    request.session['Precio'] = request.POST['Precio']
+                    url = reverse('fr')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                    url = reverse('f')
+                    return redirect(url)
+            elif request.POST['Id']=='modificar':
+                try:
+                    request.session['Fruta'] = request.POST['Fruta']
+                    request.session['Huerta'] = request.POST['Huerta']
+                    request.session['Descripcion'] = request.POST['Descripcion']
+                    request.session['Precio'] = request.POST['Precio']
+                    url = reverse('fm')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('f')
+                    return redirect(url)
+        else:
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_aco/fruit.html", {
+                    'form':form,
+                    'fruta': fruta,
+                    'huertas': huertas,
+                    "mensaje": request.session['Mensaje']
+                })
+            elif request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_aco/fruit.html", {
+                    'form':form,
+                    'fruta': fruta,
+                    'huertas': huertas,
+                    "error": request.session['Error']
+                })
+            else:
+                return render(request, "user_enc_aco/fruit.html", {
+                    'form':form,
+                    'huertas': huertas,
+                    'fruta': fruta,
+                })
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def fruitDelete(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_A'):
+        try:
+            #Se obtiene el trabajador y elimina
+            fruta = request.session.get('Fruta')
+            f = FrutaHuerta.objects.get(id=fruta)
+            f.delete()
+
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Fruta eliminada correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('f')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def fruitRegister(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_A'):
+        try:
+            huerta = Huerta.objects.get(id=request.session.get('Huerta'))
+            FrutaHuerta.objects.create(
+                idHuerta=huerta,
+                descripcionFruta=request.session.get('Descripcion'),
+                precioFruta=request.session.get('Precio'),
+            )
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Fruta registrada correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+            
+        url = reverse('f')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def fruitModify(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_A'):
+        try:
+            #Se obtienen los datos y se modifican
+            p = request.session.get('Precio')
+            p = p.replace(',', '.')
+            fruta = FrutaHuerta.objects.get(id=request.session.get('Fruta'))
+            huerta = Huerta.objects.get(id=request.session.get('Huerta'))
+            fruta.huerta = huerta
+            fruta.descripcionFruta = request.session.get('Descripcion')
+            fruta.precioFruta = float(p)
+            fruta.save()
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            print(e)
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('f')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def rol(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        #Consultas necesarias para mostrar en plantilla
+        form = AddRol()
+        roles = RolTrabajador.objects.all()
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Rol'] = request.POST['Rol']
+                    url = reverse('rd')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('r')
+                    return redirect(url)
+            elif request.POST['Id']=='agregar':
+                try:
+                    request.session['Nomenclatura'] = request.POST['Nomenclatura']
+                    request.session['Nombre'] = request.POST['Nombre']
+                    url = reverse('rr')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                    url = reverse('r')
+                    return redirect(url)
+            elif request.POST['Id']=='modificar':
+                try:
+                    request.session['Rol'] = request.POST['Rol']
+                    request.session['Nomenclatura'] = request.POST['Nomenclatura']
+                    request.session['Nombre'] = request.POST['Nombre']
+                    url = reverse('rm')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('r')
+                    return redirect(url)
+        else:
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_bit/rol.html", {
+                    'form':form,
+                    'roles': roles,
+                    "mensaje": request.session['Mensaje']
+                })
+            elif request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, "user_enc_bit/rol.html", {
+                    'form':form,
+                    'roles': roles,
+                    "error": request.session['Error']
+                })
+            else:
+                return render(request, "user_enc_bit/rol.html", {
+                    'form':form,
+                    'roles': roles,
+                })
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def rolDelete(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        try:
+            #Se obtiene el trabajador y elimina
+            r = RolTrabajador.objects.get(id=request.session.get('Rol'))
+            r.delete()
+
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Rol eliminado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('r')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def rolRegister(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        try:
+            RolTrabajador.objects.create(
+                nomenclaturaRol=request.session.get('Nomenclatura'),
+                nombreRol=request.session.get('Nombre'),
+            )
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Rol registrado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+            
+        url = reverse('r')
+        return redirect(url)
+    else:
+        return render(request, 'denied.html')
+
+@login_required
+def rolModify(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
+        try:
+            #Se obtienen los datos y se modifican
+            rol = RolTrabajador.objects.get(id=request.session.get('Rol'))
+            rol.nombreRol = request.session.get('Nombre')
+            rol.nomenclaturaRol = request.session.get('Nomenclatura')
+            rol.save()
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('r')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def report(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
+        #Consultas necesarias para mostrar en plantilla
+        form = AddReport(request=request)
+        reportes = ReporteCorte.objects.all()
+        viajes = ViajeCorte.objects.filter(idCuadrilla__idJefeCuadrilla=request.user.trabajador.id).exclude(reportecorte__idViaje__isnull=False)
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='eliminar':
+                try:
+                    request.session['Reporte'] = request.POST['Reporte']
+                    url = reverse('rpd')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+                    url = reverse('rp')
+                    return redirect(url)
+            elif request.POST['Id']=='agregar':
+                try:
+                    request.session['Viaje'] = request.POST['Viaje']
+                    request.session['Observaciones'] = request.POST['Observaciones']
+                    request.session['Cajas'] = request.POST['Cajas']
+                    url = reverse('rpr')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+                    url = reverse('rp')
+                    return redirect(url)
+            elif request.POST['Id']=='modificar':
+                try:
+                    url = reverse('rpm')
+                    return redirect(url)
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+                    url = reverse('rp')
+                    return redirect(url)
+        else:
+            if request.session.get('Operacion')==1:
+                request.session['Operacion'] = -1
+                return render(request, "user_jefe_cuad/report.html", {
+                    'form':form,
+                    'reportes': reportes,
+                    'viajes': viajes,
+                    "mensaje": request.session['Mensaje']
+                })
+            elif request.session.get('Operacion')==0:
+                request.session['Operacion'] = -1
+                return render(request, "user_jefe_cuad/report.html", {
+                    'form':form,
+                    'reportes': reportes,
+                    'viajes': viajes,
+                    "error": request.session['Error']
+                })
+            else:
+                return render(request, "user_jefe_cuad/report.html", {
+                    'form':form,
+                    'reportes': reportes,
+                    'viajes': viajes,
+                })
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def reportDelete(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
+        try:
+            #Se obtiene el trabajador y elimina
+            r = ReporteCorte.objects.get(id=request.session.get('Reporte'))
+            r.delete()
+
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Reporte eliminado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar la eliminación, intente de nuevo."
+            
+        url = reverse('rp')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def reportRegister(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
+        try:
+            viaje = ViajeCorte.objects.get(id = request.session.get('Viaje'))
+            ReporteCorte.objects.create(
+                fecha = date.today(),
+                idViaje=viaje,
+                observacionesReporte=request.session.get('Observaciones'),
+                cajasCortadas=request.session.get('Cajas'),
+            )
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Reporte registrado correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
+            
+        url = reverse('rp')
+        return redirect(url)
+    else:
+        return render(request, 'denied.html')
+
+@login_required
+def reportModify(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
+        try:
+            #Se obtienen los datos y se modifican
+            rol = RolTrabajador.objects.get(id=request.session.get('Rol'))
+            rol.nombreRol = request.session.get('Nombre')
+            rol.nomenclaturaRol = request.session.get('Nomenclatura')
+            rol.save()
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('r')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
