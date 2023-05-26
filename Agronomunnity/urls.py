@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #usuarios en general
     path('', views.index, name='index'),
+    path('help', views.help, name='help'),
     path('login/', views.li, name='login'),
     path('logout/', views.lo, name='exit'),
 
@@ -70,7 +71,8 @@ urlpatterns = [
     path('cd/',views.clientDelete, name="cd"),
     #Calidad y calibre
     path('q/',views.quality, name="q"),
-    path('qm/',views.qualityModify, name="qm"),
+    path('qmc/',views.qualityModifyCaliber, name="qmc"),
+    path('qmq/',views.qualityModifyQuality, name="qmq"),
     path('qrc/',views.qualityRegisterCaliber, name="qrc"),
     path('qdc/',views.qualityDeleteCaliber, name="qdc"),
     path('qrq/',views.qualityRegisterQuality, name="qrq"),
@@ -103,6 +105,26 @@ urlpatterns = [
     path('si/',views.solveIncident, name="si"),
     path('sid/',views.solveIncidentDelete, name="sid"),
     path('sir/',views.solveIncidentRegister, name="sir"),
+    #Precios autorizados
+    path("ap/", views.authorizedPrice, name="ap"),
+    path("apd/", views.authorizedPriceDelete, name="apd"),
+    path("apm/", views.authorizedPriceModify, name="apm"),
+    path("apr/", views.authorizedPriceRegister, name="apr"),
+    #Fruta Huerta
+    path("f/", views.fruit, name="f"),
+    path("fd/", views.fruitDelete, name="fd"),
+    path("fm/", views.fruitModify, name="fm"),
+    path("fr/", views.fruitRegister, name="fr"),
+    #Roles
+    path("r/", views.rol, name="r"),
+    path("rd/", views.rolDelete, name="rd"),
+    path("rm/", views.rolModify, name="rm"),
+    path("rr/", views.rolRegister, name="rr"),
+    #Reportes de corte
+    path("rp/", views.report, name="rp"),
+    path("rpd/", views.reportDelete, name="rpd"),
+    path("rpm/", views.reportModify, name="rpm"),
+    path("rpr/", views.reportRegister, name="rpr"),
 ]
 
 

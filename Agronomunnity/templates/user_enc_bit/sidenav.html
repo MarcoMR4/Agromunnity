@@ -1,17 +1,30 @@
 <aside class="main-sidebar sidebar-light-primary elevation-3 position-fixed">
   <!--Usuario-->
   <a href="" class="brand-link shadow" style="background:#4CAF50">
-    <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text text-light text-sm">{{request.user.trabajador.rol.nombreRol}}</span>
+    <div class="row my-n1 align-items-center">
+      <div class="col-3 text-start">
+        <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
+      </div>
+      <div class="col-8 text-start text-sm">
+        <span class="brand-text text-light">-{{request.user.trabajador.usuario.first_name}}-</span>
+        <br><span class="brand-text text-light">{{request.user.trabajador.rol.nombreRol}}</span>
+      </div>
+  </div>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
-      <nav class="mt-2">
+      <nav class="mt-3">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'index' %} style='background-color: #c9e7cb' {% endif %}>
               <a href={% url 'index' %} class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-house"></i>
                   <p>Inicio</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'r' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href={% url 'r' %} class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-layer-group"></i>
+                  <p>Roles</p>
               </a>
             </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'w' %} style='background-color: #c9e7cb' {% endif %}>
@@ -32,6 +45,12 @@
                   <p>Huertas</p>
               </a>
             </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'ap' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'ap' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-usd"></i>
+                  <p>Precios</p>
+              </a>
+            </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'vso' %} style='background-color: #c9e7cb' {% endif %}>
               <a href="{% url 'vso' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-bar-chart"></i>
@@ -44,7 +63,7 @@
                   <p>Ordenes de corte</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'ct' %} style='background-color: ##c9e7cb' {% endif %}>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'ct' %} style='background-color: #c9e7cb' {% endif %}>
               <a href="{% url 'ct' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-truck-fast"></i>
                   <p>Viajes</p>
@@ -54,6 +73,12 @@
               <a href="{% url 'i' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-circle-exclamation"></i>
                   <p>Incidencias</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'help' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'help' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-question-circle"></i>
+                  <p>Ayuda</p>
               </a>
             </li>
             <li class="nav-item">

@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 from django import forms
 from django.db.models.functions import Concat
-from .models import Productor, Trabajador, Huerta, Pedido, RolTrabajador, Cliente, CamionTransporte, OrdenCorte, Cuadrilla, Calibre, Calidad
+from .models import Productor, Trabajador, Huerta, Pedido, RolTrabajador, Cliente, CamionTransporte, OrdenCorte, Cuadrilla, Calibre, Calidad, PrecioAutorizado, ViajeCorte
 
 
 class UserLoginForm(AuthenticationForm):
@@ -38,7 +38,7 @@ class AddWorker(forms.Form):
 
     Correo = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'placeholder':'Debe contener dominio @morelia.tecnm.mx' ,'required':'true'}
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
         )
     )
 
@@ -56,33 +56,6 @@ class AddWorker(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
         )
     )
-
-    def clean_Telefono(self):
-        cleaned_data = super().clean()
-        telefono=self.cleaned_data['Telefono']
-        if not telefono.isdigit():
-            raise forms.ValidationError('El número de teléfono debe contener solo digitos')
-        if len(telefono) != 10:
-            raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
-        return telefono
-    def clean_Nombre(self):
-        cleaned_data = super().clean()
-        nombre=self.cleaned_data['Nombre']
-        if nombre.isdigit():
-            raise forms.ValidationError('El nombre no debe tener numeros')
-        return nombre
-    def clean_AP(self):
-        cleaned_data = super().clean()
-        ap=self.cleaned_data['AP']
-        if ap.isdigit():
-            raise forms.ValidationError('El apellido no debe tener numeros')
-        return ap
-    def clean_AM(self):
-        cleaned_data = super().clean()
-        am=self.cleaned_data['AM']
-        if am.isdigit():
-            raise forms.ValidationError('El apellido no debe tener numeros')
-        return am
 
 class AddTransport(forms.Form):
 
@@ -123,9 +96,10 @@ class AddTransport(forms.Form):
     )
 
     estatusTransporte = (
-    ('C_A', 'Activo'),
-    ('C_I', 'Inactivo'),
-    ('C_M', 'Mantenimiento')
+        ('','(Seleccione)'),
+        ('C_A', 'Activo'),
+        ('C_I', 'Inactivo'),
+        ('C_M', 'Mantenimiento')
     )
 
     Estatus = forms.ChoiceField(
@@ -142,8 +116,6 @@ class AddTransport(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
         )
     )
-
-    #Puse la validacion en el view pero no se que se debe validar de esta
 
 class AddProducer(forms.Form):
 
@@ -167,33 +139,7 @@ class AddProducer(forms.Form):
             attrs={'class': 'form-control', 'required':'true', 'style': 'font-size: 12px;'}
         )
     )
-    def clean_Telefono(self):
-        cleaned_data = super().clean()
-        telefono=self.cleaned_data['Telefono']
-        if not telefono.isdigit():
-            raise forms.ValidationError('El número de teléfono debe contener solo digitos')
-        if len(telefono) != 10:
-            raise forms.ValidationError('El número de teléfono debe tener solo 10 digitos')
-        return telefono
-    def clean_Nombre(self):
-        cleaned_data = super().clean()
-        nombre=self.cleaned_data['Nombre']
-        if nombre.isdigit():
-            raise forms.ValidationError('El nombre no debe tener numeros')
-        return nombre
-    def clean_AP(self):
-        cleaned_data = super().clean()
-        ap=self.cleaned_data['AP']
-        if ap.isdigit():
-            raise forms.ValidationError('El apellido no debe tener numeros')
-        return ap
-    def clean_AM(self):
-        cleaned_data = super().clean()
-        am=self.cleaned_data['AM']
-        if am.isdigit():
-            raise forms.ValidationError('El apellido no debe tener numeros')
-        return am
-    
+
 class AddOrchard(forms.Form):
 
     Nombre = forms.CharField(
@@ -202,16 +148,31 @@ class AddOrchard(forms.Form):
         )
     )
 
-    Fruta = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
-        )
+    fruta = (
+        ('','(Seleccione)'),
+        ('AGT', 'Aguacate'),
+    )
+    Fruta = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
+        ),
+        choices=fruta
     )
 
-    Ubicacion = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;','required':'true'}
-        )
+    municipio = (
+        ('','(Seleccione)'),
+        ('UPN','Uruapan'),
+        ('SES','Salvador Escalante'),
+        ('TAN','Tancítaro'),
+        ('PER','Peribán'),
+        ('TCM','Tacámbaro'),
+        ('ADR','Ario de Rosales')
+    )
+    Ubicacion = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
+        ),
+        choices=municipio
     )
 
     Localizacion = forms.CharField(
@@ -233,6 +194,7 @@ class AddOrchard(forms.Form):
     )
 
     estatusHuerta = (
+    ('','(Seleccione)'),
     ('H_A', 'Activo'),
     ('H_I', 'Inactivo'),
     )
@@ -253,19 +215,6 @@ class AddOrchard(forms.Form):
         )
     )
 
-    def clean_Nombre(self):
-        cleaned_data = super().clean()
-        nombre=self.cleaned_data['Nombre']
-        if nombre.isdigit():
-            raise forms.ValidationError('El nombre no debe tener numeros')
-        return nombre
-    def clean_Fruta(self):
-        cleaned_data = super().clean()
-        fruta=self.cleaned_data['Fruta']
-        if fruta.isdigit():
-            raise forms.ValidationError('El nombre de la fruta no debe tener numeros')
-        return fruta
-
 class AddSquad(forms.Form):
 
     Nombre = forms.CharField(
@@ -281,6 +230,7 @@ class AddSquad(forms.Form):
     )
 
     estatusCuadrilla = (
+    ('', '(Seleccione)'),
     ('C_A', 'Activa'),
     ('C_I', 'Inactiva'),
     )
@@ -307,13 +257,6 @@ class AddSquad(forms.Form):
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
         )
     )
-
-    def clean_Nombre(self):
-        cleaned_data = super().clean()
-        nombre=self.cleaned_data['Nombre']
-        if nombre.isdigit():
-            raise forms.ValidationError('El nombre no debe tener numeros')
-        return nombre
 
 class AddSquadMember(forms.Form):
 
@@ -364,7 +307,21 @@ class AddOrder(forms.Form):
         required=False
     )
 
-    Mercado = forms.CharField(
+    mercadoPedido = (
+        ('', '(Seleccione)'),
+        ('M_N', 'Nacional'),
+        ('M_E', 'Exportación'),
+        ('M_O', 'Otros destinos'),
+    )
+
+    Mercado = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        ),
+        choices=mercadoPedido
+    )
+
+    Observacion = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
@@ -451,6 +408,12 @@ class AddCaliber(forms.Form):
         )
     )
 
+    Descripcion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
 class AddTrip(forms.Form): 
 
     Salida = forms.TimeField(
@@ -521,6 +484,7 @@ class AddIncident(forms.Form):
     )
 
     temas = (
+        ('','(Seleccione)'),
         ('B_T','Bitacoras'),
         ('C_M','Camiones'),
         ('C_A','Calidad'),
@@ -548,16 +512,29 @@ class AddIncident(forms.Form):
 
 class AddCourtOrder(forms.Form):
 
-    Fruta = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        )
+    fruta = (
+        ('','(Seleccione)'),
+        ('HSS', 'Aguacate Hass'),
+        ('MDZ', 'Aguacate Mendez'),
+        ('CLL', 'Aguacate Criollo'),
+    )
+    Fruta = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
+        ),
+        choices=fruta
     )
 
-    Corte = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
-        )
+    corte = (
+        ('','(Seleccione)'),
+        ('AVN', 'Aventajado'),
+        ('FLC', 'Flor loca'),
+    )
+    Corte = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
+        ),
+        choices=corte
     )
 
     Pedido = forms.ModelChoiceField(
@@ -565,5 +542,146 @@ class AddCourtOrder(forms.Form):
         empty_label="(Seleccione)",
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    )
+
+class AddPrice(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        pcr = PrecioAutorizado.objects.values_list('estadoAplica', flat=True).distinct()
+        psr = [estado for estado in self.estados if estado[0] not in pcr]
+        self.fields['Estado'].choices = psr
+
+    Fijo = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
+        )
+    )
+
+    Descripcion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    Actual = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
+        )
+    )
+
+    Vigencia = forms.DateField(
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true', 'type': 'date'}
+        )
+    )
+
+    estados = (
+        ('','(Seleccione)'),
+        ('AGS', 'Aguascalientes'),
+        ('BC', 'Baja California'),
+        ('BCS', 'Baja California Sur'),
+        ('CAM', 'Campeche'),
+        ('CHIS', 'Chiapas'),
+        ('CHIH', 'Chihuahua'),
+        ('CDMX', 'Ciudad de México'),
+        ('COAH', 'Coahuila'),
+        ('COL', 'Colima'),
+        ('DGO', 'Durango'),
+        ('GTO', 'Guanajuato'),
+        ('GRO', 'Guerrero'),
+        ('HGO', 'Hidalgo'),
+        ('JAL', 'Jalisco'),
+        ('MEX', 'México'),
+        ('MIC', 'Michoacán'),
+        ('MOR', 'Morelos'),
+        ('NAY', 'Nayarit'),
+        ('NL', 'Nuevo León'),
+        ('OAX', 'Oaxaca'),
+        ('PUE', 'Puebla'),
+        ('QRO', 'Querétaro'),
+        ('QR', 'Quintana Roo'),
+        ('SLP', 'San Luis Potosí'),
+        ('SIN', 'Sinaloa'),
+        ('SON', 'Sonora'),
+        ('TAB', 'Tabasco'),
+        ('TAMPS', 'Tamaulipas'),
+        ('TLAX', 'Tlaxcala'),
+        ('VER', 'Veracruz'),
+        ('YUC', 'Yucatán'),
+        ('ZAC', 'Zacatecas'),
+    )
+
+    Estado = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        ),
+        choices=estados
+    )
+
+class AddFruit(forms.Form):
+
+    Descripcion = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    Precio = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
+        )
+    )
+
+    Huerta = forms.ModelChoiceField(
+        queryset = Huerta.objects.exclude(frutahuerta__isnull=False),
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
+    )
+
+class AddRol(forms.Form):
+
+    Nomenclatura = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'},
+        ),
+        max_length=3,
+    )
+
+
+    Nombre = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+class AddReport(forms.Form):
+    Viaje = forms.ModelChoiceField(
+        queryset=ViajeCorte.objects.none(),  # Inicialmente se establece como una consulta vacía
+        empty_label="(Seleccione)",
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'required':'true', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)  # Obtén el valor del atributo 'request' si está presente
+        super().__init__(*args, **kwargs)
+        if request:
+            self.fields['Viaje'].queryset = ViajeCorte.objects.filter(idCuadrilla__idJefeCuadrilla=request.user.trabajador.id).exclude(reportecorte__idViaje__isnull=False)
+ 
+
+    Cajas = forms.IntegerField(
+        widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'inputmode':'numeric'}
+        )
+    )
+
+    Observaciones = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
         )
     )

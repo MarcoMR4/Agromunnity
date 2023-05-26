@@ -3,28 +3,15 @@
 {% block title %}Transportes{% endblock %}
 
 {% block content %}
-
-    {% if error %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-            <strong>Error!</strong> {{error}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% elif mensaje %}
-        <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-            <strong>Exito!</strong> {{mensaje}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endif %}
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-center d-flex justify-content-between align-items-center py-3">
-            <div class="text-2">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-md-4 text-md-start">
                 <h3 class="py-3">Vehiculos</h3>
             </div>
-            <div class="my-2 text-end" style="width: 100%;">
+            <div class="col-md-4 col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar vehiculos...">
+            </div>
+            <div class="my-2 col-md-4 col-6 text-end" style="width: 100%;">
                 <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
                     +<i class="nav-icon fas fa-truck mr-2"></i> Nuevo
                 </button>
@@ -59,9 +46,6 @@
                                     <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
                                         <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                     </button>
-                                    <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                        <i class="nav-icon fas fa-trash text-danger"></i>
-                                    </button>
                                     <div class="modal fade" id="modificar{{a.id}}">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -75,38 +59,38 @@
                                                         <div class="text-center">
                                                             <input type="hidden" name="Id" value="modificar">
                                                             <input type="hidden" name="Camion" value={{a.id}}>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Placa" value="{{a.placaTransporte}}">
-                                                                <label>Placa</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Modelo" value="{{a.modeloTransporte}}">
-                                                                <label>Modelo</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Capacidad" value="{{a.capacidadTransporte}}">
-                                                                <label>Capacidad (en toneladas)</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Tipo" value="{{a.tipoTransporte}}">
-                                                                <label>Tipo de transporte</label>
-                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Placa" value="{{a.placaTransporte}}">
+                                                                        <label>Placa</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Modelo" value="{{a.modeloTransporte}}">
+                                                                        <label>Modelo</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
                                                             <p class="form-floating mb-3">
                                                                 <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionTransporte}}">
                                                                 <label>Descripcion</label>
                                                             </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Candado" value="{{a.candadoTransporte}}">
-                                                                <label>Candado de Transporte</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <select name="Estatus" class="form-control">
-                                                                    <option value="C_A" {% if a.estatusTransporte == 'C_A' %}selected{% endif %}>Activo</option>
-                                                                    <option value="C_I" {% if a.estatusTransporte == 'C_I' %}selected{% endif %}>Inactivo</option>
-                                                                    <option value="C_M" {% if a.estatusTransporte == 'C_M' %}selected{% endif %}>Mantenimiento</option>
-                                                                </select>
-                                                                <label>Estatus</label>
-                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Tipo" value="{{a.tipoTransporte}}">
+                                                                        <label>Tipo de transporte</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Capacidad" value="{{a.capacidadTransporte}}">
+                                                                        <label>Capacidad (en toneladas)</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
                                                             <p class="form-floating mb-3">
                                                                 <select name="Chofer" class="form-control">
                                                                     {% for c in choferes %}
@@ -115,10 +99,34 @@
                                                                 </select>
                                                                 <label>Conductor</label>
                                                             </p>
-                                                            <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
-                                                                <i class="fa-solid fa-floppy-disk mr-2"></i>
-                                                                Guardar
-                                                            </button>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <select name="Estatus" class="form-control">
+                                                                            <option value="C_A" {% if a.estatusTransporte == 'C_A' %}selected{% endif %}>Activo</option>
+                                                                            <option value="C_I" {% if a.estatusTransporte == 'C_I' %}selected{% endif %}>Inactivo</option>
+                                                                            <option value="C_M" {% if a.estatusTransporte == 'C_M' %}selected{% endif %}>Mantenimiento</option>
+                                                                        </select>
+                                                                        <label>Estatus</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Candado" value="{{a.candadoTransporte}}">
+                                                                        <label>Candado de Transporte</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                <button type="button" class="btn btn-danger text-xs mx-1" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                                    <i class="nav-icon fas fa-trash"></i>Eliminar
+                                                                </button>
+                                                                
+                                                                <button type="submit" class="btn text-light text-xs mx-1" style="background-color: #4CAF50;">
+                                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -183,38 +191,56 @@
                             {% csrf_token %}
                             <div class="text-center">
                                 <input type="hidden" name="Id" value="agregar">
-                                <p class="form-floating mb-3">
-                                    {{form.Placa}}
-                                    <label>Placa</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Capacidad}}
-                                    <label>Capacidad</label>
-                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Placa}}
+                                            <label>Placa</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Capacidad}}
+                                            <label>Capacidad (en toneladas)</label>
+                                        </p>
+                                    </div>
+                                </div>
                                 <p class="form-floating mb-3">
                                     {{form.Descripcion}}
                                     <label>Descripcion</label>
                                 </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Tipo}}
-                                    <label>Tipo de transporte</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Candado}}
-                                    <label>Candado</label>
-                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Tipo}}
+                                            <label>Tipo de transporte</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Candado}}
+                                            <label>Candado</label>
+                                        </p>
+                                    </div>
+                                </div>
                                 <p class="form-floating mb-3">
                                     {{form.Modelo}}
                                     <label>Modelo</label>
                                 </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Estatus}}
-                                    <label>Estatus</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Chofer}}
-                                    <label>Conductor</label>
-                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Chofer}}
+                                            <label>Conductor</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Estatus}}
+                                            <label>Estatus</label>
+                                        </p>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
                                     +<i class="fa-solid fa-truck mr-2"></i>Registrar
                                 </button>

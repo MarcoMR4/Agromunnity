@@ -3,22 +3,6 @@
 {% block title %}Editar Cuadrilla{% endblock %}
 
 {% block content %}
-
-{% if error %}
-    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-        <strong>Error!</strong> {{error}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% elif mensaje %}
-    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-        <strong>Exito!</strong> {{mensaje}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}
     <div class="mx-5 align-items-center justify-content-center pt-4">
         <form method="POST" enctype="multipart/form-data">
             <div class="text-center d-flex justify-content-between align-items-center">
@@ -95,7 +79,7 @@
 
         {% if miembros %}
             {% for a in miembros %}
-                <div class="card text-center">
+                <div class="card text-center mx-5">
                     <div class="row">
                         <div class="col-md-3 d-flex align-items-center justify-content-center mt-2">
                             <img src="/static/assets/img/icons/user-icon.svg" alt="User Image" width="50">

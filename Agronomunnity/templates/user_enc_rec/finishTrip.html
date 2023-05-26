@@ -1,0 +1,181 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Viajes en proceso{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-6 text-md-start">
+                <h3 class="py-3">Viajes en proceso</h3>
+            </div>
+            <div class="col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar viajes...">
+            </div>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="alert alert-danger rounded-pill w-lg-25 text-xs text-center" role="alert">
+                <i class="fa-solid fa-info-circle mr-2"></i>Revisa bien los detalles antes de finalizar el proceso, por favor.
+            </div>
+        </div>
+        {% if nvc > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>No. viaje</th>
+                            <th>Cuadrilla</th>
+                            <th>Huerta</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in vc %}
+                            <tr>
+                                <td>{{a.idOrdenCorte.idPedido.numeroPedido}}</td>
+                                <td>{{a.idCuadrilla.nombreCuadrilla}}</td>
+                                <td>{{a.idHuerta.nombreHuerta}}</td>
+                                {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery-three-quarters text-info"></i><br>En viaje</td>
+                                {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_P' %}
+                                    <td class="text-xs"><i class="fa-solid fa-battery text-success"></i><br>Completado</td>
+                                {% endif %}
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-calendar-check"></i>
+                                    </button>
+                                    <div class="modal fade" id="detalles{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title">Panel de detalles</h5>
+                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <button type="button" class="btn text-xs bg-success px-5 mb-3" data-bs-toggle="modal" data-bs-target="#confirmar{{a.id}}">
+                                                            <i class="nav-icon fas fa-calendar-check text-light mr-2"></i>Confirmar de recibido
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Orden número:</p>
+                                                        <p>{{a.idOrdenCorte.numeroOrden}}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Fecha:</p>
+                                                        <p>{{a.fechaViaje}}</p>
+                                                    </div>
+                                                </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                    <p class="fw-bold mb-0">Para el cliente:</p>
+                                                    <p>{{a.idOrdenCorte.idPedido.idCliente.nombreCliente}} {{a.idOrdenCorte.idPedido.idCliente.apellidoPCliente}} {{a.idOrdenCorte.idPedido.idCliente.apellidoMCliente}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Contiene:</p>
+                                                    <p>{{a.idOrdenCorte.idPedido.totalPalletsPedido}} pallets.</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Destino:</p>
+                                                    <p>{{a.idOrdenCorte.idPedido.destinoPedido}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                  <p class="fw-bold mb-0">Generada por:</p>
+                                                  <p>{{a.idOrdenCorte.idPedido.idTrabajador.usuario.first_name}} {{a.idOrdenCorte.idPedido.idPedido.idTrabajador.usuario.last_name}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Kilos:</p>
+                                                  <p>{{a.idOrdenCorte.idPedido.totalKilosPedido}}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                  <p class="fw-bold mb-0">Mercado:</p>
+                                                  <p>{{a.idOrdenCorte.idPedido.get_mercadoPedido_display}}</p>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="align-items-center">
+                                                    <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
+                                                </div>
+                                                <div class="col-12 table-responsive" >
+                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                                        <thead>
+                                                            <tr class="align-items-center">
+                                                                <th>Calibre</th>
+                                                                <th>Calidad</th>
+                                                                <th>Kg</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for b in pcc %}
+                                                                {% if a.idOrdenCorte.idPedido.id == b.idPedido.id %}
+                                                                    <tr>
+                                                                        <td>{{b.idCalibre.numCalibre}}</td>
+                                                                        <td>{{b.idCalidad.numCalidad}}</td>
+                                                                        <td>{{b.cantidadCC}}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    <div class="modal fade" id="confirmar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres marcar como recibido este viaje?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Revisa que todo este en orden para que no halla complicaciones con revisiones futuras.</p>
+                                                    </div>
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="agregar">
+                                                                        <input type="hidden" name="Viaje" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-success">
+                                                                            <i class="nav-icon fas fa-calendar-check mr-2"></i>Confirmar
+                                                                        </button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay viajes en curso.</h5>
+                    <img src="/static/assets/img/icons/no-camion.png" width="70">
+                    <p class="card-text">Actualmente no hay viajes de corte en curso. Espera hasta que el encargado asigne nuevos viajes.</p>
+                </div>
+            </div>
+        {% endif %}
+
+{% endblock content %}

@@ -1,8 +1,15 @@
 <aside class="main-sidebar sidebar-light-primary elevation-3 position-fixed">
   <!--Usuario-->
-  <a href="" class="brand-link" style="background:#4CAF50">
-    <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text font-weight text-sm text-light">{{request.user.trabajador.rol.nombreRol}}</span>
+  <a href="" class="brand-link shadow" style="background:#4CAF50">
+    <div class="row my-n1 align-items-center">
+      <div class="col-3 text-start">
+        <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
+      </div>
+      <div class="col-8 text-start text-sm">
+        <span class="brand-text text-light">-{{request.user.trabajador.usuario.first_name}}-</span>
+        <br><span class="brand-text text-light">{{request.user.trabajador.rol.nombreRol}}</span>
+      </div>
+  </div>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">

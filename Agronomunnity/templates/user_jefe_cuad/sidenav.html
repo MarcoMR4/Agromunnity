@@ -1,8 +1,15 @@
 <aside class="main-sidebar sidebar-light-primary elevation-3 position-fixed">
   <!--Usuario-->
   <a href="" class="brand-link shadow" style="background:#4CAF50">
-    <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
-    <span class="brand-text text-light text-sm">{{request.user.trabajador.rol.nombreRol}}</span>
+    <div class="row my-n1 align-items-center">
+      <div class="col-3 text-start">
+        <img src="/static/assets/img/icons/user-icon.svg" alt="logo" width="30" class="ml-3 rounded-circle"/>
+      </div>
+      <div class="col-8 text-start text-sm">
+        <span class="brand-text text-light">-{{request.user.trabajador.usuario.first_name}}-</span>
+        <br><span class="brand-text text-light">{{request.user.trabajador.rol.nombreRol}}</span>
+      </div>
+  </div>
   </a>
   <!-- Sidebar -->
   <div class="sidebar">
@@ -20,8 +27,14 @@
                   <p>Mis cuadrillas</p>
               </a>
             </li>
-            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'vso' %} style='background-color: #c9e7cb' {% endif %}>
-              <a href="{% url 'vso' %}" class="nav-link inactive">
+            <li class="nav-item rounded" {% if request.resolver_match.url_name in 'mt' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href={% url 'mt' %} class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-users"></i>
+                  <p>Mis Viajes</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'rp' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'rp' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-bar-chart"></i>
                   <p>Reportes de corte</p>
               </a>

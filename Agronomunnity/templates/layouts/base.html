@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+        <link rel="icon" type="image/png" href="/static/assets/img/icons/logo.svg">
         <title>
             Agromunnity - {% block title %} {% endblock %}
         </title>
@@ -16,17 +16,26 @@
         {% block stylesheets %}
         {% endblock stylesheets %}
 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/static/assets/js/Search.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
+        {% block javascripts %}
+        {% endblock javascripts %}
+
     </head>
 
     <body class="sidebar-mini sidebar-closed sidebar-collapse">
         <div class="wrapper">
         {% include 'layouts/navbar.html' %}
 
-
-        {% if request.user.trabajador.rol.nomenclaturaRol == 'E_V' %}
-            {% include "user_enc_ventas/sidenav.html" %}
-        {% elif request.user.trabajador.rol.nomenclaturaRol == 'D_G' %}
+        {% if request.user.trabajador.rol.nomenclaturaRol == 'D_G' %}
             {% include "user_dir_gral/sidenav.html" %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_V' %}
+            {% include "user_enc_ventas/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'I_C' %}
             {% include "user_ing_campo/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_B' %}
@@ -37,12 +46,12 @@
             {% include "user_enc_trans/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'G_C' %}
             {% include "user_ger_cuad/sidenav.html" %}
-        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_P' %}
-            {% include "user_enc_prod/sidenav.html" %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_R' %}
+            {% include "user_enc_rec/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_I' %}
             {% include "user_enc_ino/sidenav.html" %}
-        {% elif request.user.trabajador.rol.nomenclaturaRol == 'ADM' %}
-            {% include "user_admin/sidenav.html" %}
+        {% elif request.user.trabajador.rol.nomenclaturaRol == 'E_A' %}
+            {% include "user_enc_aco/sidenav.html" %}
         {% elif request.user.trabajador.rol.nomenclaturaRol == 'J_C' %}
             {% include "user_jefe_cuad/sidenav.html" %}
         {% endif %}
@@ -51,22 +60,23 @@
         <div class="content-wrapper">
             <section class="content">
                 <main>
+                    {% if error %}
+                    <div class="alert alert-dismissible show text-xs mt-3" role="alert" style="background:#FCB39A">
+                        <strong>Error!</strong> {{error}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% elif mensaje %}
+                    <div class="alert alert-dismissible show text-xs mt-3" role="alert" style="background:#EAFBD5">
+                        <strong>Éxito!</strong> {{mensaje}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
                     {% block content %}
                     {% endblock content %}
                     {% include 'layouts/footer.html' %}
                 </main>
             </section>
         </div>
-
-        <script src="/static/assets/js/bootstrap.bundle.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-/Ube1aEk5Z0Lh9n3G5L12O6brSMUm9NTQj6V9U6J8DweIx83+B/6T9UOjI6Iy0fB"crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
-        {% block javascripts %}
-        {% endblock javascripts %}
     </div>
     </body>
 

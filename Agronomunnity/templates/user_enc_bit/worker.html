@@ -3,37 +3,25 @@
 {% block title %}Trabajadores{% endblock %}
 
 {% block content %}
-
-    {% if error %}
-    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#FCB39A">
-        <strong>Error!</strong> {{error}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% elif mensaje %}
-    <div class="alert alert-dismissible fade show mt-2" role="alert" style="background:#EAFBD5">
-        <strong>Exito!</strong> {{mensaje}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
-
     <div class="mx-5 align-items-center justify-content-center">
-        <div class="text-center d-flex justify-content-between align-items-center py-3">
-            <div class="text-2">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-md-4 text-md-start">
                 <h3 class="py-3">Trabajadores</h3>
             </div>
-            <div class="my-2 text-end" style="width: 100%;">
+            <div class="col-md-4 col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre...">
+            </div>
+            <div class="my-2 col-md-4 col-6 text-end" style="width: 100%;">
                 <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
                     <i class="nav-icon fas fa-user-plus"></i> Nuevo
                 </button>
             </div>
         </div>
-        
+
         <div class="table-responsive">
+            
             {% if ntrabajadores > 0 %}
+                
                 <table id="example" class="table table-striped text-center" style="width:100%">
                     <thead>
                         <tr>
@@ -65,26 +53,40 @@
                                                         <div class="text-center">
                                                             <input type="hidden" name="Id" value="modificar">
                                                             <input type="hidden" name="Trabajador" value={{a.id}}>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Nombre" value="{{a.usuario.first_name}}">
-                                                                <label>Nombre(s)</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Apellidos" value="{{a.usuario.last_name}}">
-                                                                <label>Apellidos</label>
-                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Nombre" value="{{a.usuario.first_name}}">
+                                                                        <label>Nombre(s)</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Apellidos" value="{{a.usuario.last_name}}">
+                                                                        <label>Apellidos</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
                                                             <p class="form-floating mb-3">
                                                                 <input class="form-control" type="text" name="Nusuario" value="{{a.usuario.username}}">
                                                                 <label>Nombre de usuario</label>
                                                             </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Correo" value={{a.usuario.email}}>
-                                                                <label>Correo electronico</label>
-                                                            </p>
-                                                            <p class="form-floating mb-3">
-                                                                <input class="form-control" type="text" name="Telefono" value={{a.telefono}}>
-                                                                <label>Telefono</label>
-                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Correo" value={{a.usuario.email}}>
+                                                                        <label>Correo electronico</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="text" name="Telefono" value={{a.telefono}}>
+                                                                        <label>Telefono</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            
                                                             <p class="form-floating mb-3">
                                                                 <select name="Rol" class="form-control">
                                                                     {% for r in roles %}
@@ -93,19 +95,22 @@
                                                                 </select>
                                                                 <label>Estatus</label>
                                                             </p>
-                                                            <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
-                                                                <i class="fa-solid fa-floppy-disk mr-2"></i>
-                                                                Guardar
-                                                            </button>
+                                                            <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                <button type="button" class="btn btn-danger text-xs mx-1" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                                    <i class="nav-icon fas fa-trash"></i>Eliminar
+                                                                </button>
+                                                                
+                                                                <button type="submit" class="btn text-light text-xs mx-1" style="background-color: #4CAF50;">
+                                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                        <i class="nav-icon fas fa-trash text-danger"></i>
-                                    </button>
                                     <div class="modal fade" id="eliminar{{a.id}}">
                                         <div class="modal-dialog text-center">
                                             <div class="modal-content">
@@ -167,14 +172,20 @@
                                     {{form.Nombre}}
                                     <label>Nombre(s)</label>
                                 </p>
-                                <p class="form-floating mb-3">
-                                    {{form.AP}}
-                                    <label>Apellido Paterno</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.AM}}
-                                    <label>Apellido Materno</label>
-                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.AP}}
+                                            <label>Apellido Paterno</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.AM}}
+                                            <label>Apellido Materno</label>
+                                        </p>
+                                    </div>
+                                </div>
                                 <p class="form-floating mb-3">
                                     {{form.Correo}}
                                     <label>Correo electronico</label>
@@ -197,5 +208,4 @@
             </div>
         </div>
     </div>
-
 {% endblock content %}
