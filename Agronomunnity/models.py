@@ -126,7 +126,6 @@ class Productor(models.Model):
 class Huerta(models.Model):
     idProductor = models.ForeignKey('Productor', on_delete=models.CASCADE)
     nombreHuerta = models.CharField(max_length=50, blank = True)
-    frutaHuerta = models.CharField(max_length=30, blank = True)
     ubicacionHuerta = models.CharField(max_length=50, blank = True)
     localizacionHuerta = models.CharField(max_length=300, blank = True)
     claveSagarpaHuerta = models.CharField(max_length=100, blank = True)
@@ -137,9 +136,23 @@ class Huerta(models.Model):
     )
     estatusHuerta = models.CharField(max_length=3, choices=estatus, default='Activo')
 
+    municipio = (
+        ('UPN','Uruapan'),
+        ('SES','Salvador Escalante'),
+        ('TAN','Tancítaro'),
+        ('PER','Peribán'),
+        ('TCM','Tacámbaro'),
+        ('ADR','Ario de Rosales')
+    )
+    ubicacionHuerta = models.CharField(max_length=3, choices=municipio, default='UPN')
+
+    fruta = (
+        ('AGT', 'Aguacate'),
+    )
+    frutaHuerta = models.CharField(max_length=3, choices=fruta, default='AGT')
 
     def Mostrar(self):
-        return "{}, {}".format(self.nombreHuerta, self.estatusHuerta)
+        return "{}, {}".format(self.nombreHuerta, self.get_estatusHuerta_display())
 
     def __str__(self):
         return self.Mostrar()
@@ -175,12 +188,19 @@ class Pedido(models.Model):
     fechaPedido = models.DateField()
     totalKilosPedido = models.IntegerField(blank=True)
     totalPalletsPedido = models.IntegerField(blank=True)
-    mercadoPedido = models.CharField(max_length=20, blank = True)
-    destinoPedido = models.CharField(max_length=20, blank = True)
-
+    destinoPedido = models.CharField(max_length=50, blank = True)
+    observacionPedido = models.CharField(max_length=500, blank = True)
+    mercado = (
+        ('M_N', 'Nacional'),
+        ('M_E', 'Exportación'),
+        ('M_O', 'Otros destinos'),
+    )
+    mercadoPedido = models.CharField(max_length=3, choices=mercado, default='Nacional')
     estatus = (
-        ('P_P', 'Pendiente'),
-        ('P_T', 'Terminado'),
+        ('P_I', 'Iniciado'),
+        ('P_O', 'Ordenado'),
+        ('P_V', 'En viaje'),
+        ('P_C', 'Completado'),
     )
     estatusPedido = models.CharField(max_length=3, choices=estatus, default='Pendiente')
 
@@ -198,6 +218,7 @@ class Pedido(models.Model):
 
 class Calibre(models.Model):
     numCalibre = models.IntegerField(blank=True)
+    descripcionCalibre = models.CharField(max_length=500, blank = True)
 
     def Mostrar(self):
         return "Calibre: {}".format(self.numCalibre)
@@ -248,19 +269,24 @@ class PedidoCalibreCalidad(models.Model):
 class OrdenCorte(models.Model):
     fechaOrden = models.DateField()
     numeroOrden = models.CharField(max_length=20, blank = True)
-    cantidadFruta = models.FloatField(max_length=10, blank = True)
-    tipoFruta = models.CharField(max_length=20, blank = True)
-    calidadFruta = models.CharField(max_length=20, blank = True)
-    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE)
-    tipoCorte = models.CharField(max_length=20, blank = True)
-    estatus = (
-        ('O_P', 'Pendiente'),
-        ('O_T', 'Terminado'),
+
+    fruta = (
+        ('HSS', 'Aguacate Hass'),
+        ('MDZ', 'Aguacate Mendez'),
+        ('CLL', 'Aguacate Criollo'),
     )
-    estatusOrden = models.CharField(max_length=3, choices=estatus, default='Pendiente')
+    tipoFruta = models.CharField(max_length=3, choices=fruta, default='')
+    corte = (
+        ('','(Seleccione)'),
+        ('AVN', 'Aventajado'),
+        ('FLC', 'Flor loca'),
+    )
+    frutaHuerta = models.CharField(max_length=3, choices=corte, default='')
+    tipoCorte = models.CharField(max_length=20, blank = True)
+    idPedido = models.OneToOneField(Pedido, on_delete=models.CASCADE, null=True)
 
     def Mostrar(self):
-        return "Orden: {} - {}".format(self.numeroOrden, self.get_estatusOrden_display())
+        return "Orden: {} - {}".format(self.numeroOrden, self.fechaOrden)
 
     def __str__(self):
         return self.Mostrar()
@@ -268,7 +294,7 @@ class OrdenCorte(models.Model):
     class Meta:
         verbose_name= 'OrdenCorte'
         verbose_name_plural= 'OrdenesCorte'
-        db_table= 'ordenCorte'
+        db_table= 'ordencorte'
         ordering= ['id']
 
 class ViajeCorte(models.Model):
@@ -276,18 +302,14 @@ class ViajeCorte(models.Model):
     idCamionTransporte = models.ForeignKey('CamionTransporte', related_name='principal', on_delete=models.CASCADE)
     idCamionSecundarioTransporte = models.ForeignKey('CamionTransporte', related_name='secundario', on_delete=models.CASCADE)
     horaSalida = models.TimeField(max_length=20, blank = True)
-    horaLlegada = models.TimeField(max_length=20, blank = True)
+    horaLlegada = models.TimeField(max_length=20, blank = True, null=True)
     idOrdenCorte = models.ForeignKey('OrdenCorte', on_delete=models.CASCADE)
     idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
+    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE, null=True)
     puntoReunion = models.CharField(max_length=500, blank = True)
-    estatus = (
-        ('V_P', 'No terminado'),
-        ('V_T', 'Terminado'),
-    )
-    estatusViaje = models.CharField(max_length=3, choices=estatus, default='No terminado')
 
     def Mostrar(self):
-        return "Viaje del dia: {} - {}".format(self.fechaViaje, self.get_estatusViaje_display())
+        return "Viaje del dia: {} - {}".format(self.fechaViaje, self.horaSalida)
 
     def __str__(self):
         return self.Mostrar()
@@ -298,13 +320,127 @@ class ViajeCorte(models.Model):
         db_table= 'viajecorte'
         ordering= ['id']
 
+class Incidencia(models.Model):
+    descripcionIncidencia = models.CharField(max_length=500, blank = True)
+    idTrabajador = models.ForeignKey('Trabajador', on_delete=models.CASCADE)
+    fechaIncidencia = models.DateField()
+    descripcionSolucion = models.CharField(max_length=500, blank = True)
+
+    temas = (
+        ('B_T','Bitacoras'),
+        ('C_M','Camiones'),
+        ('C_A','Calidad'),
+        ('C_L','Clientes'),
+        ('C_D','Cuadrillas'),
+        ('D_C','Documentos'),
+        ('E_N','Encargados'),
+        ('G_R','Gerentes'),
+        ('H_R','Huertas'),
+        ('G_F','Jefes'),
+        ('O_C','Ordenes de corte'),
+        ('P_D','Pedidos'),
+        ('P_T','Productores'),
+        ('T_B','Trabajadores'),
+        ('T_P','Transportes'),
+        ('V_J','Viajes'),
+    )
+    temaIncidencia = models.CharField(max_length=3, choices=temas, default='B_T')
+
+    estatus = (
+        ('I_P', 'Pendiente'),
+        ('I_R', 'Resuelta'),
+    )
+    estatusIncidencia = models.CharField(max_length=3, choices=estatus, default='I_P')
+
+    def Mostrar(self):
+        return "Incidencia: {} - {}".format(self.id, self.get_estatusIncidencia_display())
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'Incidencia'
+        verbose_name_plural= 'Incidencias'
+        db_table= 'incidencia'
+        ordering= ['id']
+
+class PrecioAutorizado(models.Model):
+    precioFijo = models.FloatField(blank=True)
+    descripcion = models.CharField(max_length=500, blank = True)
+    precioActual = models.FloatField(blank=True)
+    vigencia = models.DateField()
+
+    estados = (
+        ('AGS', 'Aguascalientes'),
+        ('BC', 'Baja California'),
+        ('BCS', 'Baja California Sur'),
+        ('CAM', 'Campeche'),
+        ('CHIS', 'Chiapas'),
+        ('CHIH', 'Chihuahua'),
+        ('CDMX', 'Ciudad de México'),
+        ('COAH', 'Coahuila'),
+        ('COL', 'Colima'),
+        ('DGO', 'Durango'),
+        ('GTO', 'Guanajuato'),
+        ('GRO', 'Guerrero'),
+        ('HGO', 'Hidalgo'),
+        ('JAL', 'Jalisco'),
+        ('MEX', 'México'),
+        ('MIC', 'Michoacán'),
+        ('MOR', 'Morelos'),
+        ('NAY', 'Nayarit'),
+        ('NL', 'Nuevo León'),
+        ('OAX', 'Oaxaca'),
+        ('PUE', 'Puebla'),
+        ('QRO', 'Querétaro'),
+        ('QR', 'Quintana Roo'),
+        ('SLP', 'San Luis Potosí'),
+        ('SIN', 'Sinaloa'),
+        ('SON', 'Sonora'),
+        ('TAB', 'Tabasco'),
+        ('TAMPS', 'Tamaulipas'),
+        ('TLAX', 'Tlaxcala'),
+        ('VER', 'Veracruz'),
+        ('YUC', 'Yucatán'),
+        ('ZAC', 'Zacatecas'),
+    )
+
+    estadoAplica = models.CharField(max_length=5, choices=estados, default='')
+
+    def Mostrar(self):
+        return "Precio de: {} - Autorizado para: {}".format(self.precioActual, self.get_estadoAplica_display())
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name= 'PrecioAutorizado'
+        verbose_name_plural= 'PreciosAutorizados'
+        db_table= 'precioautorizado'
+        ordering= ['id']
+
+class FrutaHuerta(models.Model):
+    idHuerta = models.OneToOneField('Huerta', on_delete=models.CASCADE)
+    descripcionFruta = models.CharField(max_length=500, blank=True)
+    precioFruta = models.FloatField(blank=True)
+
+    def Mostrar(self):
+        return "Huerta: {} - Fruta: {}".format(self.idHuerta.nombreHuerta, self.descripcionFruta)
+
+    def __str__(self):
+        return self.Mostrar()
+
+    class Meta:
+        verbose_name = 'FrutaHuerta'
+        verbose_name_plural = 'FrutaHuertas'
+        db_table = 'frutahuerta'
+        ordering = ['id']
+
 class ReporteCorte(models.Model):
     fecha = models.DateField()
-    idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
-    documento = models.FileField(upload_to = 'Reportes/Corte')
-    cajasCortadas = models.IntegerField(blank=True)
+    idViaje = models.OneToOneField('ViajeCorte', on_delete=models.CASCADE, null=True, unique=True)
     observacionesReporte = models.CharField(max_length=500, blank = True)
-
+    cajasCortadas = models.IntegerField(blank=True)
     def Mostrar(self):
         return "Reporte del dia: {} - {} cajas cortadas.".format(self.fecha, self.cajasCortadas)
 
@@ -313,6 +449,6 @@ class ReporteCorte(models.Model):
 
     class Meta:
         verbose_name= 'ReporteCorte'
-        verbose_name_plural= 'ReporteCortes'
+        verbose_name_plural= 'ReportesCorte'
         db_table= 'reportecorte'
         ordering= ['id']

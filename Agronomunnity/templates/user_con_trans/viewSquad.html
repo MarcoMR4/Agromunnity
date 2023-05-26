@@ -1,0 +1,128 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Cuadrillas{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-md-6 text-md-start">
+                <h3 class="py-3">Cuadrillas registradas</h3>
+            </div>
+            <div class="col-md-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar ordenes...">
+            </div>
+        </div>
+        {% if ncuadrillas > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Estado</th>
+                            <th>Nombre</th>
+                            <th>Gerente</th>
+                            <th>Jefe</th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in cuadrillas %}
+                            <tr>
+                                {% if a.estatusCuadrilla == 'C_A' %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Activa</td>
+                                {% else %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
+                                {% endif %}
+                                <td>{{a.nombreCuadrilla}}</td>
+                                <td>{{a.idGerenteCuadrilla.usuario.first_name}} {{a.idGerenteCuadrilla.usuario.last_name}}</td>
+                                <td>{{a.idJefeCuadrilla.usuario.first_name}} {{a.idJefeCuadrilla.usuario.last_name}}</td>
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div class="modal fade" id="detalles{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title">Panel de detalles</h5>
+                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        {% if a.estatusCuadrilla == 'C_I' %}
+                                                            <div class="alert alert-danger rounded-pill mx-5 text-xs" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>Esta cuadrilla no esta activa por el momento.
+                                                            </div>
+                                                        {% elif a.estatusCuadrilla == 'C_A' %}
+                                                            <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
+                                                                <i class="fa-solid fa-info-circle mr-2"></i>La cuadrilla esta activa.
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Nombre:</p>
+                                                        <p>{{a.nombreCuadrilla}}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <p class="fw-bold mb-0">Jefe de cuadrilla:</p>
+                                                        <p>{{a.idJefeCuadrilla.usuario.first_name}} {{a.idJefeCuadrilla.usuario.last_name}}</p>
+                                                    </div>
+                                                </div>
+                                              <div class="row">
+                                                <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Gerente de cuadrilla:</p>
+                                                    <p>{{a.idGerenteCuadrilla.usuario.first_name}} {{a.idGerenteCuadrilla.usuario.last_name}}</p>
+                                                </div>
+                                                  <div class="col-md-6">
+                                                    <p class="fw-bold mb-0">Cuadrilla localizada en:</p>
+                                                    <p>{{a.ubicacionCuadrilla}}</p>
+                                                  </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="align-items-center">
+                                                    <p class="fw-bold mb-2">MIEMBROS</p>
+                                                </div>
+                                                <div class="col-12 table-responsive" >
+                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
+                                                        <thead>
+                                                            <tr class="align-items-center">
+                                                                <th>Nombre</th>
+                                                                <th>NSS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for b in miembros %}
+                                                                {% if a.id == b.idCuadrilla.id %}
+                                                                    <tr>
+                                                                        <td>{{b.nombre}} {{b.apellidoP}} {{b.apellidoM}}</td>
+                                                                        <td>{{b.noImss}}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay cuadrillas registradas</h5>
+                    <p class="card-text">Actualmente no hay cuadrillas registradas en el sistema. Por favor, comuniquese con el encargado de bitacora.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

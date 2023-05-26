@@ -1,0 +1,133 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Huertas{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-6 text-md-start">
+                <h3 class="py-3">Estatus de inocuidad de las huertas</h3>
+            </div>
+            <div class="col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre...">
+            </div>
+        </div>
+        {% if nhuertas > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Estatus Inocuidad</th>
+                            <th>Clave Sagarpa</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in huertas %}
+                            <tr>
+                                <td>{{a.nombreHuerta}}</td>
+                                {% if a.estatusHuerta == 'H_A' %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Activa</td>
+                                {% else %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
+                                {% endif %}
+                                <td>{{a.estatusInocuidadHuerta}}</td>
+                                <td>{{a.claveSagarpaHuerta}}</td>
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-rotate"></i>
+                                    </button>
+                                    <div class="modal fade" id="modificar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="modificar">
+                                                            <input type="hidden" name="Huerta" value={{a.id}}>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                  {% if a.estatusHuerta == 'H_A' %}
+                                                                    <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
+                                                                      <i class="fa-solid fa-circle-check mr-2"></i>Esta huerta esta activa.
+                                                                    </div>
+                                                                  {% else %}
+                                                                    <div class="alert alert-danger rounded-pill mx-5 text-xs" role="alert">
+                                                                      <i class="fa-solid fa-times-circle mr-2"></i>Esta huerta esta inactiva.
+                                                                    </div>
+                                                                  {% endif %}
+                                                                </div>
+                                                            </div>
+                                                          <div class="row">
+                                                            <div class="col-md-12">
+                                                              <p class="fw-bold mb-0">Nombre de la huerta:</p>
+                                                              <p>{{a.nombreHuerta}}</p>
+                                                            </div>
+                                                          </div>
+                                                          <div class="row">
+                                                            <div class="col-md-6">
+                                                              <div class="col-md-12">
+                                                                    <p class="fw-bold mb-0">Tipo de fruta:</p>
+                                                                    <p>{{a.frutaHuerta}}</p>
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                              <p class="fw-bold mb-0">Municipio:</p>
+                                                              <p>{{a.ubicacionHuerta}}</p>
+                                                            </div>
+                                                          </div>
+                                                          <div class="row">
+                                                            <div class="col-md-6">
+                                                              <div class="col-md-12">
+                                                                    <p class="fw-bold mb-0">Coordenadas:</p>
+                                                                    <p>{{a.localizacionHuerta}}</p>
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                              <p class="fw-bold mb-0">Productor a cargo:</p>
+                                                              <p>{{a.idProductor.nombre}} {{a.idProductor.apellidoP}} {{a.idProductor.apellidoM}}</p>
+                                                            </div>
+                                                          </div>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Clave" value={{a.claveSagarpaHuerta}}>
+                                                                <label>Clave de Sagarpa</label>
+                                                            </p>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Inocuidad" value={{a.estatusInocuidadHuerta}}>
+                                                                <label>Estatus de inocuidad</label>
+                                                            </p>
+                                                            <button type="submit" class="btn  text-light" style="background-color: #4CAF50;">
+                                                                <i class="fa-solid fa-floppy-disk mr-2"></i>
+                                                                Guardar
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay huertas registradas</h5>
+                    <img src="/static/assets/img/icons/orchard.png" width="70">
+                    <p class="card-text">Actualmente no hay huertas registradas en el sistema. Por favor, comuniquese con el encargado del área.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

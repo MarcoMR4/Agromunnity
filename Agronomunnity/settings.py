@@ -1,5 +1,13 @@
 import os
 from pathlib import Path
+import locale
+
+# Establecer el separador decimal como punto
+locale.setlocale(locale.LC_NUMERIC, 'en_US.UTF-8')
+
+# Configuración de formato numérico de Django
+USE_THOUSAND_SEPARATOR = False
+DECIMAL_SEPARATOR = '.'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

@@ -1,0 +1,189 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Fruta{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+        <div class="row text-center justify-content-center align-items-center py-3">
+            <div class="text-2 col-md-4 text-md-start">
+                <h3 class="py-3">Fruta de huertas</h3>
+            </div>
+            <div class="col-md-4 col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar frutas...">
+            </div>
+            {% if huertas.count > 0 %}
+            <div class="my-2 col-md-4 col-6 text-end" style="width: 100%;">
+                <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                    +<i class="nav-icon fa-solid fa-leaf mr-2"></i> Nueva
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        {% if huertas.count > 0 %}
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="alert alert-danger rounded-pill w-lg-25 text-xs text-center" role="alert">
+                    <i class="fa-solid fa-info-circle mr-2"></i>Hay huertas que un no se les ha registrado la fruta, favor de hacerlo lo antes posible.
+                </div>
+            </div>
+        {% endif %}
+        {% if fruta.count > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Huerta</th>
+                            <th>Precio</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in fruta %}
+                            <tr>
+                                <td>{{a.descripcionFruta}}</td>
+                                <td>{{a.idHuerta.nombreHuerta}}</td>
+                                <td>${{a.precioFruta}}</td>
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div class="modal fade" id="modificar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="modificar">
+                                                            <input type="hidden" name="Fruta" value={{a.id}}>
+                                                            <p class="form-floating mb-3">
+                                                                <input class="form-control" type="text" name="Descripcion" value="{{a.descripcionFruta}}">
+                                                                <label>Descripción</label>
+                                                            </p>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <select class="form-control" name="Huerta">
+                                                                            <option value="{{a.idHuerta.id}}" selected >{{ a.idHuerta }}</option>
+                                                                            {% for h in huertas %}
+                                                                            <option value="{{ h.id }}">{{ h }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                        <label>Huerta</label>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="form-floating mb-3">
+                                                                        <input class="form-control" type="currency" name="Precio" value={{ a.precioFruta}}>
+                                                                        <label>Precio de la fruta (MXN)</label>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                <button type="button" class="btn btn-danger text-xs mx-1" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                                    <i class="nav-icon fas fa-trash"></i>Eliminar
+                                                                </button>
+                                                                
+                                                                <button type="submit" class="btn text-light text-xs mx-1" style="background-color: #4CAF50;">
+                                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="eliminar{{a.id}}">
+                                        <div class="modal-dialog text-center">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="fs-6">¿Seguro que quieres eliminar este precio?</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="text-center mx-5 rounded">
+                                                        <p class="fs-10">*Cuidado, toma en cuenta que se necestia este dato para generar viajes de corte y ordenes de corte.</p>
+                                                    </div>
+                                                    <div class="text-center d-inline-block">
+                                                        <p class="form-floating">
+                                                            <form method="POST" enctype="multipart/form-data">
+                                                                {% csrf_token %}
+                                                                
+                                                                        <input type="hidden" name="Id" value="eliminar">
+                                                                        <input type="hidden" name="Fruta" value={{a.id}}>
+                                                                        <button type="submit" class="btn btn-danger">
+                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                        </button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay registros asignados a huertas aun</h5>
+                    <img src="/static/assets/img/icons/orchard.png" width="70">
+                    <p class="card-text">Actualmente no hay registros en el sistema. Por favor, registre la fruta de cada huerta, es importante para generar pedidos y viajes de corte.</p>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="modal fade" id="exampleModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header align-items-center">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de registro</h1>
+                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="text-center">
+                                <input type="hidden" name="Id" value="agregar">
+                                <p class="form-floating mb-3">
+                                    {{form.Descripcion}}
+                                    <label>Descripcion</label>
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Huerta}}
+                                            <label>Huerta</label>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="form-floating mb-3">
+                                            {{form.Precio}}
+                                            <label>Precio (MXN)</label>
+                                        </p>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                    +<i class="fa-solid fa-leaf mr-2"></i>Registrar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

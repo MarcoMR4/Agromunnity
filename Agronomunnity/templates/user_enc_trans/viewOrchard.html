@@ -1,0 +1,137 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Huertas{% endblock %}
+
+{% block content %}
+    <div class="mx-5 align-items-center justify-content-center">
+
+        <div class="text-center d-flex justify-content-between align-items-center py-3">
+            <div class="text-2">
+                <h3 class="py-3">Huertas</h3>
+            </div>
+            {% if nproductores > 0 %}
+                <div class="my-2 text-end" style="width: 100%;">
+                    <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                        +<i class="nav-icon fas fa-tree"></i> Nuevo
+                    </button>
+                </div>
+            {% endif %}
+            
+        </div>
+        {% if nhuertas > 0 %}
+            <div class="table-responsive">
+                <table id="example" class="table table-striped text-center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Localizacion</th>
+                            <th>Estado</th>
+                            <th>Productor</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in huertas %}
+                            <tr>
+                                <td>{{a.nombreHuerta}}</td>
+                                <td>{{a.localizacionHuerta}}</td>
+                                {% if a.estatusHuerta == 'H_A' %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Activa</td>
+                                {% else %}
+                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
+                                {% endif %}
+                                <td>{{a.idProductor.nombre}} {{a.idProductor.apellidoP}} {{a.idProductor.apellidoM}}</td>
+                                <td>
+                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <div class="modal fade" id="modificar{{a.id}}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header align-items-center">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de edición</h1>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="text-center">
+                                                            <input type="hidden" name="Id" value="modificar">
+                                                            <input type="hidden" name="Huerta" value={{a.id}}>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <p class="form-floating mb-3">
+                                                                        {% if a.estatusPedido == 'H_I' %}
+                                                                            <div class="alert alert-danger" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>La huerta esta inactiva.
+                                                                            </div>
+                                                                        {% elif a.estatusPedido == 'P_A' %}
+                                                                            <div class="alert alert-success" role="alert">
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>La huerta esta activa.
+                                                                            </div>
+                                                                        {% endif %}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Nombre:</p>
+                                                                    <p>{{a.nombreHuerta}}</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Fruta:</p>
+                                                                    <p>{{a.frutaHuerta}}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <p class="fw-bold mb-0">Productor:</p>
+                                                                    <p>{{a.idProductor.nombre}} {{a.idProductor.apellidoP}} {{a.idProductor.apellidoM}}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Municipio:</p>
+                                                                    <p>{{a.ubicacionHuerta}}</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Localizacion:</p>
+                                                                    <p>{{a.localizacionHuerta}}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Clave de Sagarpa:</p>
+                                                                    <p>{{a.claveSagarpaHuerta}}</p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p class="fw-bold mb-0">Estatus de inocuidad:</p>
+                                                                    <p>{{a.estatusInocuidadHuerta}}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="card text-center shadow rounded mx-5">
+                <div class="card-body text-center">
+                    <h5 class="card-titl">No hay huertas registradas</h5>
+                    <img src="/static/assets/img/icons/orchard.png" width="70">
+                    <p class="card-text">Actualmente no hay huertas registradas en el sistema. Por favor, registre una nueva huerta para poder asignarla en pedidos futuros.</p>
+                    {% if nproductores < 2 %}
+                        <p class="mt-2 card-text">Para poder registrar huertas primero asegurate que halla <br>productores registrados.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+{% endblock content %}
