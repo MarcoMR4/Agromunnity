@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
-
+from django.db.models import Min, Max
 from django import forms
 from django.db.models.functions import Concat
 from .models import Productor, Trabajador, Huerta, Pedido, RolTrabajador, Cliente, CamionTransporte, OrdenCorte, Cuadrilla, Calibre, Calidad, PrecioAutorizado, ViajeCorte
@@ -195,8 +195,8 @@ class AddOrchard(forms.Form):
 
     estatusHuerta = (
     ('','(Seleccione)'),
-    ('H_A', 'Activo'),
-    ('H_I', 'Inactivo'),
+    ('H_D', 'Con fruta Disponible'),
+    ('H_S', 'Sin fruta disponible')
     )
 
     Estatus = forms.ChoiceField(
@@ -231,8 +231,8 @@ class AddSquad(forms.Form):
 
     estatusCuadrilla = (
     ('', '(Seleccione)'),
-    ('C_A', 'Activa'),
-    ('C_I', 'Inactiva'),
+    ('C_L', 'Libre'),
+    ('C_O', 'Ocupada'),
     )
 
     Estatus = forms.ChoiceField(
@@ -324,6 +324,12 @@ class AddOrder(forms.Form):
     Observacion = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+    DatosT = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'hidden': 'true'}
         )
     )
 
@@ -453,15 +459,7 @@ class AddTrip(forms.Form):
     )
 
     Cuadrilla = forms.ModelChoiceField(
-        queryset = Cuadrilla.objects.all().order_by('nombreCuadrilla'),
-        empty_label="(Seleccione)",
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
-        )
-    )
-
-    Huerta = forms.ModelChoiceField(
-        queryset = Huerta.objects.all().order_by('nombreHuerta'),
+        queryset = Cuadrilla.objects.filter(estatusCuadrilla='C_L').order_by('nombreCuadrilla'),
         empty_label="(Seleccione)",
         widget=forms.Select(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
@@ -512,17 +510,12 @@ class AddIncident(forms.Form):
 
 class AddCourtOrder(forms.Form):
 
-    fruta = (
-        ('','(Seleccione)'),
-        ('HSS', 'Aguacate Hass'),
-        ('MDZ', 'Aguacate Mendez'),
-        ('CLL', 'Aguacate Criollo'),
-    )
-    Fruta = forms.ChoiceField(
+    Huerta = forms.ModelChoiceField(
+        queryset = Huerta.objects.all().order_by('nombreHuerta'),
+        empty_label="(Seleccione)",
         widget=forms.Select(
-            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required':'true'}
-        ),
-        choices=fruta
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;'} 
+        )
     )
 
     corte = (
@@ -683,5 +676,21 @@ class AddReport(forms.Form):
     Observaciones = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'style': 'font-size: 12px;'}
+        )
+    )
+
+class SearchTrip(forms.Form):
+    
+    fecha_inicio = ViajeCorte.objects.all().aggregate(Min('fechaViaje')).get('fechaViaje__min')
+    fecha_fin = ViajeCorte.objects.all().aggregate(Max('fechaViaje')).get('fechaViaje__max')
+
+    Inicio = forms.DateField(
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': True, 'type': 'date', 'value': fecha_inicio}
+        )
+    )
+    Fin = forms.DateField(
+        widget=forms.DateInput(
+            attrs={'class': 'form-control', 'style': 'font-size: 12px;', 'required': True, 'type': 'date', 'value': fecha_fin}
         )
     )

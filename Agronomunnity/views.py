@@ -2,8 +2,16 @@ from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.db.models import Q
 from datetime import date
+from django.conf import settings
+import os
+import locale
+from django.db.models import Min, Max
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+from openpyxl.drawing.image import Image
 from django.contrib.auth.decorators import login_required
-from .forms import UserLoginForm, AddWorker, AddCourtOrder, AddProducer, AddTransport, AddSquad, AddOrchard, AddSquadMember, AddOrder, AddClient, AddCaliber, AddQuality, AddTrip, AddIncident, AddPrice, AddFruit, AddRol, AddReport
+from .forms import UserLoginForm, AddWorker, AddCourtOrder, AddProducer, AddTransport, AddSquad, AddOrchard, AddSquadMember, AddOrder, AddClient, AddCaliber, AddQuality, AddTrip, AddIncident, AddPrice, AddFruit, AddRol, AddReport, SearchTrip
 from django.contrib.auth import authenticate, logout, login
 from .models import Trabajador, RolTrabajador, User, CamionTransporte, Cuadrilla, Productor, Huerta, MiembroCuadrilla, Cliente, Pedido, Calibre, Calidad, PedidoCalibreCalidad, OrdenCorte, ViajeCorte, ReporteCorte, Incidencia, PrecioAutorizado, FrutaHuerta
 from django.contrib.auth.hashers import make_password
@@ -11,10 +19,10 @@ from django.contrib.auth.hashers import make_password
 #dashboard 
 @login_required
 def index(request):
-    ca = Cuadrilla.objects.filter(estatusCuadrilla='C_A').count()
-    ci = Cuadrilla.objects.filter(estatusCuadrilla='C_I').count()
-    ha = Huerta.objects.filter(estatusHuerta="H_A").count()
-    hi = Huerta.objects.filter(estatusHuerta="H_I").count()
+    ca = Cuadrilla.objects.filter(estatusCuadrilla='C_L').count()
+    ci = Cuadrilla.objects.filter(estatusCuadrilla='C_O').count()
+    ha = Huerta.objects.filter(estatusHuerta="H_D").count()
+    hi = Huerta.objects.filter(estatusHuerta="H_S").count()
     pi = Pedido.objects.filter(estatusPedido="P_I").count() 
     po = Pedido.objects.filter(estatusPedido="P_O").count()
     pv = Pedido.objects.filter(estatusPedido="P_V").count()
@@ -888,7 +896,7 @@ def transportModify(request):
         return render(request, 'denied.html')
 
 def orchard(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T', 'I_C', 'E_A'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'I_C', 'E_A'):
 
         form = AddOrchard(request.POST)
         huertas = Huerta.objects.all()
@@ -1069,7 +1077,7 @@ def orchardModify(request):
 def trip(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T'):
         form = AddTrip()
-        vc = ViajeCorte.objects.all()
+        vc = ViajeCorte.objects.all().order_by('-fechaViaje')
         nvc = vc.count()
         nop = OrdenCorte.objects.filter(idPedido__estatusPedido='P_O').count()
         pcc = PedidoCalibreCalidad.objects.all()
@@ -1093,7 +1101,6 @@ def trip(request):
                     request.session['Orden'] = request.POST['Orden']
                     request.session['Cuadrilla'] = request.POST['Cuadrilla']
                     request.session['Punto'] = request.POST['Punto']
-                    request.session['Huerta'] = request.POST['Huerta']
                     url = reverse('ctr')
                     return redirect(url)
                 except Exception as e:
@@ -1109,7 +1116,6 @@ def trip(request):
                     request.session['Salida'] = request.POST['Salida']
                     request.session['Orden'] = request.POST['Orden']
                     request.session['Cuadrilla'] = request.POST['Cuadrilla']
-                    request.session['Huerta'] = request.POST['Huerta']
                     request.session['Punto'] = request.POST['Punto']
                     url = reverse('ctm')
                     return redirect(url)
@@ -1156,10 +1162,14 @@ def tripDelete(request):
         try:
             #Se obtiene el miembro y elimina
             v = ViajeCorte.objects.get(id=request.session.get('Viaje'))
+            cuadrilla = Cuadrilla.objects.get(id=v.idCuadrilla.id)
+            cuadrilla.estatusCuadrilla = 'C_L'
+            cuadrilla.save()
             o = OrdenCorte.objects.get(id=v.idOrdenCorte.id)
             p = Pedido.objects.get(id=o.idPedido.id)
             p.estatusPedido = 'P_O'
             p.save()
+            cuadrilla.save()
             v.delete()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
             
@@ -1181,10 +1191,10 @@ def tripRegister(request):
             #Se obtienen los datos y se crea el miembro
             camion1 = CamionTransporte.objects.get(id=request.session.get('Camion1'))
             camion2 = CamionTransporte.objects.get(id=request.session.get('Camion2'))
-            orden = OrdenCorte.objects.get(idPedido__numeroPedido=request.session.get('Orden'))
+            orden = OrdenCorte.objects.get(id=request.session.get('Orden'))
             pedido = Pedido.objects.get(id=orden.idPedido.id)
             cuadrilla = Cuadrilla.objects.get(id=request.session.get('Cuadrilla'))
-            huerta = Huerta.objects.get(id=request.session.get('Huerta'))
+            cuadrilla.estatusCuadrilla = 'C_O'
             ViajeCorte.objects.create(
                 fechaViaje=date.today(),
                 idCamionTransporte=camion1,
@@ -1192,52 +1202,19 @@ def tripRegister(request):
                 horaSalida=request.session.get('Salida'),
                 idOrdenCorte=orden,
                 idCuadrilla=cuadrilla,
-                idHuerta=huerta,
                 puntoReunion=request.session.get('Punto')
             )
             pedido.estatusPedido = 'P_V'
+            cuadrilla.save()
             pedido.save()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Viaje registrado correctamente."
         except Exception as e:
+            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-            
-        url = reverse('ct')
-        return redirect(url)
-    else: 
-        return render(request, 'denied.html')
-
-@login_required
-def tripModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'E_T'):
-        try:
-            #Se obtienen los datos y se modifican
-            camion1 = CamionTransporte.objects.get(id=request.session.get('Camion1'))
-            camion2 = CamionTransporte.objects.get(id=request.session.get('Camion2'))
-            orden = OrdenCorte.objects.get(id=request.session.get('Orden'))
-            cuadrilla = OrdenCorte.objects.get(id=request.session.get('Cuadrilla'))
-
-            viaje = ViajeCorte.objects.get(id=request.session.get('Viaje'))
-            viaje.fechaViaje=request.session.get('Fecha')
-            viaje.idCamionTransporte=camion1
-            viaje.idCamionSecundarioTransporte=camion2
-            viaje.horaSalida=request.session.get('Salida')
-            viaje.horaLlegada=request.session.get('Llegada')
-            viaje.idOrdenCorte = orden
-            viaje.idCuadrilla = cuadrilla
-            viaje.puntoReunion=request.session.get('Punto')
-            viaje.estatusViaje=request.session.get('Estatus')
-            viaje.save()
-            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
-            
-            request.session['Operacion'] = 1
-            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
-        except Exception as e:
-            request.session['Operacion'] = 0
-            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
             
         url = reverse('ct')
         return redirect(url)
@@ -1272,6 +1249,7 @@ def order(request):
                     request.session['Destino'] = request.POST['Destino']
                     request.session['Cliente'] = request.POST['Cliente']
                     request.session['Observacion'] = request.POST['Observacion']
+                    request.session['DatosT'] = request.POST['DatosT']
                     url = reverse('sor')
                     return redirect(url)
                 except Exception as e:
@@ -1352,7 +1330,13 @@ def orderRegister(request):
             cliente = Cliente.objects.get(id=request.session.get('Cliente'))
             kilos = float(request.session.get('Kilos'))
             pallets = int(kilos // 1000)
-            Pedido.objects.create(
+            datos = request.session.get('DatosT')
+            # Eliminar la coma al final de la cadena
+            datos = datos.rstrip(',')
+            # Dividir la cadena en segmentos de tres elementos
+            segmentos = datos.split(',')
+            # Iterar sobre los segmentos
+            p = Pedido.objects.create(
                 idTrabajador=request.user.trabajador,
                 idCliente = cliente,
                 numeroPedido=request.session.get('Numero'),
@@ -1364,14 +1348,32 @@ def orderRegister(request):
                 destinoPedido=request.session.get('Destino'),
                 estatusPedido='P_I'
             )
+
+            for i in range(0, len(segmentos), 3):
+                # Obtener los datos individuales
+                D1 = segmentos[i]
+                D2 = segmentos[i+1]
+                D3 = segmentos[i+2]
+
+                # Realizar las consultas
+                calidad = Calidad.objects.get(id=D1)
+                calibre = Calibre.objects.get(id=D2)
+
+                # Realizar la inserción
+                PedidoCalibreCalidad.objects.create(
+                    idPedido=p,
+                    idCalibre=calibre,
+                    idCalidad=calidad,
+                    cantidadCC=D3,
+                )
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
             request.session['Operacion'] = 1
             request.session['Mensaje'] = "Pedido registrado correctamente."
         except Exception as e:
+            print(e)
             request.session['Operacion'] = 0
             request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
-            
         url = reverse('so')
         return redirect(url)
     else: 
@@ -1789,7 +1791,7 @@ def courtOrder(request):
 
         form = AddCourtOrder()
         npi = Pedido.objects.filter(estatusPedido='P_I').count()
-        oc = OrdenCorte.objects.all()
+        oc = OrdenCorte.objects.order_by('-fechaOrden')
         pcc = PedidoCalibreCalidad.objects.all()
         noc = oc.count()
         #si se envia un formulario
@@ -1806,7 +1808,7 @@ def courtOrder(request):
                     return redirect(url)
             elif request.POST['Id']=='agregar':
                 try:
-                    request.session['Fruta'] = request.POST['Fruta']
+                    request.session['Huerta'] = request.POST['Huerta']
                     request.session['Corte'] = request.POST['Corte']
                     request.session['Pedido'] = request.POST['Pedido']
                     url = reverse('cor')
@@ -1877,12 +1879,13 @@ def courtOrderRegister(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_B'):
 
         try:
+            huerta = Huerta.objects.get(id=request.session.get('Huerta'))
             pedido = Pedido.objects.get(id=request.session.get('Pedido'))
             #Se obtienen los datos y se crea el miembro
             OrdenCorte.objects.create(
                 fechaOrden=date.today(),
                 numeroOrden=pedido.numeroPedido,
-                tipoFruta=request.session.get('Fruta'),
+                idHuerta=huerta,
                 tipoCorte=request.session.get('Corte'),
                 idPedido=pedido
             )
@@ -2149,10 +2152,13 @@ def finishTripRegister(request):
         try:
             #Se obtienen los datos y se crea el miembro
             viaje = ViajeCorte.objects.get(id=request.session.get('Viaje'))
+            cuadrilla = Cuadrilla.objects.get(id=viaje.idCuadrilla.id)
             orden = OrdenCorte.objects.get(id=viaje.idOrdenCorte.id)
             pedido = Pedido.objects.get(id=orden.idPedido.id)
             pedido.estatusPedido = 'P_C'
+            cuadrilla.estatusCuadrilla = 'C_L'
             pedido.save()
+            cuadrilla.save()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
             request.session['Operacion'] = 1
@@ -3324,6 +3330,252 @@ def reportRegister(request):
 @login_required
 def reportModify(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
+        try:
+            #Se obtienen los datos y se modifican
+            rol = RolTrabajador.objects.get(id=request.session.get('Rol'))
+            rol.nombreRol = request.session.get('Nombre')
+            rol.nomenclaturaRol = request.session.get('Nomenclatura')
+            rol.save()
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
+            
+        url = reverse('r')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def cutLog(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('D_G'):
+        form = SearchTrip()
+        #si se envia un formulario
+        if request.method == 'POST':
+            if request.POST['Id']=='buscar':
+                try:
+                    i = request.POST['Inicio']
+                    f = request.POST['Fin']
+                    viajes = list(ViajeCorte.objects.filter(Q(fechaViaje__range=[i, f])))
+                    return render(request, "user_dir_gral/cutLog.html", {
+                        'form':form,
+                        "viajes": viajes
+                    })
+                except Exception as e:
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "Ha ocurrido un error, intente de nuevo."
+                    url = reverse('cl')
+                    return redirect(url)
+            elif request.POST['Id']=='generar':
+                try:
+                    filas = request.POST['Filas'].split(',')
+                    viajes = ViajeCorte.objects.filter(id__in=filas)
+                    resultados = viajes.aggregate(primera_fecha=Min('fechaViaje'), ultima_fecha=Max('fechaViaje'))
+                    locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+                    i = resultados['primera_fecha']
+                    f = resultados['ultima_fecha']
+                    i_texto = i.strftime('%d de %B de %Y')
+                    f_texto = f.strftime('%d de %B de %Y')
+                    ruta = os.path.join(os.getcwd(), 'Agronomunnity', 'static', 'temp')
+                    os.makedirs(ruta, exist_ok=True)
+                    ruta = os.path.join(ruta, 'bitacora.xlsx')
+                    wb = Workbook()
+                    #titulo de la hoja
+                    hoja = wb.active
+                    hoja.title = "Bitacora"
+                    #Logos
+                    hoja.merge_cells('A1:F5')
+                    hoja['A1'] = 'FRUTIVAL SA DE CV'
+                    fuente = Font(name='Century Gothic', size=20, bold=True)
+                    hoja['A1'].font = fuente
+                    hoja['A1'].alignment = Alignment(horizontal='center', vertical='center')
+                    hoja.merge_cells('G1:G5')
+                    rimagen = os.path.join(os.getcwd(), 'Agronomunnity', 'static', 'assets', 'img')
+                    os.makedirs(rimagen, exist_ok=True)
+                    rimagen = os.path.join(rimagen, 'frutival.jpg')
+                    imagen = Image(rimagen)
+                    imagen.anchor = 'G1'
+                    imagen.width = 150
+                    imagen.height = 100
+                    hoja.add_image(imagen)
+                    hoja.merge_cells('H1:O5')
+                    texto = 'Bitacora de reportes del {} al {}'.format(i_texto, f_texto)
+                    hoja['H1'] = texto
+                    fuente = Font(name='Arial', size=11)
+                    hoja['H1'].font = fuente
+                    hoja['H1'].alignment = Alignment(horizontal='center', vertical='center')
+                    #tabla de viajes
+                    campos = ['FECHA', 'HUERTA', 'PRODUCTOR', 'TIPO DE CORTE', 'PUNTO DE REUNION',
+                              'CAMION','CONDUCTOR', 'CUADRILLA', 'CANDADO', 'KILO',
+                              'PALETS', 'MERCADO','DESTINO', 'CLIENTE', 'OBSERVACIONES']
+                    for col, campo in enumerate(campos, start=1):
+                        cell = hoja.cell(row=7, column=col)
+                        cell.value = campo
+                        cell.font = Font(bold=True)
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
+                        cell.fill = PatternFill(fill_type="solid", fgColor="4CAF50")
+                        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+                        hoja.cell(row=7, column=col).alignment = Alignment(horizontal='center', vertical='center')
+
+                    # Insertar los datos de la consulta
+                    fila_inicio_datos = 8
+                    for i, viaje in enumerate(viajes, start=fila_inicio_datos):
+                        hoja.cell(row=i, column=1, value=viaje.fechaViaje)
+                        hoja.cell(row=i, column=2, value=viaje.idOrdenCorte.idHuerta.nombreHuerta)
+                        hoja.cell(row=i, column=3, value=f"{viaje.idOrdenCorte.idHuerta.idProductor.nombre} {viaje.idOrdenCorte.idHuerta.idProductor.apellidoP} {viaje.idOrdenCorte.idHuerta.idProductor.apellidoM}")
+                        hoja.cell(row=i, column=4, value=viaje.idOrdenCorte.get_tipoCorte_display())
+                        hoja.cell(row=i, column=5, value=viaje.puntoReunion)
+                        hoja.cell(row=i, column=6, value=viaje.idCamionTransporte.modeloTransporte)
+                        hoja.cell(row=i, column=7, value=f"{viaje.idCamionTransporte.idChoferTransporte.usuario.first_name} {viaje.idCamionTransporte.idChoferTransporte.usuario.last_name}")
+                        hoja.cell(row=i, column=8, value=viaje.idCuadrilla.nombreCuadrilla)
+                        hoja.cell(row=i, column=9, value=viaje.idCamionTransporte.candadoTransporte)
+                        hoja.cell(row=i, column=10, value=viaje.idOrdenCorte.idPedido.totalKilosPedido)
+                        hoja.cell(row=i, column=11, value=viaje.idOrdenCorte.idPedido.totalPalletsPedido)
+                        hoja.cell(row=i, column=12, value=viaje.idOrdenCorte.idPedido.get_mercadoPedido_display())
+                        hoja.cell(row=i, column=13, value=viaje.idOrdenCorte.idPedido.destinoPedido)
+                        hoja.cell(row=i, column=14, value=f"{viaje.idOrdenCorte.idPedido.idCliente.nombreCliente} {viaje.idOrdenCorte.idPedido.idCliente.apellidoPCliente} {viaje.idOrdenCorte.idPedido.idCliente.apellidoMCliente}")
+                        hoja.cell(row=i, column=15, value=viaje.idOrdenCorte.idPedido.observacionPedido)
+                        fila_inicio_datos = i
+                    # Ajustar el ancho de las columnas al tamaño del título
+                    for col in range(1, len(campos) + 1):
+                        column_letter = get_column_letter(col)
+                        hoja.column_dimensions[column_letter].auto_size = True
+                    
+                    fila_inicio_datos +=3
+                    cf = get_column_letter(3)
+                    ff = get_column_letter(6)
+                    hoja.merge_cells(f'{cf}{fila_inicio_datos}:{ff}{fila_inicio_datos}')
+                    texto = 'PRECIOS AUTORIZADOS'
+                    celda = hoja[f'{cf}{fila_inicio_datos}']
+                    celda.value = texto
+                    celda.font = Font(name='Arial', size=11)
+                    celda.alignment = Alignment(horizontal='center', vertical='center')
+                    celda.fill = PatternFill(fill_type="solid", fgColor="4CAF50")
+                    celda.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+                    cf = get_column_letter(9)
+                    ff = get_column_letter(11)
+                    hoja.merge_cells(f'{cf}{fila_inicio_datos}:{ff}{fila_inicio_datos}')
+                    texto = 'FRUTA DE HUERTAS'
+                    celda = hoja[f'{cf}{fila_inicio_datos}']
+                    celda.value = texto
+                    celda.font = Font(name='Arial', size=11)
+                    celda.alignment = Alignment(horizontal='center', vertical='center')
+                    celda.fill = PatternFill(fill_type="solid", fgColor="4CAF50")
+                    celda.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+                    fila_inicio_datos +=1
+
+                     #tabla de precios autorizados
+                    campos = ['ESTADO', 'DESCRIPCION', 'PRECIO', 'VIGENCIA']
+                    for col, campo in enumerate(campos, start=3):
+                        cell = hoja.cell(row=fila_inicio_datos, column=col)
+                        cell.value = campo
+                        cell.font = Font(bold=True)
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
+                        cell.fill = PatternFill(fill_type="solid", fgColor="4CAF50")
+                        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+                        hoja.cell(row=fila_inicio_datos, column=col).alignment = Alignment(horizontal='center', vertical='center')
+
+                    #tabal de fruta huerta
+                    campos = ['HUERTA', 'FRUTA', 'PRECIO']
+                    for col, campo in enumerate(campos, start=9):
+                        cell = hoja.cell(row=fila_inicio_datos, column=col)
+                        cell.value = campo
+                        cell.font = Font(bold=True)
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
+                        cell.fill = PatternFill(fill_type="solid", fgColor="4CAF50")
+                        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+                        hoja.cell(row=fila_inicio_datos, column=col).alignment = Alignment(horizontal='center', vertical='center')
+                    fila_inicio_datos +=1
+                    precios = PrecioAutorizado.objects.all()
+                    x=0
+                    for i, precio in enumerate(precios, start=fila_inicio_datos):
+                        hoja.cell(row=i, column=3, value=precio.get_estadoAplica_display())
+                        hoja.cell(row=i, column=4, value=precio.descripcion)
+                        hoja.cell(row=i, column=5, value=precio.precioActual)
+                        hoja.cell(row=i, column=6, value=precio.vigencia)
+                        x+=1
+                    frutas = FrutaHuerta.objects.all()
+                    y=0
+                    for i, fruta in enumerate(frutas, start=fila_inicio_datos):
+                        hoja.cell(row=i, column=9, value=fruta.idHuerta.nombreHuerta)
+                        hoja.cell(row=i, column=10, value=fruta.descripcionFruta)
+                        hoja.cell(row=i, column=11, value=fruta.precioFruta)
+                        y+=1
+                    fila_inicio_datos += x if x > y else y
+                    
+                    fila_inicio_datos += 2
+                    cf = get_column_letter(3)
+                    ff = get_column_letter(6)
+                    hoja.merge_cells(f'{cf}{fila_inicio_datos}:{ff}{fila_inicio_datos}')
+                    ea= Trabajador.objects.get(rol_id=12)
+                    texto = 'Precios Autorizados por {} {}.'.format(ea.usuario.first_name, ea.usuario.last_name)
+                    celda = hoja[f'{cf}{fila_inicio_datos}']
+                    celda.value = texto
+                    celda.font = Font(name='Arial', size=9)
+                    celda.alignment = Alignment(horizontal='center', vertical='center')
+                    celda.fill = PatternFill(fill_type="solid", fgColor="FFAE9D")
+                    celda.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+                    cf = get_column_letter(8)
+                    ff = get_column_letter(11)
+                    hoja.merge_cells(f'{cf}{fila_inicio_datos}:{ff}{fila_inicio_datos}')
+                    ea= request.user.trabajador
+                    texto = 'Bitacora generada por {} {}.'.format(ea.usuario.first_name, ea.usuario.last_name)
+                    celda = hoja[f'{cf}{fila_inicio_datos}']
+                    celda.value = texto
+                    celda.font = Font(name='Arial', size=9)
+                    celda.alignment = Alignment(horizontal='center', vertical='center')
+                    celda.fill = PatternFill(fill_type="solid", fgColor="FFAE9D")
+                    celda.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+                    fila_inicio_datos +=1
+
+                    wb.save(ruta)
+                    wb.close()
+                    return render(request, "user_dir_gral/cutLog.html", {
+                        'form':form,
+                        'listo':True,
+                        'ruta': ruta
+                    })
+                except Exception as e:
+                    print(e)
+                    request.session['Operacion'] = 0
+                    request.session['Error'] = "Ha ocurrido un error, intente de nuevo."
+                    url = reverse('cl')
+                    return redirect(url)
+        else:
+            
+            return render(request, "user_dir_gral/cutLog.html", {
+                'form':form,
+            })
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def cutLogSearch(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('D_G'):
+        try:
+            i = request.session.get('Inicio')
+            f = request.session.get('Fin')
+            viajes = list(ViajeCorte.objects.filter(Q(fechaViaje__range=[i, f])))
+
+            request.session['Operacion'] = 1
+            request.session['Viajes'] = viajes
+        except Exception as e:
+            request.session['Operacion'] = 0
+            request.session['Error'] = "Ha ocurrido un error, intente de nuevo."
+            
+        url = reverse('cl')
+        return redirect(url)
+    else:
+        return render(request, 'denied.html')
+
+@login_required
+def cutLogGenerate(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('D_G'):
         try:
             #Se obtienen los datos y se modifican
             rol = RolTrabajador.objects.get(id=request.session.get('Rol'))

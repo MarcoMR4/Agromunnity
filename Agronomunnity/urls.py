@@ -55,7 +55,6 @@ urlpatterns = [
     path('vo/',views.viewOrchard, name="vo"),
     #Viaje
     path('ct/',views.trip, name="ct"),
-    path('ctm/',views.tripModify, name="ctm"),
     path('ctr/',views.tripRegister, name="ctr"),
     path('ctd/',views.tripDelete, name="ctd"),
     path('mt/',views.myTrips, name="mt"),
@@ -125,6 +124,10 @@ urlpatterns = [
     path("rpd/", views.reportDelete, name="rpd"),
     path("rpm/", views.reportModify, name="rpm"),
     path("rpr/", views.reportRegister, name="rpr"),
+    #Bitacoras
+    path('cl/',views.cutLog, name="cl"),
+    path('cls/',views.cutLogSearch, name="cls"),
+    path('clg/',views.cutLogGenerate, name="clg"),
 ]
 
 

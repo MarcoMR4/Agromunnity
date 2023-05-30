@@ -26,16 +26,22 @@
                     <i class="fa-solid fa-info-circle mr-2"></i>Hay ordenes de corte esperando a que generes su viaje de corte.
                 </div>
             </div>
+        {% else %}
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="alert alert-success rounded-pill w-lg-25 text-xs text-center" role="alert">
+                    <i class="fa-solid fa-info-circle mr-2"></i>Por el momento no hay ordenes de corte nuevas.
+                </div>
+            </div>
         {% endif %}
         {% if nvc > 0 %}
             <div class="table-responsive">
                 <table id="example" class="table table-striped text-center" style="width:100%">
                     <thead>
                         <tr>
-                            <th>No. viaje</th>
-                            <th>Cuadrilla</th>
-                            <th>Huerta</th>
-                            <th>Estado</th>
+                            <th>Viaje N°</th>
+                            <th>Camion encargado</th>
+                            <th>Cuadrilla encargada</th>
+                            <th>Creado el</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -43,114 +49,225 @@
                         {% for a in vc %}
                             <tr>
                                 <td>{{a.idOrdenCorte.idPedido.numeroPedido}}</td>
+                                <td>{{a.idCamionTransporte.modeloTransporte}}</td>
                                 <td>{{a.idCuadrilla.nombreCuadrilla}}</td>
-                                <td>{{a.idHuerta.nombreHuerta}}</td>
-                                {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
-                                    <td class="text-xs"><i class="fa-solid fa-battery-three-quarters text-info"></i><br>En viaje</td>
-                                {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
-                                    <td class="text-xs"><i class="fa-solid fa-battery text-success"></i><br>Completado</td>
-                                {% endif %}
+                                <td>{{a.fechaViaje}}</td>
                                 <td>
                                     <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
                                         <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                     </button>
                                     <div class="modal fade" id="detalles{{a.id}}">
                                         <div class="modal-dialog modal-dialog-centered">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title">Panel de detalles</h5>
-                                              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
-                                                            <div class="alert alert-info rounded-pill mx-5 text-xs" role="alert">
-                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene una orden de corte y esta en viaje, proximo a completarse.
-                                                            </div>
-                                                        {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
-                                                            <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
-                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
-                                                            </div>
-                                                        {% endif %}
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Panel de detalles</h5>
+                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
+                                                                <div class="alert alert-danger rounded-pill mx-5 text-xs" role="alert">
+                                                                    <i class="fa-solid fa-info-circle mr-2"></i>Este viaje de corte esta proximo a completarse, pero aun no se ha dado por recibido en bodega.
+                                                                </div>
+                                                            {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
+                                                                <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
+                                                                    <i class="fa-solid fa-info-circle mr-2"></i>Este viaje de corte fue completado, el encargado de recibo notifico que fue recibido en bodega.
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <p class="fw-bold mb-0">Orden número:</p>
-                                                        <p>{{a.idOrdenCorte.numeroOrden}}</p>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Viaje de corte N°:</p>
+                                                            <p>{{a.idOrdenCorte.numeroOrden}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Fecha de creación:</p>
+                                                            <p>{{a.fechaViaje}}</p>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <p class="fw-bold mb-0">Fecha:</p>
-                                                        <p>{{a.fechaViaje}}</p>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <p class="fw-bold mb-0">Punto de reunión acordado:</p>
+                                                            <p>{{a.puntoReunion}}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                              <div class="row">
-                                                <div class="col-md-12">
-                                                    <p class="fw-bold mb-0">Para el cliente:</p>
-                                                    <p>{{a.idOrdenCorte.idPedido.idCliente.nombreCliente}} {{a.idOrdenCorte.idPedido.idCliente.apellidoPCliente}} {{a.idOrdenCorte.idPedido.idCliente.apellidoMCliente}}</p>
-                                                </div>
-                                              </div>
-                                              <div class="row">
-                                                <div class="col-md-6">
-                                                    <p class="fw-bold mb-0">Contiene:</p>
-                                                    <p>{{a.idOrdenCorte.idPedido.totalPalletsPedido}} pallets.</p>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p class="fw-bold mb-0">Destino:</p>
-                                                    <p>{{a.idOrdenCorte.idPedido.destinoPedido}}</p>
-                                                </div>
-                                              </div>
-                                              <div class="row">
-                                                <div class="col-md-12">
-                                                  <p class="fw-bold mb-0">Generada por:</p>
-                                                  <p>{{a.idOrdenCorte.idPedido.idTrabajador.usuario.first_name}} {{a.idOrdenCorte.idPedido.idPedido.idTrabajador.usuario.last_name}}</p>
-                                                </div>
-                                              </div>
-                                              <div class="row">
-                                                <div class="col-md-6">
-                                                  <p class="fw-bold mb-0">Kilos:</p>
-                                                  <p>{{a.idOrdenCorte.idPedido.totalKilosPedido}}</p>
-                                                </div>
-                                                <div class="col-md-6">
-                                                  <p class="fw-bold mb-0">Mercado:</p>
-                                                  <p>{{a.idOrdenCorte.idPedido.get_mercadoPedido_display}}</p>
-                                                </div>
-                                              </div>
-                                              <div class="row">
-                                                <div class="align-items-center">
-                                                    <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
-                                                </div>
-                                                <div class="col-12 table-responsive" >
-                                                    <table id="tabla" class="table table-striped text-center" style="width:100%">
-                                                        <thead>
-                                                            <tr class="align-items-center">
-                                                                <th>Calibre</th>
-                                                                <th>Calidad</th>
-                                                                <th>Kg</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {% for b in pcc %}
-                                                                {% if a.idOrdenCorte.idPedido.id == b.idPedido.id %}
-                                                                    <tr>
-                                                                        <td>{{b.idCalibre.numCalibre}}</td>
-                                                                        <td>{{b.idCalidad.numCalidad}}</td>
-                                                                        <td>{{b.cantidadCC}}</td>
-                                                                    </tr>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Camión Principal:</p>
+                                                            <p class="text-xs">{{a.idCamionTransporte.modeloTransporte}} - {{a.idCamionTransporte.idChoferTransporte.usuario.first_name}} {{a.idCamionTransporte.idChoferTransporte.usuario.last_name}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Camión auxiliar:</p>
+                                                            <p class="text-xs">{{a.idCamionTransporte.modeloTransporte}} - {{a.idCamionSecundarioTransporte.idChoferTransporte.usuario.first_name}} {{a.idCamionSecundarioTransporte.idChoferTransporte.usuario.last_name}}</p>
+                                                        </div>
+                                                    </div>
+                                                    {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <p class="fw-bold mb-0">Hora de salida:</p>
+                                                            <p>{{a.horaSalida}}</p>
+                                                        </div>
+                                                    </div>
+                                                    {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Hora de salida:</p>
+                                                            <p>{{a.horaSalida}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Hora de llegada:</p>
+                                                            <p>{{a.horaLlegada}}</p>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Correspondiente al pedido:</p>
+                                                            <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#pedido{{a.id}}">
+                                                                <i class=" fa-solid fa-info-circle mr-2"></i> {{a.idOrdenCorte.idPedido}}
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Correspondiente a la orden:</p>
+                                                            <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#orden{{a.id}}">
+                                                                <i class=" fa-solid fa-info-circle mr-2"></i> {{a.idOrdenCorte}}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" class="btn text-xs bg-danger px-5 mt-2" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
+                                                        <i class="nav-icon fas fa-trash text-light"></i>Eliminar
+                                                    </button>
                                                 </div>
                                             </div>
-                                              <button type="button" class="btn text-xs bg-danger px-5" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                                <i class="nav-icon fas fa-trash text-light"></i>Eliminar
-                                              </button>
-                                            </div>
-                                          </div>
                                         </div>
-                                      </div>
+                                    </div>
+                                    <div class="modal fade" id="orden{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header text-xs">
+                                                    <button type="submit" class="btn text-sm" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                                        <i class=" fa-solid fa-arrow-left mr-2"></i>
+                                                    </button>
+                                                    <h5 class="modal-title">Detalles de la orden de corte</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Orden de corte N°:</p>
+                                                            <p>{{a.idOrdenCorte.numeroOrden}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Fecha de creación:</p>
+                                                            <p>{{a.idOrdenCorte.fechaOrden}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <p class="fw-bold mb-0">Correspondiente al pedido:</p>
+                                                            <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#pedido{{a.id}}">
+                                                                <i class=" fa-solid fa-info-circle mr-2"></i> {{a.idOrdenCorte.idPedido}} 
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Para la huerta:</p>
+                                                            <p>{{a.idOrdenCorte.idHuerta.nombreHuerta}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Tipo de corte:</p>
+                                                            <p>{{a.idOrdenCorte.get_tipoCorte_display}}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="pedido{{a.id}}">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header text-xs">
+                                                    <button type="submit" class="btn text-sm" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
+                                                        <i class=" fa-solid fa-arrow-left mr-2"></i>
+                                                    </button>
+                                                    <h5 class="modal-title">Detalles del pedido</h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Orden número:</p>
+                                                            <p>{{a.idOrdenCorte.numeroOrden}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Fecha:</p>
+                                                            <p>{{a.idOrdenCorte.fechaOrden}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <p class="fw-bold mb-0">Para el cliente:</p>
+                                                            <p>{{a.idOrdenCorte.idPedido.idCliente.nombreCliente}} {{a.idPedido.idCliente.apellidoPCliente}} {{a.idPedido.idCliente.apellidoMCliente}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Contiene:</p>
+                                                            <p>{{a.idOrdenCorte.idPedido.totalPalletsPedido}} pallets.</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <p class="fw-bold mb-0">Destino:</p>
+                                                            <p>{{a.idOrdenCorte.idPedido.destinoPedido}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                        <p class="fw-bold mb-0">Generada por:</p>
+                                                        <p>{{a.idOrdenCorte.idPedido.idTrabajador.usuario.first_name}} {{a.idPedido.idPedido.idTrabajador.usuario.last_name}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                        <p class="fw-bold mb-0">Kilos:</p>
+                                                        <p>{{a.idOrdenCorte.idPedido.totalKilosPedido}}</p>
+                                                        </div>
+                                                        <div class="col-6">
+                                                        <p class="fw-bold mb-0">Mercado:</p>
+                                                        <p>{{a.idOrdenCorte.idPedido.get_mercadoPedido_display}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="align-items-center">
+                                                            <p class="fw-bold mb-2">Contiene los siguientes tipos:</p>
+                                                        </div>
+                                                        <div class="col-12 table-responsive" >
+                                                            <table id="tabla" class="table table-striped text-center text-xs" style="width:100%">
+                                                                <thead>
+                                                                    <tr class="align-items-center">
+                                                                        <th>Calibre</th>
+                                                                        <th>Calidad</th>
+                                                                        <th>Kg</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for b in pcc %}
+                                                                        {% if a.idOrdenCorte.idPedido.id == b.idPedido.id %}
+                                                                            <tr>
+                                                                                <td>{{b.idCalibre.numCalibre}}</td>
+                                                                                <td>{{b.idCalidad.numCalidad}}</td>
+                                                                                <td>{{b.cantidadCC}}</td>
+                                                                            </tr>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="modal fade" id="eliminar{{a.id}}">
                                         <div class="modal-dialog text-center">
                                             <div class="modal-content">
@@ -166,14 +283,11 @@
                                                         <p class="form-floating">
                                                             <form method="POST" enctype="multipart/form-data">
                                                                 {% csrf_token %}
-                                                                
-                                                                        <input type="hidden" name="Id" value="eliminar">
-                                                                        <input type="hidden" name="Viaje" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-danger">
-                                                                            <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
-                                                                        </button>
-                                                                    </p>
-                                                                </div>
+                                                                <input type="hidden" name="Id" value="eliminar">
+                                                                <input type="hidden" name="Viaje" value={{a.id}}>
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                </button>
                                                             </form>
                                                         </p>
                                                     </div>
@@ -246,15 +360,11 @@
                                     </div>
                                     <div class="col-md-6">
                                         <p class="form-floating mb-3">
-                                            {{form.Huerta}}
-                                            <label>Huerta donde se cortará</label>
+                                            {{form.Orden}}
+                                            <label>Orden de corte</label>
                                         </p>
                                     </div>
                                 </div>
-                                <p class="form-floating mb-3">
-                                    {{form.Orden}}
-                                    <label>Orden de corte</label>
-                                </p>
                                 <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
                                     +<i class="fa-solid fa-tasks mr-2"></i>Registrar
                                 </button>
