@@ -122,8 +122,8 @@ urlpatterns = [
     #Reportes de corte
     path("rp/", views.report, name="rp"),
     path("rpd/", views.reportDelete, name="rpd"),
-    path("rpm/", views.reportModify, name="rpm"),
     path("rpr/", views.reportRegister, name="rpr"),
+    path("rdw/", views.reportDownload, name="rdw"),
     #Bitacoras
     path('cl/',views.cutLog, name="cl"),
     path('cls/',views.cutLogSearch, name="cls"),

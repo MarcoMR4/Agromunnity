@@ -3,203 +3,217 @@
 {% block title %}Reportes{% endblock %}
 
 {% block content %}
-    <div class="mx-5 align-items-center justify-content-center">
-        <div class="row text-center justify-content-center align-items-center py-3">
-            <div class="text-2 col-md-4 text-md-start">
-                <h3 class="py-3">Reportes de corte</h3>
+    {% if descargar %}
+        <div class="card text-center shadow rounded">
+            <div class="card-body text-center">
+                <h5 class="card-tittle">Tu reporte de corte esta listo!!</h5>
+                <img src="/static/assets/img/icons/download.png" width="100" class="my-4 rounded">
+                <p class="card-text">Da click en el botón inferior para descargarlo.</p>
+                <a href="/static/temp/ReporteCorte.pdf" class="btn bg-success" target="_blank"><i class="fa-solid fa-file-excel mr-2"></i>Descargar</a>
             </div>
-            <div class="col-md-4 col-6">
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar reporte...">
-            </div>
-            {% if viajes.count > 0 %}
-            <div class="my-2 col-md-4 col-6 text-end" style="width: 100%;">
-                <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
-                    +<i class="nav-icon fas fa-file mr-2"></i> Nuevo
-                </button>
-            </div>
-            {% endif %}
         </div>
+    {% else %}
+        <div class="mx-5 align-items-center justify-content-center">
+            <div class="row text-center justify-content-center align-items-center py-3">
+                <div class="text-2 col-md-4 text-md-start">
+                    <h3 class="py-3">Reportes de corte</h3>
+                </div>
+                <div class="col-md-4 col-6">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar reporte...">
+                </div>
+                {% if viajes.count > 0 %}
+                <div class="my-2 col-md-4 col-6 text-end" style="width: 100%;">
+                    <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
+                        +<i class="nav-icon fas fa-file mr-2"></i> Nuevo
+                    </button>
+                </div>
+                {% endif %}
+            </div>
 
-        <div class="table-responsive">
-            
-            {% if reportes.count > 0 %}
+            <div class="table-responsive">
                 
-                <table id="example" class="table table-striped text-center" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Viaje</th>
-                            <th>Cajas cortadas</th>
-                            <th> </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for a in reportes %}
+                {% if reportes.count > 0 %}
+                    
+                    <table id="example" class="table table-striped text-center" style="width:100%">
+                        <thead>
                             <tr>
-                                <td>{{a.fecha}}</td>
-                                <td>{{a.idViaje}}</td>
-                                <td>{{a.cajasCortadas}}</td>
-                                <td>
-                                    
-                                    <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
-                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
-                                    </button>
-                                    <div class="modal fade" id="modificar{{a.id}}">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header align-items-center">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de detalles</h1>
-                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form method="POST" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        <div class="text-center">
-                                                            <input type="hidden" name="Id" value="modificar">
-                                                            <input type="hidden" name="Rol" value={{a.id}}>
-                                                            <div class="row">
-                                                                <div class="col-6">
-                                                                    <p class="fw-bold mb-0">Fecha:</p>
-                                                                    <p>{{a.fecha}}</p>
-                                                                </div>
-                                                                <div class="col-6">
-                                                                    <p class="fw-bold mb-0">Cajas cortadas:</p>
-                                                                    <p>{{a.cajasCortadas}}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-12">
-                                                                    <p class="fw-bold mb-0">Viaje:</p>
-                                                                    <p>{{a.idViaje}}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-12">
-                                                                    <p class="fw-bold mb-0">Observaciones:</p>
-                                                                    <p>{{a.observacionesReporte}}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
-                                                                <button type="button" class="btn btn-danger text-xs mx-1 rounded" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
-                                                                    <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
-                                                                </button>
-                                                                <button type="button" class="btn btn-info text-xs mx-1 rounded" data-bs-toggle="modal" data-bs-target="#generar{{a.id}}">
-                                                                    <i class="nav-icon fas fa-file-pdf mr-2"></i>Generar
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal fade" id="generar{{a.id}}">
-                                        <div class="modal-dialog text-center">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="fs-6">Generacion de reporte en pdf</h1>
-                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="text-center mx-5 rounded">
-                                                        <p class="fs-10">Se descargara un pdf en tu dispositivo.</p>
+                                <th>Fecha</th>
+                                <th>Viaje</th>
+                                <th>Cajas cortadas</th>
+                                <th> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in reportes %}
+                                <tr>
+                                    <td>{{a.fecha}}</td>
+                                    <td>{{a.idViaje}}</td>
+                                    <td>{{a.cajasCortadas}}</td>
+                                    <td>
+                                        
+                                        <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">
+                                            <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
+                                        </button>
+                                        <div class="modal fade" id="modificar{{a.id}}">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header align-items-center">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Panel de detalles</h1>
+                                                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
                                                     </div>
-                                                    <div class="text-center">
-                                                        <p class="form-floating">
-                                                            <form method="POST" enctype="multipart/form-data">
-                                                                {% csrf_token %}
-                                                                
-                                                                        <input type="hidden" name="Id" value="generar">
-                                                                        <input type="hidden" name="Reporte" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-info">
-                                                                            <i class="nav-icon fas fa-file-pdf mr-2"></i>Generar
-                                                                        </button>
-                                                                    </p>
+                                                    <div class="modal-body">
+                                                        <form method="POST" enctype="multipart/form-data">
+                                                            {% csrf_token %}
+                                                            <div class="text-center">
+                                                                <input type="hidden" name="Id" value="modificar">
+                                                                <input type="hidden" name="Rol" value={{a.id}}>
+                                                                <div class="row">
+                                                                    <div class="col-6">
+                                                                        <p class="fw-bold mb-0">Fecha:</p>
+                                                                        <p>{{a.fecha}}</p>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <p class="fw-bold mb-0">Cajas cortadas:</p>
+                                                                        <p>{{a.cajasCortadas}}</p>
+                                                                    </div>
                                                                 </div>
-                                                            </form>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal fade" id="eliminar{{a.id}}">
-                                        <div class="modal-dialog text-center">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="fs-6">¿Seguro que quieres eliminar a este rol?</h1>
-                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="text-center mx-5 rounded">
-                                                        <p class="fs-10">*Cuidado, al eliminar este reporte, ya no estará disponible para su consulta o descarga.</p>
-                                                    </div>
-                                                    <div class="text-center">
-                                                        <p class="form-floating">
-                                                            <form method="POST" enctype="multipart/form-data">
-                                                                {% csrf_token %}
-                                                                
-                                                                        <input type="hidden" name="Id" value="eliminar">
-                                                                        <input type="hidden" name="Reporte" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-danger">
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <p class="fw-bold mb-0">Viaje:</p>
+                                                                        <p>{{a.idViaje}}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <p class="fw-bold mb-0">Observaciones:</p>
+                                                                        <p>{{a.observacionesReporte}}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="btn-group w-100" role="group" aria-label="Basic mixed styles example">
+                                                                    {% if request.user.trabajador.rol.nomenclaturaRol == 'J_C' %}
+                                                                        <button type="button" class="btn btn-danger text-xs mx-1 rounded" data-bs-toggle="modal" data-bs-target="#eliminar{{a.id}}">
                                                                             <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
                                                                         </button>
-                                                                    </p>
+                                                                    {% endif %}
+                                                                    <button type="button" class="btn btn-info text-xs mx-1 rounded" data-bs-toggle="modal" data-bs-target="#generar{{a.id}}">
+                                                                        <i class="nav-icon fas fa-file-pdf mr-2"></i>Generar
+                                                                    </button>
                                                                 </div>
-                                                            </form>
-                                                        </p>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="card text-center shadow">
-                    <div class="card-body">
-                        <img src="/static/assets/img/icons/wo-users.png" width="70">
-                        <p class="card-text">No hay trabajadores registrados.</p>
+                                        <div class="modal fade" id="generar{{a.id}}">
+                                            <div class="modal-dialog text-center">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="fs-6">Generacion de reporte en pdf</h1>
+                                                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="text-center mx-5 rounded">
+                                                            <p class="fs-10">Se descargara un pdf en tu dispositivo.</p>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <p class="form-floating">
+                                                                <form method="POST" enctype="multipart/form-data">
+                                                                    {% csrf_token %}
+                                                                    
+                                                                            <input type="hidden" name="Id" value="generar">
+                                                                            <input type="hidden" name="Reporte" value={{a.id}}>
+                                                                            <button type="submit" class="btn btn-info">
+                                                                                <i class="nav-icon fas fa-file-pdf mr-2"></i>Generar
+                                                                            </button>
+                                                                        </p>
+                                                                    </div>
+                                                                </form>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade" id="eliminar{{a.id}}">
+                                            <div class="modal-dialog text-center">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="fs-6">¿Seguro que quieres eliminar a este rol?</h1>
+                                                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="text-center mx-5 rounded">
+                                                            <p class="fs-10">*Cuidado, al eliminar este reporte, ya no estará disponible para su consulta o descarga.</p>
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <p class="form-floating">
+                                                                <form method="POST" enctype="multipart/form-data">
+                                                                    {% csrf_token %}
+                                                                    
+                                                                            <input type="hidden" name="Id" value="eliminar">
+                                                                            <input type="hidden" name="Reporte" value={{a.id}}>
+                                                                            <button type="submit" class="btn btn-danger">
+                                                                                <i class="nav-icon fas fa-trash mr-2"></i>Eliminar
+                                                                            </button>
+                                                                        </p>
+                                                                    </div>
+                                                                </form>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            <img src="/static/assets/img/icons/no-calidad.png" width="70">
+                            <p class="card-text">No tienes viajes de corte asignados para realizar reportes.</p>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-        </div>
+                {% endif %}
+            </div>
 
-        <div class="modal fade" id="exampleModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header align-items-center">
-                        <h1 class="modal-title fs-5">Panel de registro</h1>
-                        <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="text-center">
-                                <input type="hidden" name="Id" value="agregar">
-                                <p class="form-floating mb-3">
-                                    {{form.Observaciones}}
-                                    <label>Nombre</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Cajas}}
-                                    <label>Cajas cortadas (Numero entero)</label>
-                                </p>
-                                <p class="form-floating mb-3">
-                                    {{form.Viaje}}
-                                    <label>Viaje</label>
-                                </p>
-                                <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
-                                    +<i class="fa-solid fa-file mr-2"></i>Registrar
-                                </button>
-                            </div>
-                        </form>
+            <div class="modal fade" id="exampleModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header align-items-center">
+                            <h1 class="modal-title fs-5">Panel de registro</h1>
+                            <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="text-center">
+                                    <input type="hidden" name="Id" value="agregar">
+                                    <p class="form-floating mb-3">
+                                        {{form.Observaciones}}
+                                        <label>Observaciones</label>
+                                    </p>
+                                    <p class="form-floating mb-3">
+                                        {{form.Cajas}}
+                                        <label>Cajas cortadas (Numero entero)</label>
+                                    </p>
+                                    <p class="form-floating mb-3">
+                                        {{form.Viaje}}
+                                        <label>Viaje</label>
+                                    </p>
+                                    <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                        +<i class="fa-solid fa-file mr-2"></i>Registrar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
+    
 {% endblock content %}

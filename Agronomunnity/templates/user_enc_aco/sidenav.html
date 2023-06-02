@@ -51,6 +51,12 @@
                   <p>Incidencias</p>
               </a>
             </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'help' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'help' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-question-circle"></i>
+                  <p>Ayuda</p>
+              </a>
+            </li>
             <li class="nav-item">
               <a href={% url 'exit' %} class="nav-link inactive text-danger">
                   <i class="nav-icon fa-solid fa-sign-out"></i>
