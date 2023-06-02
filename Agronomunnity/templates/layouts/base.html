@@ -2,6 +2,7 @@
 <html lang="es">
 
     <head>
+        
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="icon" type="image/png" href="/static/assets/img/icons/logo.svg">
@@ -25,7 +26,10 @@
         <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
         {% block javascripts %}
         {% endblock javascripts %}
-
+        
+        <!-- PWA, buscar service worker -->
+        {% load pwa %}
+        {% progressive_web_app_meta %}
     </head>
 
     <body class="sidebar-mini sidebar-closed sidebar-collapse">

@@ -3594,3 +3594,8 @@ def cutLogGenerate(request):
         return redirect(url)
     else: 
         return render(request, 'denied.html')
+    
+
+#pwa 
+def offline(request):
+    return render(request, 'offline.html')

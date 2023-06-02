@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
   
     'Agronomunnity',
+    #PWA
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +128,29 @@ STATICFILES_DIR = [os.path.join(BASE_DIR, 'Agronumunnity\\static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#PWA, info para descargar web progresiva 
+PWA_APP_NAME = "Agromunnity"
+PWA_APP_DESCRIPTION = "Web app de gestion de corte de aguacate"
+PAW_APP_THEME_COLOR = "#3CB144"
+PWA_APP_BACKGROUND_COLOR = "#3CB144"
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+
+PWA_APP_ICONS = [
+    {
+        "src": "/static/assets/img/icons/avocado.png",
+        "sizes": "160x160"
+     }
+]
+
+PWA_APP_ICONS_APPLE = [
+    {
+        "src": "/static/assets/img/icons/avocado.png",
+        "sizes": "160x160"
+     }
+]
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'serviceworker.js')
