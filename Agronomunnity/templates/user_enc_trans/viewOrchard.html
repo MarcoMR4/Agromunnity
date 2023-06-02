@@ -6,17 +6,12 @@
     <div class="mx-5 align-items-center justify-content-center">
 
         <div class="text-center d-flex justify-content-between align-items-center py-3">
-            <div class="text-2">
+            <div class="text-2 col-6 text-md-start">
                 <h3 class="py-3">Huertas</h3>
             </div>
-            {% if nproductores > 0 %}
-                <div class="my-2 text-end" style="width: 100%;">
-                    <button type="button" class="btn text-light" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btnmodal" style="background: #4CAF50;">
-                        +<i class="nav-icon fas fa-tree"></i> Nuevo
-                    </button>
-                </div>
-            {% endif %}
-            
+            <div class="col-md-4 col-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre...">
+            </div>
         </div>
         {% if nhuertas > 0 %}
             <div class="table-responsive">
@@ -35,10 +30,10 @@
                             <tr>
                                 <td>{{a.nombreHuerta}}</td>
                                 <td>{{a.localizacionHuerta}}</td>
-                                {% if a.estatusHuerta == 'H_A' %}
-                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Activa</td>
-                                {% else %}
-                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
+                                {% if a.estatusHuerta == 'H_D' %}
+                                    <td class="text-xs"><i class="fa-solid fa-lemon text-success"></i><br>{{a.get_estatusHuerta_display}}</td>
+                                {% elif a.estatusHuerta == 'H_S' %}
+                                    <td class="text-xs"><i class="fa-solid fa-ban text-danger"></i><br>{{a.get_estatusHuerta_display}}</td>
                                 {% endif %}
                                 <td>{{a.idProductor.nombre}} {{a.idProductor.apellidoP}} {{a.idProductor.apellidoM}}</td>
                                 <td>
@@ -54,25 +49,6 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <form method="POST" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        <div class="text-center">
-                                                            <input type="hidden" name="Id" value="modificar">
-                                                            <input type="hidden" name="Huerta" value={{a.id}}>
-                                                            <div class="row">
-                                                                <div class="col-md-12">
-                                                                    <p class="form-floating mb-3">
-                                                                        {% if a.estatusPedido == 'H_I' %}
-                                                                            <div class="alert alert-danger" role="alert">
-                                                                                <i class="fa-solid fa-info-circle mr-2"></i>La huerta esta inactiva.
-                                                                            </div>
-                                                                        {% elif a.estatusPedido == 'P_A' %}
-                                                                            <div class="alert alert-success" role="alert">
-                                                                                <i class="fa-solid fa-info-circle mr-2"></i>La huerta esta activa.
-                                                                            </div>
-                                                                        {% endif %}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <p class="fw-bold mb-0">Nombre:</p>
@@ -127,9 +103,6 @@
                     <h5 class="card-titl">No hay huertas registradas</h5>
                     <img src="/static/assets/img/icons/orchard.png" width="70">
                     <p class="card-text">Actualmente no hay huertas registradas en el sistema. Por favor, registre una nueva huerta para poder asignarla en pedidos futuros.</p>
-                    {% if nproductores < 2 %}
-                        <p class="mt-2 card-text">Para poder registrar huertas primero asegurate que halla <br>productores registrados.</p>
-                    {% endif %}
                 </div>
             </div>
         {% endif %}

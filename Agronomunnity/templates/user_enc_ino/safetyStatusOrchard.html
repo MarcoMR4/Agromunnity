@@ -33,7 +33,11 @@
                                 {% else %}
                                     <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
                                 {% endif %}
-                                <td>{{a.estatusInocuidadHuerta}}</td>
+                                {% if a.estatusInocuidadHuerta == 'Activo' %}
+                                    <td class="text-xs"><i class="fa-solid fa-pump-medical text-success"></i><br>Activo</td>
+                                {% else %}
+                                    <td class="text-xs"><i class="fa-solid fa-pump-medical text-danger"></i><br>Inactivo</td>
+                                {% endif %}
                                 <td>{{a.claveSagarpaHuerta}}</td>
                                 <td>
                                     <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#modificar{{a.id}}">

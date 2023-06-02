@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const calidadSelect = document.getElementById("id_Calidad");
   const calibreSelect = document.getElementById("id_Calibre");
   const kgInput = document.getElementById("id_Kilos");
+  const datos = document.getElementById("id_DatosT");
   const agregarButton = document.getElementById("agregartabla");
   const tabla = document.getElementById("tablaPedido");
   const totalKgInput = document.getElementById("id_Tkilos");
@@ -30,10 +31,17 @@ document.addEventListener('DOMContentLoaded', function() {
       // Eliminar la opción del select de calibre
       const calibreOption = calibreSelect.querySelector(`option[value="${calibre}"]`);
       calibreOption.remove();
+      // Reiniciar los valores de los select y el input
+      calidadSelect.selectedIndex = 0;
+      calibreSelect.selectedIndex = 0;
+      kgInput.value = "";
+      const textodato = datos.value;
+      const  insertardato = `${calidad},${calibre},${kg},`;
+      datos.value = textodato ? textodato + insertardato : insertardato;
       // Ocultar los select y botón si no quedan opciones
       if (calibreSelect.children.length === 1) {
-        calidadSelect.style.display = "none";
         calibreSelect.style.display = "none";
+        calidadSelect.style.display = "none";
         kgInput.style.display="none"
         agregarButton.style.display = "none";
         e1.style.display="none";

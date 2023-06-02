@@ -27,10 +27,10 @@
                     <tbody>
                         {% for a in cuadrillas %}
                             <tr>
-                                {% if a.estatusCuadrilla == 'C_A' %}
-                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Activa</td>
+                                {% if a.estatusCuadrilla == 'C_L' %}
+                                    <td class="text-xs"><i class="fa-solid fa-clock text-success"></i><br>Libre</td>
                                 {% else %}
-                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
+                                    <td class="text-xs"><i class="fa-solid fa-clock text-danger"></i><br>Ocupada</td>
                                 {% endif %}
                                 <td>{{a.nombreCuadrilla}}</td>
                                 <td>{{a.idGerenteCuadrilla.usuario.first_name}} {{a.idGerenteCuadrilla.usuario.last_name}}</td>

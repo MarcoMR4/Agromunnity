@@ -36,10 +36,10 @@
                             <tr>
                                 <td>{{a.nombreHuerta}}</td>
                                 <td>{{a.localizacionHuerta}}</td>
-                                {% if a.estatusHuerta == 'H_A' %}
-                                    <td class="text-xs"><i class="fa-solid fa-circle-check text-success"></i><br>Activa</td>
-                                {% else %}
-                                    <td class="text-xs"><i class="fa-solid fa-circle-xmark text-danger"></i><br>Inactiva</td>
+                                {% if a.estatusHuerta == 'H_D' %}
+                                    <td class="text-xs"><i class="fa-solid fa-lemon text-success"></i><br>{{a.get_estatusHuerta_display}}</td>
+                                {% elif a.estatusHuerta == 'H_S' %}
+                                    <td class="text-xs"><i class="fa-solid fa-ban text-danger"></i><br>{{a.get_estatusHuerta_display}}</td>
                                 {% endif %}
                                 <td>{{a.idProductor.nombre}} {{a.idProductor.apellidoP}} {{a.idProductor.apellidoM}}</td>
                                 <td>
@@ -99,8 +99,8 @@
                                                             </div>
                                                             <p class="form-floating mb-3">
                                                                 <select name="Estatus" class="form-control">
-                                                                    <option value="H_A" {% if a.estatusHuerta == 'H_A' %}selected{% endif %}>Activa</option>
-                                                                    <option value="H_I" {% if a.estatusHuerta == 'H_I' %}selected{% endif %}>Inactiva</option>
+                                                                    <option value="H_D" {% if a.estatusHuerta == 'H_D' %}selected{% endif %}>Disponible para corte</option>
+                                                                    <option value="H_S" {% if a.estatusHuerta == 'H_S' %}selected{% endif %}>Sin fruta disponible</option>
                                                                 </select>
                                                                 <label>Estatus</label>
                                                             </p>

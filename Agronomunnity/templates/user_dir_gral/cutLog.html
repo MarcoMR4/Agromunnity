@@ -1,39 +1,40 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Viajes en proceso{% endblock %}
+{% block title %}Bitacoras de corte{% endblock %}
 
 {% block content %}
     <div class="mx-5 align-items-center justify-content-center">
         <div class="row text-center justify-content-center align-items-center py-3">
-            <div class="text-2 col-6 text-md-start">
-                <h3 class="py-3">Viajes en proceso</h3>
-            </div>
-            <div class="col-6">
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar viajes...">
+            <div class="text-2 col-12 text-md-start">
+                <h3 class="py-3">Bitacoras</h3>
             </div>
         </div>
-        {% if nvc > 0 %}
-            <div class="table-responsive">
-                <table id="example" class="table table-striped text-center" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>No. viaje</th>
-                            <th>Cuadrilla</th>
-                            <th>Huerta</th>
-                            <th>Camión asignado</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for a in vc %}
+        {% if viajes %}
+            <div class="card text-center shadow rounded">
+                <div class="card-body text-center">
+                    <h5 class="card-tittle mb-5">Estos son los viajes que se incluirian en tu reporte, puedes quitar algunos si asi lo deseas.</h5>
+                    <table id="example" class="table table-striped text-center" style="width:100%">
+                        <thead>
                             <tr>
-                                <td>{{a.idOrdenCorte.idPedido.numeroPedido}}</td>
-                                <td>{{a.idCuadrilla.nombreCuadrilla}}</td>
-                                <td>{{a.idOrdenCorte.idHuerta.nombreHuerta}}</td>
-                                <td>{{a.idCamionTransporte.modeloTransporte}}</td>
+                                <th></th>  <!-- Columna de checkbox de selección -->
+                                <th>Viaje N°</th>
+                                <th>Camion encargado</th>
+                                <th>Cuadrilla encargada</th>
+                                <th>Creado el</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in viajes %}
+                            <tr>
+                                <td><input type="checkbox" name="seleccion[]" value="{{ a.id }}" checked></td>
+                                <td>{{ a.idOrdenCorte.idPedido.numeroPedido }}</td>
+                                <td>{{ a.idCamionTransporte.modeloTransporte }}</td>
+                                <td>{{ a.idCuadrilla.nombreCuadrilla }}</td>
+                                <td>{{ a.fechaViaje }}</td>
                                 <td>
                                     <button type="submit" class="btn text-xs" data-bs-toggle="modal" data-bs-target="#detalles{{a.id}}">
-                                        <i class="nav-icon fa-solid fa-calendar-check"></i>
+                                        <i class="nav-icon fa-solid fa-ellipsis-vertical"></i>
                                     </button>
                                     <div class="modal fade" id="detalles{{a.id}}">
                                         <div class="modal-dialog modal-dialog-centered">
@@ -45,11 +46,15 @@
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <div class="d-flex justify-content-center align-items-center">
-                                                                <div class="alert alert-danger rounded-pill w-lg-25 text-xs text-center" role="alert">
-                                                                    <i class="fa-solid fa-info-circle mr-2"></i>Revisa bien los detalles antes de finalizar el proceso, por favor.
+                                                            {% if a.idOrdenCorte.idPedido.estatusPedido == 'P_V' %}
+                                                                <div class="alert alert-danger rounded-pill mx-5 text-xs" role="alert">
+                                                                    <i class="fa-solid fa-info-circle mr-2"></i>Este viaje de corte esta proximo a completarse, pero aun no se ha dado por recibido en bodega.
                                                                 </div>
-                                                            </div>
+                                                            {% elif a.idOrdenCorte.idPedido.estatusPedido == 'P_C' %}
+                                                                <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
+                                                                    <i class="fa-solid fa-info-circle mr-2"></i>Este viaje de corte fue completado, el encargado de recibo notifico que fue recibido en bodega.
+                                                                </div>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -111,9 +116,6 @@
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <button type="button" class="btn text-xs bg-success px-5 mt-2" data-bs-toggle="modal" data-bs-target="#confirmar{{a.id}}">
-                                                        <i class="nav-icon fas fa-calendar-check text-light mr-2"></i>Marcar como recibido
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -243,50 +245,68 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal fade" id="confirmar{{a.id}}">
-                                        <div class="modal-dialog text-center">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="fs-6">¿Seguro que quieres marcar como recibido este viaje?</h1>
-                                                    <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="text-center mx-5 rounded">
-                                                        <p class="fs-10">*Revisa que todo este en orden para que no halla complicaciones con revisiones futuras.</p>
-                                                    </div>
-                                                    <div class="text-center d-inline-block">
-                                                        <p class="form-floating">
-                                                            <form method="POST" enctype="multipart/form-data">
-                                                                {% csrf_token %}
-                                                                
-                                                                        <input type="hidden" name="Id" value="agregar">
-                                                                        <input type="hidden" name="Viaje" value={{a.id}}>
-                                                                        <button type="submit" class="btn btn-success">
-                                                                            <i class="nav-icon fas fa-calendar-check mr-2"></i>Confirmar
-                                                                        </button>
-                                                                    </p>
-                                                                </div>
-                                                            </form>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <form method="POST" enctype="multipart/form-data" class="mt-4">
+                        {% csrf_token %}
+                        <div id="filas-seleccionadas">
+                            <input type="hidden" name="Id" value="generar">
+                            <input id="filas-seleccionadas-contenido" type="hidden" name="Filas">
+                            <span id="alerta-sin-seleccion" style="display: none;" class="text-light bg-danger rounded-pill p-2">Sin viajes seleccionados</span>
+                        </div>
+                        <button type="submit" class="btn btn-success" id="genDoc">
+                            <i class="nav-icon fas fa-file-excel mr-2"></i>Generar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% elif listo %}
+            <div class="card text-center shadow rounded">
+                <div class="card-body text-center">
+                    <h5 class="card-tittle">Tu bitacora de corte esta lista!!</h5>
+                    <img src="/static/assets/img/icons/download.png" width="100" class="my-4 rounded">
+                    <p class="card-text">Da click en el botón inferior para descargarlo.</p>
+                    <a href="/static/temp/bitacora.xlsx" class="btn bg-success" target="_blank"><i class="fa-solid fa-file-excel mr-2"></i>Descargar</a>
+                </div>
             </div>
         {% else %}
-            <div class="card text-center shadow rounded mx-5">
+            <div class="card text-center shadow rounded">
                 <div class="card-body text-center">
-                    <h5 class="card-titl">No hay viajes en curso.</h5>
-                    <img src="/static/assets/img/icons/no-camion.png" width="70">
-                    <p class="card-text">Actualmente no hay viajes de corte en curso. Espera hasta que el encargado asigne nuevos viajes.</p>
+                    <h5 class="card-tittle">Genera una bitacora de corte</h5>
+                    <img src="/static/assets/img/icons/excel.png" width="100" class="my-4 rounded">
+                    <p class="card-text">Primero selecciona el rango de dias que quieres incluir en la bitacora.</p>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="text-center">
+                            <input type="hidden" name="Id" value="buscar">
+                            <div class="row justify-content-center">
+                                <div class="col-md-4">
+                                    <p class="form-floating mb-3">
+                                        {{form.Inicio}}
+                                        <label>Fecha inicial</label>
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="form-floating mb-3">
+                                        {{form.Fin}}
+                                        <label>Fecha Limite</label>
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn text-light" style="background-color: #4CAF50;">
+                                <i class="fa-solid fa-search mr-2"></i>Buscar
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         {% endif %}
-
+    </div>
 {% endblock content %}
+
+{% block javascripts %}
+    <script src="/static/assets/js/cutLogs.js"></script>
+{% endblock javascripts %}

@@ -52,7 +52,7 @@ class CamionTransporte(models.Model):
     
 
     def Mostrar(self):
-        return "{}, {} - {}".format(self.modeloTransporte, self.placaTransporte, self.estatusTransporte)
+        return "{} - {}".format(self.modeloTransporte, self.placaTransporte)
 
     def __str__(self):
         return self.Mostrar()
@@ -88,13 +88,13 @@ class Cuadrilla(models.Model):
     nombreCuadrilla = models.CharField(max_length=50, blank = True)
     ubicacionCuadrilla = models.CharField(max_length=50, blank = True)
     estatus = (
-        ('C_A', 'Activa'),
-        ('C_I', 'Inactiva'),
+        ('C_L', 'Libre'),
+        ('C_O', 'Ocupada'),
     )
     estatusCuadrilla = models.CharField(max_length=3, choices=estatus, default='Activa')
 
     def Mostrar(self):
-        return "{} - {}".format(self.nombreCuadrilla, self.estatusCuadrilla)
+        return "{} - {}".format(self.nombreCuadrilla, self.get_estatusCuadrilla_display())
 
     def __str__(self):
         return self.Mostrar()
@@ -131,8 +131,8 @@ class Huerta(models.Model):
     claveSagarpaHuerta = models.CharField(max_length=100, blank = True)
     estatusInocuidadHuerta = models.CharField(max_length=100, blank = True)
     estatus = (
-        ('H_A', 'Activo'),
-        ('H_I', 'Inactivo'),
+        ('H_D', 'Con fruta Disponible'),
+        ('H_S', 'Sin fruta disponible'),
     )
     estatusHuerta = models.CharField(max_length=3, choices=estatus, default='Activo')
 
@@ -269,21 +269,14 @@ class PedidoCalibreCalidad(models.Model):
 class OrdenCorte(models.Model):
     fechaOrden = models.DateField()
     numeroOrden = models.CharField(max_length=20, blank = True)
-
-    fruta = (
-        ('HSS', 'Aguacate Hass'),
-        ('MDZ', 'Aguacate Mendez'),
-        ('CLL', 'Aguacate Criollo'),
-    )
-    tipoFruta = models.CharField(max_length=3, choices=fruta, default='')
     corte = (
         ('','(Seleccione)'),
         ('AVN', 'Aventajado'),
         ('FLC', 'Flor loca'),
     )
-    frutaHuerta = models.CharField(max_length=3, choices=corte, default='')
-    tipoCorte = models.CharField(max_length=20, blank = True)
+    tipoCorte = models.CharField(max_length=3, choices=corte, default='')
     idPedido = models.OneToOneField(Pedido, on_delete=models.CASCADE, null=True)
+    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE, null=True)
 
     def Mostrar(self):
         return "Orden: {} - {}".format(self.numeroOrden, self.fechaOrden)
@@ -305,7 +298,6 @@ class ViajeCorte(models.Model):
     horaLlegada = models.TimeField(max_length=20, blank = True, null=True)
     idOrdenCorte = models.ForeignKey('OrdenCorte', on_delete=models.CASCADE)
     idCuadrilla = models.ForeignKey('Cuadrilla', on_delete=models.CASCADE)
-    idHuerta = models.ForeignKey('Huerta', on_delete=models.CASCADE, null=True)
     puntoReunion = models.CharField(max_length=500, blank = True)
 
     def Mostrar(self):

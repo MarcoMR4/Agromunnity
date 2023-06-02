@@ -62,10 +62,6 @@
                                                                             <div class="alert alert-info rounded-pill mx-5 text-xs" role="alert">
                                                                                 <i class="fa-solid fa-info-circle mr-2"></i>El pedido tiene una orden de corte y esta en viaje, proximo a completarse.
                                                                             </div>
-                                                                        {% elif a.estatusPedido == 'P_C' %}
-                                                                            <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
-                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
-                                                                            </div>
                                                                         {% endif %}
                                                                     </div>
                                                                 </div>
@@ -198,7 +194,7 @@
                                                                     <div class="col-md-12">
                                                                         {% if a.estatusPedido == 'P_C' %}
                                                                             <div class="alert alert-success rounded-pill mx-5 text-xs" role="alert">
-                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de producción notifico que fue recibido en bodega.
+                                                                                <i class="fa-solid fa-info-circle mr-2"></i>El pedido esta completado, el encargado de recibo notifico que llego a la bodega.
                                                                             </div>
                                                                         {% endif %}
                                                                     </div>
