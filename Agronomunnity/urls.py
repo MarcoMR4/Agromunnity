@@ -128,6 +128,11 @@ urlpatterns = [
     path('cl/',views.cutLog, name="cl"),
     path('cls/',views.cutLogSearch, name="cls"),
     path('clg/',views.cutLogGenerate, name="clg"),
+
+    #PWA
+    path('', include('pwa.urls')),
+    path("offline/", views.offline, name="offline"),
+
 ]
 
 
