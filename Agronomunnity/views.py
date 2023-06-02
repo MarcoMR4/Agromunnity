@@ -1,11 +1,13 @@
 from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.db.models import Q
-from datetime import date
+from datetime import date, datetime
 from django.conf import settings
 import os
 import locale
+from weasyprint import HTML
 from django.db.models import Min, Max
+from jinja2 import Environment, FileSystemLoader
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
@@ -717,7 +719,7 @@ def squadMemberRegister(request):
 #Encargado de transporte
 @login_required
 def transport(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_T'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_T', 'D_G'):
         form = AddTransport(request.POST)
         camiones = CamionTransporte.objects.all()
         ncamiones = camiones.count()
@@ -1225,7 +1227,7 @@ def tripRegister(request):
 def order(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_V'):
         form = AddOrder()
-        pedidos = Pedido.objects.all()
+        pedidos = Pedido.objects.all().order_by('-fechaPedido')
         npedidos = pedidos.count()
         nclientes = Cliente.objects.all().count()
         pcc = PedidoCalibreCalidad.objects.all()
@@ -1932,7 +1934,7 @@ def courtOrderModify(request):
 @login_required
 def viewOrder(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('E_B', 'I_C', 'E_R', 'E_A'):
-        pedidos = Pedido.objects.all()
+        pedidos = Pedido.objects.all().order_by('-fechaPedido')
         p = Pedido.objects.filter(~Q(estatusPedido='P_C'))
         npedidosp = p.count()
         p = Pedido.objects.filter(estatusPedido='P_C')
@@ -2152,12 +2154,14 @@ def finishTripRegister(request):
         try:
             #Se obtienen los datos y se crea el miembro
             viaje = ViajeCorte.objects.get(id=request.session.get('Viaje'))
+            viaje.horaLlegada = datetime.now().time()
             cuadrilla = Cuadrilla.objects.get(id=viaje.idCuadrilla.id)
             orden = OrdenCorte.objects.get(id=viaje.idOrdenCorte.id)
             pedido = Pedido.objects.get(id=orden.idPedido.id)
             pedido.estatusPedido = 'P_C'
             cuadrilla.estatusCuadrilla = 'C_L'
             pedido.save()
+            viaje.save()
             cuadrilla.save()
             #Se guarda en memoria la operacion exitosa y redirige a la url de origen
 
@@ -2174,7 +2178,7 @@ def finishTripRegister(request):
 
 @login_required
 def viewOrchard(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('E_T'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('E_T', 'D_G'):
         form = AddOrchard()
         huertas = Huerta.objects.all()
         nhuertas = huertas.count()
@@ -2189,8 +2193,7 @@ def viewOrchard(request):
 def myTrips(request):
     if request.user.trabajador.rol.nomenclaturaRol in ('C_T','J_C'):
 
-        viajes = ViajeCorte.objects.filter(Q(idCamionTransporte__idChoferTransporte=request.user.trabajador.id) | Q(idCuadrilla__idJefeCuadrilla=request.user.trabajador.id) | Q(idCamionSecundarioTransporte__idChoferTransporte=request.user.trabajador.id))
-        viajes.order_by('-fechaViaje')
+        viajes = ViajeCorte.objects.filter(Q(idCamionTransporte__idChoferTransporte=request.user.trabajador.id) | Q(idCuadrilla__idJefeCuadrilla=request.user.trabajador.id) | Q(idCamionSecundarioTransporte__idChoferTransporte=request.user.trabajador.id)).order_by('-fechaViaje')
         nv = viajes.count()
         pcc = PedidoCalibreCalidad.objects.all()
 
@@ -3222,7 +3225,7 @@ def rolModify(request):
 
 @login_required
 def report(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
+    if request.user.trabajador.rol.nomenclaturaRol in ('J_C', 'D_G', 'E_B'):
         #Consultas necesarias para mostrar en plantilla
         form = AddReport(request=request)
         reportes = ReporteCorte.objects.all()
@@ -3251,9 +3254,10 @@ def report(request):
                     request.session['Error'] = "No se pudo realizar el registro, intente de nuevo."
                     url = reverse('rp')
                     return redirect(url)
-            elif request.POST['Id']=='modificar':
+            elif request.POST['Id']=='generar':
                 try:
-                    url = reverse('rpm')
+                    request.session['Reporte'] = request.POST['Reporte']
+                    url = reverse('rdw')
                     return redirect(url)
                 except Exception as e:
                     request.session['Operacion'] = 0
@@ -3267,6 +3271,7 @@ def report(request):
                     'form':form,
                     'reportes': reportes,
                     'viajes': viajes,
+                    "descargar": request.session['Descargar'],
                     "mensaje": request.session['Mensaje']
                 })
             elif request.session.get('Operacion')==0:
@@ -3295,6 +3300,7 @@ def reportDelete(request):
             r.delete()
 
             request.session['Operacion'] = 1
+            request.session['Descargar'] = False
             request.session['Mensaje'] = "Reporte eliminado correctamente."
         except Exception as e:
             request.session['Operacion'] = 0
@@ -3317,6 +3323,7 @@ def reportRegister(request):
                 cajasCortadas=request.session.get('Cajas'),
             )
             request.session['Operacion'] = 1
+            request.session['Descargar'] = False
             request.session['Mensaje'] = "Reporte registrado correctamente."
         except Exception as e:
             request.session['Operacion'] = 0
@@ -3325,28 +3332,6 @@ def reportRegister(request):
         url = reverse('rp')
         return redirect(url)
     else:
-        return render(request, 'denied.html')
-
-@login_required
-def reportModify(request):
-    if request.user.trabajador.rol.nomenclaturaRol in ('J_C'):
-        try:
-            #Se obtienen los datos y se modifican
-            rol = RolTrabajador.objects.get(id=request.session.get('Rol'))
-            rol.nombreRol = request.session.get('Nombre')
-            rol.nomenclaturaRol = request.session.get('Nomenclatura')
-            rol.save()
-
-            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
-            request.session['Operacion'] = 1
-            request.session['Mensaje'] = "Se guardaron las modificaciones correctamente."
-        except Exception as e:
-            request.session['Operacion'] = 0
-            request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
-            
-        url = reverse('r')
-        return redirect(url)
-    else: 
         return render(request, 'denied.html')
 
 @login_required
@@ -3591,6 +3576,46 @@ def cutLogGenerate(request):
             request.session['Error'] = "No se pudo modificar los datos, intente de nuevo."
             
         url = reverse('r')
+        return redirect(url)
+    else: 
+        return render(request, 'denied.html')
+
+@login_required
+def reportDownload(request):
+    if request.user.trabajador.rol.nomenclaturaRol in ('J_C', 'D_G'):
+        try:
+            r = ReporteCorte.objects.get(id=request.session.get('Reporte'))
+            c = MiembroCuadrilla.objects.filter(idCuadrilla= r.idViaje.idCuadrilla)
+            enc = Trabajador.objects.get(rol__nomenclaturaRol='E_R')
+
+            direc = Environment(loader=FileSystemLoader('Agronomunnity/templates/user_jefe_cuad'))
+            plantilla = direc.get_template("reportTemplate.html")
+            #consultas para rellenar el pdf
+            info={
+                'reporte' : r,
+                'miembros' : c,
+                'E_R' : enc,
+            }
+            #ruta donde se guardaran los creditos
+            ruta = os.path.join(os.getcwd(), 'Agronomunnity', 'static', 'temp')
+            #si no existe la carpeta la crea
+            os.makedirs(ruta, exist_ok=True)
+            #se crea un objeto con la plantilla
+            html = plantilla.render(info)
+            #nombre del pdf
+            pdf = os.path.join(ruta+'\\ReporteCorte.pdf')
+            #crea el pdf
+            HTML(string=html, base_url= request.build_absolute_uri()).write_pdf(target=pdf)
+
+            #Se guarda en memoria la operacion exitosa y redirige a la url de origen
+            request.session['Operacion'] = 1
+            request.session['Mensaje'] = "Se generó tu archivo correctamente."
+            request.session['Descargar'] = True
+        except Exception as e:
+            print(e)
+            request.session['Operacion'] = 0
+            request.session['Error'] = "No se pudo generar el archivo, intente de nuevo."
+        url = reverse('rp')
         return redirect(url)
     else: 
         return render(request, 'denied.html')

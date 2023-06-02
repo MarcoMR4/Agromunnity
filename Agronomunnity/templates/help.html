@@ -1,12 +1,235 @@
 {% extends 'layouts/base.html' %}
 
-{% block content %}
-<div class="mx-5 align-items-center justify-content-center">
-  <div class="text-center d-flex justify-content-between align-items-center py-3">
-      <div>
-          <h3 class="py-3">¿Necesitas ayuda?</h3>
-      </div>
-  </div>
-</div>
+{% block title %}Inicio{% endblock %}
 
+{% block content %}
+  <div class="text-center py-3">
+    <h3 class="py-3">¿Necesitas Ayuda?</h3>
+    <h6>No te preocupes, tenemos unos videos listos para que te familiarices con nuestro sistema, selecciona tu tipo de usuario para verlo.</h6>
+  </div>
+  <div class="row justify-content-center px-5 py-1 text-center mx-md-2">
+
+    <div class="card text-center align-items-center col-md-3 col-6">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Conductor de transporte</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video1">
+        <i class="nav-icon fa-solid fa-truck"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el conductor de transporte</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1HMdnkZBtY4Qz9oSRmlulQeawMMdYTK42/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Director General</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video2">
+        <i class="nav-icon fa-solid fa-hard-hat"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video2">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el director general</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1JAH8cp-w0JRsxAnxO01yEjegfIQq7cV6/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Encargado de acopio</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video3">
+        <i class="nav-icon fa-solid fa-lemon"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video3">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el encargado de acopio</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1y4sYqEMMMDLYQ4NgK6Y4qzl_eA5pcycR/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Encargado de bitacora</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video4">
+        <i class="nav-icon fa-solid fa-table"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video4">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el encargado de bitacora</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1bfxei9gpWgo_Es_OUTUOPBHNvxReXTMT/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Encargado de inocuidad</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video5">
+        <i class="nav-icon fa-solid fa-shield-virus"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video5">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el encargado de inocuidad</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Encargado de recibo</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video6">
+        <i class="nav-icon fa-solid fa-calendar-check"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video6">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el encargado de recibo</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Encargado de transporte</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video7">
+        <i class="nav-icon fa-solid fa-truck-loading"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video7">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el encargado de transporte</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Encargado de ventas</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video8">
+        <i class="nav-icon fa-solid fa-tags"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video8">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el encargado de ventas</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Gerente de cuadrillas</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video9">
+        <i class="nav-icon fa-solid fa-user-tie"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video9">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el gerente de cuadrillas</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Jefe de cuadrillas</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video10">
+        <i class="nav-icon fa-solid fa-users"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video10">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el jefe de cuadrillas</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-center align-items-center col-md-3 col-6 mx-md-2">
+      <p class="text-sm my-2 fw-bold"><i class="nav-icon fa-solid fa-user mr-2 text-success"></i>Ingeniero de campo</p>
+      <button type="submit" class="btn text-xl text-dark" data-bs-toggle="modal" data-bs-target="#Video11">
+        <i class="nav-icon fa-solid fa-tractor"></i>
+      </button>
+    </div>
+    <div class="modal fade" id="Video11">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header align-items-center">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Tutorial para el ingeniero de campo</h1>
+              <i class="fa-solid fa-xmark fs-5" data-bs-dismiss="modal"></i>
+          </div>
+          <div class="modal-body">
+            <iframe src="https://drive.google.com/file/d/1FsgR2Wf37D2UWPR2FWPpuINvxaZMxIzp/preview" width="470" height="250" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  </div>
 {% endblock content %}

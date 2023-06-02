@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            font-family: "Arial", sans-serif; /* Cambia "Arial" por la fuente que desees utilizar */
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <div style="align-self: flex-start; margin-right: auto;">
+            <img src="/static/assets/img/frutival.jpg" style="width: 200px;">
+        </div>
+        <div style="align-self: center; text-align: end;">
+            <p>
+                <strong>Frutival,  S.A. de C.V.</strong><br>
+                Carretera Uruapan-San Juan Nuevo KM. 7.3<br>
+                Localidad Jujucato Uruapan, Michoacán, México.<br>
+                <strong>452-524-22-87 | yval@prodigy.net.mx</strong>
+            </p>
+        </div>
+    </div>
+
+    <table style="text-align: center; width: 100%; border-radius: 10px; border: 1px solid black;">
+        <thead>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Viaje No:</strong> {{reporte.idViaje.idOrdenCorte.numeroOrden}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Fecha:</strong> {{reporte.idViaje.fechaViaje}}</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Punto de reunión:</strong> {{reporte.idViaje.puntoReunion}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Camión que transporto</strong> {{reporte.idViaje.idCamionTransporte}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Hora de salida:</strong> {{reporte.idViaje.horaSalida}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Hora de llegada:</strong> {{reporte.idViaje.horaLlegada}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Huerta involucrada:</strong> {{reporte.idViaje.idOrdenCorte.idHuerta.nombreHuerta}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Tipo de corte:</strong> {{reporte.idViaje.idOrdenCorte.tipoCorte}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Cliente:</strong> {{reporte.idViaje.idOrdenCorte.idPedido.idCliente.nombreCliente}} {{reporte.idViaje.idOrdenCorte.idPedido.idCliente.apellidoPCliente}} {{reporte.idViaje.idOrdenCorte.idPedido.idCliente.apellidoMCliente}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Contiene:</strong> {{reporte.idViaje.idOrdenCorte.idPedido.totalPalletsPedido}} pallets.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Destino:</strong> {{reporte.idViaje.idOrdenCorte.idPedido.destinoPedido}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Pedido realizado por:</strong> {{reporte.idViaje.idOrdenCorte.idPedido.idTrabajador.usuario.first_name}} {{reporte.idViaje.idOrdenCorte.idPedido.idTrabajador.usuario.last_name}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Kilos:</strong> {{reporte.idViaje.idOrdenCorte.idPedido.totalKilosPedido}}</td>
+                <td></td>
+                <td style="border-bottom: 1px solid black;"><strong>Mercado:</strong> {{reporte.idViaje.idOrdenCorte.idPedido.mercadoPedido}}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <h4 style="text-align: center; font-weight: bold; margin-top:55px;">Miembros de cuadrilla que realizaron el corte</h4>
+    <table style="border-collapse: collapse; text-align: center; width: 100%; margin-bottom: 50px;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="padding: 10px; border: none;">Nombre</th>
+                <th style="padding: 10px; border: none;">NSS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in miembros %}
+                <tr>
+                    <td style="padding: 10px; border: none;">{{a.nombre}} {{a.apellidoP}} {{a.apellidoM}}</td>
+                    <td style="padding: 10px; border: none;">{{a.noImss}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <table style="border: hidden; text-align: center; width:100%">
+        <tbody style="border: hidden">
+            <tr style="border: hidden">
+                <td style="border: hidden; padding-bottom: 20px;"></td>
+                <td style="border: hidden; padding-bottom: 20px;"></td>
+            </tr>
+            <tr style="border: hidden">
+                <td style="border: hidden; border-top: 1px solid black;"></td>
+                <td style="border: hidden; border-top: 1px solid black;"></td>
+            </tr>
+            <tr style="border: hidden">
+                <td style="border: hidden;">{{E_R.usuario.first_name}} {{E_R.usuario.last_name}}<br><br>AUTORIZO DE RECIBIDO</td>
+                <td style="border: hidden;">{{reporte.idViaje.idCuadrilla.idJefeCuadrilla.usuario.first_name}} {{reporte.idViaje.idCuadrilla.idJefeCuadrilla.usuario.last_name}}<br><br>GENERO EL REPORTE</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>

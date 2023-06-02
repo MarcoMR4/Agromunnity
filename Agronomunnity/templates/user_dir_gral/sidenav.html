@@ -21,16 +21,40 @@
                   <p>Inicio</p>
               </a>
             </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'vo' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href={% url 'vo' %} class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-tree"></i>
+                  <p>Huertas</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 't' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 't' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-truck"></i>
+                  <p>Transportes</p>
+              </a>
+            </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'cl' %} style='background-color: #c9e7cb' {% endif %}>
               <a href="{% url 'cl' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-table"></i>
                   <p>Bitacoras</p>
               </a>
             </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'rp' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'rp' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-bar-chart"></i>
+                  <p>Reportes de corte</p>
+              </a>
+            </li>
             <li class="nav-item rounded" {% if request.resolver_match.url_name == 'si' %} style='background-color: #c9e7cb' {% endif %}>
               <a href="{% url 'si' %}" class="nav-link inactive">
                   <i class="nav-icon fa-solid fa-circle-exclamation"></i>
                   <p>Incidencias</p>
+              </a>
+            </li>
+            <li class="nav-item rounded" {% if request.resolver_match.url_name == 'help' %} style='background-color: #c9e7cb' {% endif %}>
+              <a href="{% url 'help' %}" class="nav-link inactive">
+                  <i class="nav-icon fa-solid fa-question-circle"></i>
+                  <p>Ayuda</p>
               </a>
             </li>
             <li class="nav-item">
